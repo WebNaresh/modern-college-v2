@@ -1,0 +1,130 @@
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Student Related Info
+
+model User {
+  id                   String             @id @default(cuid())
+  name                 String?
+  email                String?            @unique
+  emailVerified        DateTime?
+  image                String?
+  accounts             Account[]
+  sessions             Session[]
+  password             String?
+  role                 RelationType       @default(Student)
+  personalInfoId       PersonalInfo?      @relation(fields: [personalInfoIdString], references: [id])
+  personalInfoIdString String?            @unique
+  relatives            Relative[]
+  previousAcademics    PreviousAcademic[]
+}
+
+enum RelationType {
+  Student
+  Teacher
+  Admin
+}
+
+model PersonalInfo {
+  id               String @id @default(cuid())
+  dateOfBirth      String
+  gender           String
+  religion         String
+  caste            String
+  category         String
+  bloodGroup       String
+  mobile1          String
+  temporaryAddress String
+  permanentAddress String
+  User             User?
+}
+
+model Relative {
+  id           String  @id @default(cuid())
+  name         String
+  relationName String
+  occupation   String
+  address      String
+  contact      String
+  User         User?   @relation(fields: [userId], references: [id])
+  userId       String?
+}
+
+// Admin related Object
+
+model Academic {
+  id            String  @id @default(cuid())
+  admissionYear Int
+  courseId      String?
+}
+
+model PreviousAcademic {
+  id              String   @id @default(cuid())
+  boardUniversity String
+  collegeName     String
+  courseName      String
+  passingYear     DateTime
+  percentage      Int
+  User            User?    @relation(fields: [userId], references: [id])
+  userId          String?
+}
+
+model Course {
+  id         String    @id @default(cuid())
+  courseName String
+  totalFee   Int
+  Subjects   Subject[]
+  createAt   DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  createdBy  String?
+}
+
+model Subject {
+  id          String  @id @default(cuid())
+  subjectName String
+  totalMark   Int
+  Course      Course? @relation(fields: [courseId], references: [id])
+  courseId    String?
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
