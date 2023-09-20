@@ -52,7 +52,6 @@ const LoginForm = () => {
       email: values.email,
       password: values.password,
     });
-    console.log(`🚀 ~ res:`, res);
     if (res?.error?.includes("CredentialsSignin")) {
       toast({
         title: "Email of Password is not matching",
