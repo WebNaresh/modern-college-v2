@@ -65,11 +65,7 @@ const MainNav = (props: Props) => {
               href={ele.href}
             >
               <Image
-                src={` ${
-                  data.data?.user?.image
-                    ? data.data.user?.image
-                    : "https://instagram.fnag1-4.fna.fbcdn.net/v/t51.2885-19/278989595_664165064810773_3556417570745100004_n.jpg?stp=dst-jpg_s150x150&_nc_ht=instagram.fnag1-4.fna.fbcdn.net&_nc_cat=101&_nc_ohc=6cKhMqFLgWYAX9GJ10S&edm=ACWDqb8BAAAA&ccb=7-5&oh=00_AfBVtxk5NWc7Ag84tiuXvFjVtoepnQMrXwmDUQRwVC2wmQ&oe=64D95257&_nc_sid=ee9879"
-                }`}
+                src={`/bigLogo.png`}
                 height={40}
                 width={40}
                 className={`hover:border-primary ${
