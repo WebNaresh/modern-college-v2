@@ -44,7 +44,7 @@ const LoginForm = () => {
         description: `Welcome ${data?.user?.name}`,
       });
     }
-  }, [data, router]);
+  }, [data, router, toast]);
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     const res = await signIn("credentials", {
