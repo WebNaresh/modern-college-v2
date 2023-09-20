@@ -45,7 +45,7 @@ const Navbar = (props: Props) => {
               <li>
                 <Link href={"/"}>
                   <Image
-                    src="/bigLogo.png"
+                    src="/biglogo.png"
                     height={50}
                     width={50}
                     alt="Moder logo"
