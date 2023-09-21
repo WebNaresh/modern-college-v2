@@ -30,7 +30,6 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        console.log(`🚀 ~ credentials:`, { credentials });
         if (!credentials?.email || !credentials?.password) {
           // Any object returned will be saved in `user` property of the JWT
           return null;
@@ -58,26 +57,40 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, trigger, session }) {
+      console.log(`🚀 ~ session:`, session);
+      console.log(`🚀 ~ token:`, token);
+      if (trigger === "update") {
+        token.name == session.name;
+        token.picture == session.image;
+      } else {
+      }
       return token;
     },
     async signIn({ user, account, profile, email, credentials }) {
-      console.log(`🚀 ~ user, account, profile, email, credentials:`, {
-        user,
-        account,
-        profile,
-        email,
-        credentials,
-      });
+      // console.log(`🚀 ~ user, account, profile, email, credentials:`, {
+      //   user,
+      //   account,
+      //   profile,
+      //   email,
+      //   credentials,
+      // });
       return true;
     },
     async session({ session, token }) {
+      console.log(`🚀 ~ session:`, session);
+      console.log(`🚀 ~ session:`, token);
       const user = await prisma.user.findUnique({
         where: {
           email: token.email as string,
         },
+        include: {
+          familyDetail: true,
+          previousAcademics: true,
+          personalInfo: true,
+        },
       });
       user!.password = null;
-      session.user = user!;
+      session.user = user;
       return session;
     },
   },

@@ -1,4 +1,5 @@
 "use client";
+import { updateUserInfo } from "@/actions/handleUserFor";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -11,6 +12,7 @@ import {
 import ImageUpload from "@/components/ui/image-upload";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
@@ -26,30 +28,37 @@ type Props = {
   session: Session | null;
 };
 const UserInfo1 = (props: Props) => {
-  const { data } = useSession();
-  console.log(`🚀 ~ data:`, data);
-  const [open, setOpen] = useState(false);
+  const { data, update } = useSession();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  console.log(props.session?.user?.image);
 
-  const onSubmit = async (data: BillboardFormValues) => {
-    setLoading(true);
-
-    console.log(`🚀 ~ data:`, data);
-    try {
-    } catch (error) {
-    } finally {
+  const onSubmit = async (formData: UserForm1Values) => {
+    // setLoading(true);
+    const { message, user } = await updateUserInfo(formData);
+    if (user) {
+      toast({
+        title: "Updated successfully",
+        description: "User updated successfully now you can go to Next Step",
+      });
+      update({ name: formData.name, image: formData.imageUrl });
+    } else {
+      toast({
+        title: message,
+        description: "Something went wrong",
+        variant: "destructive",
+      });
     }
   };
 
-  type BillboardFormValues = z.infer<typeof formSchema>;
-  const form = useForm<BillboardFormValues>({
+  type UserForm1Values = z.infer<typeof formSchema>;
+  const form = useForm<UserForm1Values>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: `${props.session?.user?.name}`,
       imageUrl: `${props.session?.user?.image || "/default.png"}`,
     },
   });
+
   return (
     <Form {...form}>
       <form
@@ -60,13 +69,12 @@ const UserInfo1 = (props: Props) => {
           control={form.control}
           name={"imageUrl"}
           render={({ field }) => {
+            const isNameChanged = field.value !== data?.user?.name;
             return (
               <FormItem className="w-full flex flex-col items-center">
                 <FormLabel>Profile image</FormLabel>
-                {props.session?.user ? (
+                {!props.session?.user?.name && (
                   <Skeleton className="w-[200px] h-[200px] rounded-full" />
-                ) : (
-                  ""
                 )}
                 <FormControl>
                   <ImageUpload
@@ -104,7 +112,14 @@ const UserInfo1 = (props: Props) => {
           />
         </div>
 
-        <Button disabled={loading} className="m-4" type="submit">
+        <Button
+          disabled={
+            form.getValues().name === data?.user?.name &&
+            form.getValues().imageUrl === data?.user?.image
+          }
+          className="m-4"
+          type="submit"
+        >
           Save Changes
         </Button>
       </form>

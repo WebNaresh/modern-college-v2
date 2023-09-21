@@ -6,9 +6,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import useUpdateUserStore from "@/hooks/stepper-user-update-hook";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
 import BottomBar from "./bottom-bar";
 import IconBar from "./icon-bar";
 import UserInfo1 from "./stepper/stepper-1";
@@ -20,31 +20,19 @@ type Props = {
   session: Session | null;
 };
 function Stepper(props: Props) {
-  const [currentStep, setCurrentStep] = useState(1);
+  const { index, nextStep, prevStep, setIndex } = useUpdateUserStore();
   const { data } = useSession();
 
-  const handleNext = () => {
-    if (currentStep < 4) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
   const renderStepContent = () => {
-    switch (currentStep) {
-      case 1:
+    switch (index) {
+      case 0:
         return <UserInfo1 session={props.session} />;
+      case 1:
+        return <UserInfo2 session={props.session} />;
       case 2:
-        return <UserInfo2 />;
+        return <UserInfo3 session={props.session} />;
       case 3:
-        return <UserInfo3 />;
-      case 4:
-        return <UserInfo4 />;
+        return <UserInfo4 session={props.session} />;
       default:
         return null;
     }
@@ -55,17 +43,13 @@ function Stepper(props: Props) {
       <CardHeader>
         <CardTitle>Teacher Registration Form</CardTitle>
         <CardDescription>Welcome {data?.user?.name}</CardDescription>
-        <IconBar setState={setCurrentStep} />
+        <IconBar />
       </CardHeader>
       <CardContent>
         <div className="mt-8 p-4">{renderStepContent()}</div>
       </CardContent>
       <CardFooter className=" flex flex-col w-full">
-        <BottomBar
-          currentStep={currentStep}
-          handleNext={handleNext}
-          handlePrevious={handlePrevious}
-        />
+        <BottomBar />
       </CardFooter>
     </div>
   );

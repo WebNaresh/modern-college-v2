@@ -6,6 +6,35 @@ export interface RoutesA {
   hide?: boolean;
   role?: "hidden" | "";
 }
+interface PersonalInfo {
+  id: string;
+  dateOfBirth: Date | undefined;
+  gender: "Male" | "Female" | "Other" | undefined;
+  religion: string;
+  caste: string;
+  category: string;
+  bloodGroup: string;
+  mobile1: string;
+  temporaryAddress: string;
+  permanentAddress: string;
+}
+interface FamilyDetail {
+  id: string;
+  name: string;
+  relationName: string;
+  occupation: string;
+  address: string;
+  contact: string;
+}
+
+interface PreviousAcademic {
+  id: string;
+  boardUniversity: string;
+  collegeName: string;
+  courseName: string;
+  passingYear: Date;
+  percentage: number;
+}
 
 declare module "next-auth" {
   /**
@@ -20,6 +49,9 @@ declare module "next-auth" {
       image: string | null;
       password: string | null;
       role: "Teacher" | "Student" | "Admin";
+      personalInfo: PersonalInfo | null;
+      familyDetail: FamilyDetail[] | [];
+      previousAcademics: PreviousAcademic[] | [];
     } | null;
   }
 }

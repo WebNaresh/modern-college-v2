@@ -1,29 +1,33 @@
 import { Button } from "@/components/ui/button";
+import useUpdateUserStore from "@/hooks/stepper-user-update-hook";
+import { useSession } from "next-auth/react";
 
-type Props = {
-  handlePrevious: () => void;
-  handleNext: () => void;
-  currentStep: number;
-};
+type Props = {};
 
-const BottomBar = ({ handleNext, handlePrevious, currentStep }: Props) => {
+const BottomBar = (props: Props) => {
+  const { index, nextStep, prevStep, checkNextStep, loading } =
+    useUpdateUserStore();
+  const { data } = useSession();
   return (
     <>
       {" "}
       <div className="flex p-2 mt-4 w-full">
-        <Button
-          className="bg-background"
-          variant={"ghost"}
-          onClick={handlePrevious}
-        >
-          Previous
-        </Button>
+        {index !== 0 && (
+          <Button
+            className="bg-background"
+            variant={"ghost"}
+            onClick={prevStep}
+          >
+            Previous
+          </Button>
+        )}
         <div className="flex-auto flex flex-row-reverse">
-          {currentStep < 4 && (
+          {index < 3 && (
             <Button
+              disabled={loading}
               className="bg-background"
               variant={"ghost"}
-              onClick={handleNext}
+              onClick={nextStep}
             >
               Next
             </Button>

@@ -65,3 +65,55 @@
   width: 10px;
   background: transparent;
 }
+.preloaderBg {
+  position: fixed;
+  z-index: 10;
+  top: 25%;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+
+.preloader {
+  margin: auto;
+  background: url("/biglogo.png") no-repeat center;
+  background-size: 175px;
+  width: 250px;
+  height: 250px;
+  /* padding: 66px; */
+}
+.hide {
+  display: none !important;
+}
+
+.preloader2 {
+  border: 5px solid #797777;
+  border-top: 5px solid #be193b;
+  border-radius: 50%;
+  width: 350px;
+  height: 350px;
+  animation: spin 1s ease-in-out infinite;
+  position: relative;
+  margin: auto;
+  top: -280px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.rdp-caption_dropdowns {
+  width: 100%;
+  justify-content: space-between;
+}
+.rdp-dropdown {
+  background: rgb(46, 46, 46) !important;
+  padding: 10px;
+}
+select[name="months"] option {
+  padding: 15px !important; /* Adjust the padding as needed */
+}

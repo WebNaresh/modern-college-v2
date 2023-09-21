@@ -9,7 +9,6 @@ import { HiOutlineLogout } from "react-icons/hi";
 
 export function ThemeToggle() {
   const data = useSession();
-  // console.log(`🚀 ~ data:`, data);
   const { setTheme, theme } = useTheme();
   const toggleMode = () => {
     if (theme === "dark") {

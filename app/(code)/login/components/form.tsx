@@ -4,6 +4,7 @@ import InputField from "@/components/AuthComponets/InputField";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
+import useStore from "@/hooks/loader-hook";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -25,6 +26,7 @@ const formSchema = z.object({
 
 const LoginForm = () => {
   const { data } = useSession();
+  const { setLoadingFalse, setLoadingTrue } = useStore();
   const { toast } = useToast();
   const router = useRouter();
 
@@ -46,6 +48,7 @@ const LoginForm = () => {
     }
   }, [data, router, toast]);
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoadingTrue();
     console.log(values);
     const res = await signIn("credentials", {
       redirect: false,
@@ -64,6 +67,8 @@ const LoginForm = () => {
         description: "Try after sometime",
         variant: "destructive",
       });
+    } else {
+      setLoadingFalse();
     }
   }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
+import { PlusIcon } from "@radix-ui/react-icons";
 import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
@@ -47,10 +47,12 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           className="relative w-[200px] h-[200px] rounded-md overflow-hidden "
         >
           <div className="z-10 absolute top-2 right-2">
-            <Button variant={"destructive"} onClick={uploadPres} size={"icon"}>
-              <TrashIcon className="h-4 w-4" />
-            </Button>
-            <Button onClick={uploadPres} variant={"default"} size={"icon"}>
+            <Button
+              type="button"
+              onClick={uploadPres}
+              variant={"default"}
+              size={"icon"}
+            >
               <BiEdit className="h-4 w-4" />
             </Button>
           </div>

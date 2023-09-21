@@ -47,9 +47,9 @@ model User {
   sessions             Session[]
   password             String?
   role                 RelationType       @default(Student)
-  personalInfoId       PersonalInfo?      @relation(fields: [personalInfoIdString], references: [id])
+  personalInfo         PersonalInfo?      @relation(fields: [personalInfoIdString], references: [id])
   personalInfoIdString String?            @unique
-  relatives            Relative[]
+  familyDetail         FamilyDetail[]
   previousAcademics    PreviousAcademic[]
 }
 
@@ -60,28 +60,34 @@ enum RelationType {
 }
 
 model PersonalInfo {
-  id               String @id @default(cuid())
-  dateOfBirth      String
-  gender           String
-  religion         String
-  caste            String
-  category         String
-  bloodGroup       String
-  mobile1          String
-  temporaryAddress String
-  permanentAddress String
+  id               String   @id @default(cuid())
+  dateOfBirth      DateTime
+  gender           Gender
+  religion         String   @default("")
+  caste            String   @default("")
+  category         String   @default("")
+  bloodGroup       String   @default("")
+  mobile1          String   @default("")
+  temporaryAddress String   @default("")
+  permanentAddress String   @default("")
   User             User?
 }
 
-model Relative {
-  id           String  @id @default(cuid())
+enum Gender {
+  Male
+  Female
+  Other
+}
+
+model FamilyDetail {
+  id           String @id @unique @default(cuid())
   name         String
   relationName String
   occupation   String
   address      String
   contact      String
-  User         User?   @relation(fields: [userId], references: [id])
-  userId       String?
+  user         User   @relation(fields: [userId], references: [id])
+  userId       String
 }
 
 // Admin related Object

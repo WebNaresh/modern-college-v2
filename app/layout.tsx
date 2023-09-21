@@ -1,3 +1,4 @@
+import Loader from "@/components/Loader/page";
 import Navbar from "@/components/Navbar/navbar";
 import { Toaster } from "@/components/ui/toaster";
 import { NextAuthProvider } from "@/components/wrapper/next-auth-provider";
@@ -29,8 +30,8 @@ export default function RootLayout({
       <body className={cn(inter.className, "flex flex-col h-[100dvh] ")}>
         <NextAuthProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <Loader />
             <Navbar />
-
             <div className="mt-[120px]">{children}</div>
             <Toaster />
           </ThemeProvider>

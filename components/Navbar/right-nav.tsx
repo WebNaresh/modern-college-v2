@@ -58,9 +58,9 @@ const RightNav = (props: Props) => {
       role: data.data?.user?.role === "Teacher" ? "" : "hidden",
     },
     {
-      href: "/Student-registration",
+      href: "/student-registration",
       label: "Register As Student",
-      active: pathname === "/techer-registration",
+      active: pathname === "/student-registration",
       role: data.data?.user?.role === "Student" ? "" : "hidden",
     },
   ];

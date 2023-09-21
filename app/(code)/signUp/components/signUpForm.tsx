@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
+import useStore from "@/hooks/loader-hook";
 import { ToastAction } from "@radix-ui/react-toast";
 import Link from "next/link";
 
@@ -46,6 +47,7 @@ const formSchema = z.object({
 
 const SignUpForm = () => {
   const { toast } = useToast();
+  const { setLoadingTrue, setLoadingFalse } = useStore();
   const router = useRouter();
   const { data } = useSession();
   if (data?.user) {
@@ -63,6 +65,7 @@ const SignUpForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoadingTrue();
     const res = await fetch("/api/register", {
       method: "POST",
       body: JSON.stringify(values),
@@ -97,8 +100,10 @@ const SignUpForm = () => {
       toast({
         title: "Something went wrong",
         description: "Try after sometime",
+        variant: "destructive",
       });
     }
+    setLoadingFalse();
   }
 
   return (
