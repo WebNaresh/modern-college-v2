@@ -38,45 +38,34 @@ model Session {
 // Student Related Info
 
 model User {
-  id                   String             @id @default(cuid())
-  name                 String?
-  email                String?            @unique
-  emailVerified        DateTime?
-  image                String?
-  accounts             Account[]
-  sessions             Session[]
-  password             String?
-  role                 RelationType       @default(Student)
-  personalInfo         PersonalInfo?      @relation(fields: [personalInfoIdString], references: [id])
-  personalInfoIdString String?            @unique
-  familyDetail         FamilyDetail[]
-  previousAcademics    PreviousAcademic[]
+  id                String             @id @default(cuid())
+  name              String?
+  email             String?            @unique
+  emailVerified     DateTime?
+  image             String?
+  accounts          Account[]
+  sessions          Session[]
+  password          String?
+  religion          String             @default("") //add
+  caste             String             @default("") //add
+  temporaryAddress  String             @default("") //add
+  permanentAddress  String             @default("") //add
+  gender            Gender?
+  role              RelationType       @default(Student)
+  personalInfo      PersonalInfo?
+  familyDetail      FamilyDetail[]     @relation("FamilyDetails")
+  previousAcademics PreviousAcademic[] @relation("previousAcademics")
 }
 
-enum RelationType {
-  Student
-  Teacher
-  Admin
-}
-
-model PersonalInfo {
-  id               String   @id @default(cuid())
-  dateOfBirth      DateTime
-  gender           Gender
-  religion         String   @default("")
-  caste            String   @default("")
-  category         String   @default("")
-  bloodGroup       String   @default("")
-  mobile1          String   @default("")
-  temporaryAddress String   @default("")
-  permanentAddress String   @default("")
-  User             User?
-}
-
-enum Gender {
-  Male
-  Female
-  Other
+model PreviousAcademic {
+  id              String @id @default(cuid())
+  boardUniversity String
+  collegeName     String
+  courseName      String
+  passingYear     String
+  percentage      String
+  user            User   @relation("previousAcademics", fields: [userId], references: [id])
+  userId          String
 }
 
 model FamilyDetail {
@@ -86,8 +75,54 @@ model FamilyDetail {
   occupation   String
   address      String
   contact      String
-  user         User   @relation(fields: [userId], references: [id])
   userId       String
+  user         User   @relation("FamilyDetails", fields: [userId], references: [id])
+}
+
+enum RelationType {
+  Student
+  Teacher
+  Admin
+}
+
+model PersonalInfo {
+  id                      String                   @id @default(cuid())
+  dateOfBirth             DateTime
+  mobile1                 String                   @default("")
+  bloodGroup              String                   @default("") //add
+  user                    User                     @relation(fields: [userId], references: [id])
+  userId                  String                   @unique // Add the unique constraint here
+  city                    String                   @default("")
+  state                   String                   @default("")
+  pincode                 String                   @default("")
+  subjectOfTeaching       String                   @default("")
+  employmentStatus        Boolean
+  workHistory             WorkHistory[] //add
+  professionalAchievement ProffesionalAchevement[] //add
+}
+
+model WorkHistory {
+  id             String        @id @default(cuid())
+  jobRole        String
+  subjectTeach   String
+  serviceYear    Int
+  PersonalInfo   PersonalInfo? @relation(fields: [personalInfoId], references: [id])
+  personalInfoId String?
+}
+
+model ProffesionalAchevement {
+  id             String        @id @default(cuid())
+  awardName      String
+  whereYouGot    String
+  aboutAward     String
+  PersonalInfo   PersonalInfo? @relation(fields: [personalInfoId], references: [id])
+  personalInfoId String?
+}
+
+enum Gender {
+  Male
+  Female
+  Other
 }
 
 // Admin related Object
@@ -96,17 +131,6 @@ model Academic {
   id            String  @id @default(cuid())
   admissionYear Int
   courseId      String?
-}
-
-model PreviousAcademic {
-  id              String   @id @default(cuid())
-  boardUniversity String
-  collegeName     String
-  courseName      String
-  passingYear     DateTime
-  percentage      Int
-  User            User?    @relation(fields: [userId], references: [id])
-  userId          String?
 }
 
 model Course {

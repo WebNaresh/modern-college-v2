@@ -1,6 +1,9 @@
 -- CreateEnum
 CREATE TYPE "RelationType" AS ENUM ('Student', 'Teacher', 'Admin');
 
+-- CreateEnum
+CREATE TYPE "Gender" AS ENUM ('Male', 'Female', 'Other');
+
 -- CreateTable
 CREATE TABLE "Account" (
     "id" TEXT NOT NULL,
@@ -38,40 +41,50 @@ CREATE TABLE "User" (
     "image" TEXT,
     "password" TEXT,
     "role" "RelationType" NOT NULL DEFAULT 'Student',
-    "personalInfoIdString" TEXT,
-    "academicId" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "PersonalInfo" (
+CREATE TABLE "PreviousAcademic" (
     "id" TEXT NOT NULL,
-    "dateOfBirth" TEXT NOT NULL,
-    "gender" TEXT NOT NULL,
-    "religion" TEXT NOT NULL,
-    "caste" TEXT NOT NULL,
-    "category" TEXT NOT NULL,
-    "bloodGroup" TEXT NOT NULL,
-    "mobile1" TEXT NOT NULL,
-    "mobile2" TEXT,
-    "temporaryAddress" TEXT NOT NULL,
-    "permanentAddress" TEXT NOT NULL,
+    "boardUniversity" TEXT NOT NULL,
+    "collegeName" TEXT NOT NULL,
+    "courseName" TEXT NOT NULL,
+    "passingYear" TEXT NOT NULL,
+    "percentage" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
 
-    CONSTRAINT "PersonalInfo_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "PreviousAcademic_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Relative" (
+CREATE TABLE "FamilyDetail" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "relationName" TEXT NOT NULL,
     "occupation" TEXT NOT NULL,
     "address" TEXT NOT NULL,
     "contact" TEXT NOT NULL,
-    "email" TEXT,
-    "personalInfoId" TEXT,
+    "userId" TEXT NOT NULL,
 
-    CONSTRAINT "Relative_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "FamilyDetail_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PersonalInfo" (
+    "id" TEXT NOT NULL,
+    "dateOfBirth" TIMESTAMP(3) NOT NULL,
+    "gender" "Gender" NOT NULL,
+    "religion" TEXT NOT NULL DEFAULT '',
+    "caste" TEXT NOT NULL DEFAULT '',
+    "bloodGroup" TEXT NOT NULL DEFAULT '',
+    "mobile1" TEXT NOT NULL DEFAULT '',
+    "temporaryAddress" TEXT NOT NULL DEFAULT '',
+    "permanentAddress" TEXT NOT NULL DEFAULT '',
+    "userId" TEXT NOT NULL,
+
+    CONSTRAINT "PersonalInfo_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -86,24 +99,23 @@ CREATE TABLE "Academic" (
 -- CreateTable
 CREATE TABLE "Course" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "courseName" TEXT NOT NULL,
+    "totalFee" INTEGER NOT NULL,
     "createAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "userId" TEXT,
+    "createdBy" TEXT,
 
     CONSTRAINT "Course_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "FeeCriteria" (
+CREATE TABLE "Subject" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "amount" INTEGER NOT NULL,
-    "createAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "userId" TEXT,
+    "subjectName" TEXT NOT NULL,
+    "totalMark" INTEGER NOT NULL,
+    "courseId" TEXT,
 
-    CONSTRAINT "FeeCriteria_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Subject_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -123,7 +135,10 @@ CREATE UNIQUE INDEX "Session_sessionToken_key" ON "Session"("sessionToken");
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_personalInfoIdString_key" ON "User"("personalInfoIdString");
+CREATE UNIQUE INDEX "FamilyDetail_id_key" ON "FamilyDetail"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PersonalInfo_userId_key" ON "PersonalInfo"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token");
@@ -138,19 +153,13 @@ ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_personalInfoIdString_fkey" FOREIGN KEY ("personalInfoIdString") REFERENCES "PersonalInfo"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "PreviousAcademic" ADD CONSTRAINT "PreviousAcademic_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_academicId_fkey" FOREIGN KEY ("academicId") REFERENCES "Academic"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "FamilyDetail" ADD CONSTRAINT "FamilyDetail_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Relative" ADD CONSTRAINT "Relative_personalInfoId_fkey" FOREIGN KEY ("personalInfoId") REFERENCES "PersonalInfo"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "PersonalInfo" ADD CONSTRAINT "PersonalInfo_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Academic" ADD CONSTRAINT "Academic_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Course"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Course" ADD CONSTRAINT "Course_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "FeeCriteria" ADD CONSTRAINT "FeeCriteria_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Subject" ADD CONSTRAINT "Subject_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Course"("id") ON DELETE SET NULL ON UPDATE CASCADE;

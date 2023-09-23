@@ -70,6 +70,7 @@ const LoginForm = () => {
     } else {
       setLoadingFalse();
     }
+    setLoadingFalse();
   }
 
   return (
@@ -96,15 +97,6 @@ const LoginForm = () => {
           <Button className="w-full text-white" type="submit">
             Login
           </Button>
-
-          {/* <Button
-            type="button"
-            className="w-full bg-white dark:hover:bg-slate-100"
-            onClick={() => signIn("github")}
-          >
-            <GitHubLogoIcon className="mr-2 h-4 w-4" />
-            Continue with Github
-          </Button> */}
         </form>
       </Form>
     </>

@@ -6,20 +6,20 @@ export interface RoutesA {
   hide?: boolean;
   role?: "hidden" | "";
 }
-interface PersonalInfo {
-  id: string;
+export interface PersonalInfo {
+  id?: string;
   dateOfBirth: Date | undefined;
-  gender: "Male" | "Female" | "Other" | undefined;
-  religion: string;
-  caste: string;
-  category: string;
   bloodGroup: string;
   mobile1: string;
-  temporaryAddress: string;
-  permanentAddress: string;
+  city: string;
+  state: string;
+  pincode: string;
+  subjectOfTeaching: string;
+  employmentStatus: boolean;
 }
-interface FamilyDetail {
-  id: string;
+
+export interface FamilyDetail {
+  id?: string;
   name: string;
   relationName: string;
   occupation: string;
@@ -27,13 +27,13 @@ interface FamilyDetail {
   contact: string;
 }
 
-interface PreviousAcademic {
-  id: string;
+export interface PreviousAcademic {
+  id?: string;
   boardUniversity: string;
   collegeName: string;
   courseName: string;
-  passingYear: Date;
-  percentage: number;
+  passingYear: string;
+  percentage: string;
 }
 
 declare module "next-auth" {
@@ -52,6 +52,11 @@ declare module "next-auth" {
       personalInfo: PersonalInfo | null;
       familyDetail: FamilyDetail[] | [];
       previousAcademics: PreviousAcademic[] | [];
+      temporaryAddress: string;
+      permanentAddress: string;
+      religion: string;
+      caste: string;
+      gender: "Male" | "Female" | "Other";
     } | null;
   }
 }

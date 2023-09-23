@@ -5,9 +5,9 @@ import { useSession } from "next-auth/react";
 type Props = {};
 
 const BottomBar = (props: Props) => {
-  const { index, nextStep, prevStep, checkNextStep, loading } =
-    useUpdateUserStore();
+  const { index, nextStep, prevStep, loading } = useUpdateUserStore();
   const { data } = useSession();
+
   return (
     <>
       {" "}

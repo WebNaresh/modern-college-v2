@@ -57,8 +57,6 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, trigger, session }) {
-      console.log(`🚀 ~ session:`, session);
-      console.log(`🚀 ~ token:`, token);
       if (trigger === "update") {
         token.name == session.name;
         token.picture == session.image;
@@ -77,8 +75,6 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
     async session({ session, token }) {
-      console.log(`🚀 ~ session:`, session);
-      console.log(`🚀 ~ session:`, token);
       const user = await prisma.user.findUnique({
         where: {
           email: token.email as string,

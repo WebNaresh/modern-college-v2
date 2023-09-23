@@ -9,7 +9,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -17,32 +16,32 @@ import { MdAdd } from "react-icons/md";
 import { z } from "zod";
 
 type Props = {
-  setArrayOfFamily: React.Dispatch<React.SetStateAction<UserForm1Values[]>>;
+  setArrayOfAcademics: React.Dispatch<React.SetStateAction<UserForm1Values[]>>;
 };
 type UserForm1Values = z.infer<typeof formSchema>;
 const formSchema = z.object({
-  name: z.string().min(1),
-  relationName: z.string().min(1),
-  address: z.string().min(5),
-  occupation: z.string().min(5),
-  contact: z.string().min(10),
+  boardUniversity: z.string().min(1),
+  collegeName: z.string().min(1),
+  courseName: z.string().min(1),
+  passingYear: z.string().min(10),
+  percentage: z.string().min(2),
 });
 
-const MiniForm = (props: Props) => {
+const MiniForm2 = (props: Props) => {
   const [loading, setLoading] = useState(false);
   const form = useForm<UserForm1Values>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      relationName: "",
-      address: "",
-      occupation: ``,
-      contact: "",
+      boardUniversity: "",
+      collegeName: "",
+      courseName: "",
+      passingYear: "",
+      percentage: "",
     },
   });
   const onSubmit = async (formData: UserForm1Values) => {
     console.log(`🚀 ~ formData:`, formData);
-    props.setArrayOfFamily((prevArray) => [...prevArray, formData]);
+    props.setArrayOfAcademics((prevArray) => [...prevArray, formData]);
     // form.reset();
   };
   return (
@@ -55,71 +54,18 @@ const MiniForm = (props: Props) => {
           <div className="grid place-items-center w-[70%]">
             <FormField
               control={form.control}
-              name={"name"}
+              name={"boardUniversity"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>Family Member Name</FormLabel>
+                    <FormLabel>Your Board/University</FormLabel>
                     <FormControl>
                       <Input
                         className="w-full"
                         disabled={loading}
-                        placeholder="Name"
+                        placeholder="Board / University"
                         {...field}
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name={"relationName"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>Relation with member</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="w-full"
-                        disabled={loading}
-                        placeholder="Relation"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name={"address"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>Address of member</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        placeholder="Type permanent address."
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name={"occupation"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>Occupation of member</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Occupation" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -129,18 +75,58 @@ const MiniForm = (props: Props) => {
 
             <FormField
               control={form.control}
-              name={"contact"}
+              name={"collegeName"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>Member Contact Number</FormLabel>
+                    <FormLabel>College Name</FormLabel>
                     <FormControl>
-                      <Input
-                        className="w-full"
-                        disabled={loading}
-                        placeholder="Contact Number"
-                        {...field}
-                      />
+                      <Input {...field} placeholder="College name" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name={"courseName"}
+              render={({ field }) => {
+                return (
+                  <FormItem className="w-full">
+                    <FormLabel>Course Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Course name" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name={"passingYear"}
+              render={({ field }) => {
+                return (
+                  <FormItem className="w-full">
+                    <FormLabel>Passing Year</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Passing year" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name={"percentage"}
+              render={({ field }) => {
+                return (
+                  <FormItem className="w-full">
+                    <FormLabel>Percentage here </FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Don't add % sign" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -161,4 +147,4 @@ const MiniForm = (props: Props) => {
   );
 };
 
-export default MiniForm;
+export default MiniForm2;

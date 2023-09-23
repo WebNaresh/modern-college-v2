@@ -11,7 +11,15 @@ import {
 } from "@/components/ui/form";
 import ImageUpload from "@/components/ui/image-upload";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Session } from "next-auth";
@@ -23,6 +31,11 @@ import { z } from "zod";
 const formSchema = z.object({
   name: z.string().min(1),
   imageUrl: z.string().min(1),
+  religion: z.string().min(1),
+  caste: z.string().min(1),
+  permanentAddress: z.string().min(5),
+  temporaryAddress: z.string().min(5),
+  gender: z.enum(["Male", "Female", "Other"]),
 });
 type Props = {
   session: Session | null;
@@ -36,11 +49,11 @@ const UserInfo1 = (props: Props) => {
     // setLoading(true);
     const { message, user } = await updateUserInfo(formData);
     if (user) {
+      update({ name: formData.name, image: formData.imageUrl });
       toast({
         title: "Updated successfully",
         description: "User updated successfully now you can go to Next Step",
       });
-      update({ name: formData.name, image: formData.imageUrl });
     } else {
       toast({
         title: message,
@@ -56,6 +69,11 @@ const UserInfo1 = (props: Props) => {
     defaultValues: {
       name: `${props.session?.user?.name}`,
       imageUrl: `${props.session?.user?.image || "/default.png"}`,
+      religion: props.session?.user?.religion || "",
+      caste: props.session?.user?.caste || "",
+      permanentAddress: props.session?.user?.permanentAddress || "",
+      temporaryAddress: props.session?.user?.temporaryAddress || "",
+      gender: props.session?.user?.gender || undefined,
     },
   });
 
@@ -104,6 +122,121 @@ const UserInfo1 = (props: Props) => {
                       placeholder="Recheck your username"
                       {...field}
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            control={form.control}
+            name={"religion"}
+            render={({ field }) => {
+              return (
+                <FormItem className="w-full">
+                  <FormLabel>Religion</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="w-full"
+                      disabled={loading}
+                      placeholder="Religion"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            control={form.control}
+            name={"caste"}
+            render={({ field }) => {
+              return (
+                <FormItem className="w-full">
+                  <FormLabel>Caste</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="w-full"
+                      disabled={loading}
+                      placeholder="Caste"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            control={form.control}
+            name={"permanentAddress"}
+            render={({ field }) => {
+              return (
+                <FormItem className="w-full">
+                  <FormLabel>Permanent Address</FormLabel>
+                  <FormControl>
+                    {/* <Input
+                      className="w-full"
+                      disabled={loading}
+                      placeholder="Caste"
+                      {...field}
+                    /> */}
+                    <Textarea
+                      {...field}
+                      placeholder="Type permanent address."
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            control={form.control}
+            name={"temporaryAddress"}
+            render={({ field }) => {
+              return (
+                <FormItem className="w-full">
+                  <FormLabel>Temporary Address</FormLabel>
+                  <FormControl>
+                    {/* <Input
+                      className="w-full"
+                      disabled={loading}
+                      placeholder="Caste"
+                      {...field}
+                    /> */}
+                    <Textarea
+                      {...field}
+                      placeholder="Type temporary address."
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            control={form.control}
+            name={"gender"}
+            render={({ field }) => {
+              return (
+                <FormItem className="w-full">
+                  <FormLabel>Gender</FormLabel>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Male">Male</SelectItem>
+                        <SelectItem value="Female">Female</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

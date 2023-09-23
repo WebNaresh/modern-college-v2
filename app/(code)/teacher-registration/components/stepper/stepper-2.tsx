@@ -1,6 +1,8 @@
 "use client";
+import { updateUserDetails } from "@/actions/handleUserFor";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -16,83 +18,74 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import useStore from "@/hooks/loader-hook";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
-  religion: z.string().min(1),
-  caste: z.string().min(1),
-  permanentAddress: z.string().min(5),
-  temporaryAddress: z.string().min(5),
   dateOfBirth: z.date({
     required_error: "A date of birth is required.",
   }),
-  gender: z.enum(["Male", "Female", "Other"]),
   bloodGroup: z.string().min(1),
   mobile1: z.string().min(10),
+  city: z.string().min(2),
+  state: z.string().min(2),
+  pincode: z.string().min(2),
+  subjectOfTeaching: z.string().min(2),
+  employmentStatus: z.boolean(),
 });
 type Props = {
   session: Session | null;
 };
 const UserInfo2 = (props: Props) => {
   const { data, update } = useSession();
-  console.log(`🚀 ~ data:`, data);
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
+  const { loading, setLoading } = useStore();
 
-  const onSubmit = async (formData: any) => {
-    console.log(`🚀 ~ formData:`, formData);
-    // setLoading(true);
-    // const { message, user } = await updateUserInfo(formData);
-    // if (user) {
-    //   toast({
-    //     title: "Updated successfully",
-    //     description: "User updated successfully now you can go to Next Step",
-    //   });
-    //   update({ name: formData.name, image: formData.imageUrl });
-    // } else {
-    //   toast({
-    //     title: message,
-    //     description: "Something went wrong",
-    //     variant: "destructive",
-    //   });
-    // }
+  const onSubmit = async (formData: UserForm1Values) => {
+    setLoading(true);
+    let info = await updateUserDetails(formData);
+
+    if (info.user) {
+      toast({
+        title: "Updated successfully",
+        description: "info updated successfully now you can go to Next Step",
+      });
+    } else {
+      toast({
+        title: info.message,
+        description: "Something went wrong",
+        variant: "destructive",
+      });
+      update({ formData });
+    }
+    setLoading(false);
   };
 
   type UserForm1Values = z.infer<typeof formSchema>;
   const form = useForm<UserForm1Values>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      religion: `${props.session?.user?.personalInfo?.religion || ""}`,
-      caste: `${props.session?.user?.personalInfo?.caste || "Male"}`,
-      permanentAddress: `${
-        props.session?.user?.personalInfo?.permanentAddress || ""
-      }`,
-      temporaryAddress: `${
-        props.session?.user?.personalInfo?.temporaryAddress || ""
-      }`,
       dateOfBirth: props.session?.user?.personalInfo?.dateOfBirth,
-      gender: props.session?.user?.personalInfo?.gender,
       bloodGroup: props.session?.user?.personalInfo?.bloodGroup || "",
       mobile1: props.session?.user?.personalInfo?.mobile1 || "",
+      city: props.session?.user?.personalInfo?.city || "",
+      state: props.session?.user?.personalInfo?.state || "",
+      pincode: props.session?.user?.personalInfo?.pincode || "",
+      subjectOfTeaching:
+        props.session?.user?.personalInfo?.subjectOfTeaching || "",
+      employmentStatus:
+        props.session?.user?.personalInfo?.employmentStatus || undefined,
     },
   });
+  let personalInfoDateOfBirth = data?.user?.personalInfo?.dateOfBirth || "";
 
   return (
     <Form {...form}>
@@ -101,94 +94,6 @@ const UserInfo2 = (props: Props) => {
         className="grid place-items-center w-full"
       >
         <div className="grid place-items-center w-[70%]">
-          <FormField
-            control={form.control}
-            name={"religion"}
-            render={({ field }) => {
-              return (
-                <FormItem className="w-full">
-                  <FormLabel>Religion</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="w-full"
-                      disabled={loading}
-                      placeholder="Religion"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-          <FormField
-            control={form.control}
-            name={"caste"}
-            render={({ field }) => {
-              return (
-                <FormItem className="w-full">
-                  <FormLabel>Caste</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="w-full"
-                      disabled={loading}
-                      placeholder="Caste"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-          <FormField
-            control={form.control}
-            name={"permanentAddress"}
-            render={({ field }) => {
-              return (
-                <FormItem className="w-full">
-                  <FormLabel>Permanent Address</FormLabel>
-                  <FormControl>
-                    {/* <Input
-                      className="w-full"
-                      disabled={loading}
-                      placeholder="Caste"
-                      {...field}
-                    /> */}
-                    <Textarea
-                      {...field}
-                      placeholder="Type permanent address."
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-          <FormField
-            control={form.control}
-            name={"temporaryAddress"}
-            render={({ field }) => {
-              return (
-                <FormItem className="w-full">
-                  <FormLabel>Temporary Address</FormLabel>
-                  <FormControl>
-                    {/* <Input
-                      className="w-full"
-                      disabled={loading}
-                      placeholder="Caste"
-                      {...field}
-                    /> */}
-                    <Textarea
-                      {...field}
-                      placeholder="Type temporary address."
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
           <FormField
             control={form.control}
             name="dateOfBirth"
@@ -236,33 +141,7 @@ const UserInfo2 = (props: Props) => {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name={"gender"}
-            render={({ field }) => {
-              return (
-                <FormItem className="w-full">
-                  <FormLabel>Gender</FormLabel>
-                  <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Gender" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Male">Male</SelectItem>
-                        <SelectItem value="Female">Female</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
+
           <FormField
             control={form.control}
             name={"bloodGroup"}
@@ -303,13 +182,111 @@ const UserInfo2 = (props: Props) => {
               );
             }}
           />
+          <FormField
+            control={form.control}
+            name={"city"}
+            render={({ field }) => {
+              return (
+                <FormItem className="w-full">
+                  <FormLabel>Your current city</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="w-full"
+                      disabled={loading}
+                      placeholder="City"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            control={form.control}
+            name={"state"}
+            render={({ field }) => {
+              return (
+                <FormItem className="w-full">
+                  <FormLabel>Your current state</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="w-full"
+                      disabled={loading}
+                      placeholder="State"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            control={form.control}
+            name={"pincode"}
+            render={({ field }) => {
+              return (
+                <FormItem className="w-full">
+                  <FormLabel>PinCode</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="w-full"
+                      disabled={loading}
+                      placeholder="Pin-Code"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            control={form.control}
+            name={"subjectOfTeaching"}
+            render={({ field }) => {
+              return (
+                <FormItem className="w-full">
+                  <FormLabel>Your Subject of teaching</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="w-full"
+                      disabled={loading}
+                      placeholder="Subject"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            control={form.control}
+            name={"employmentStatus"}
+            render={({ field }) => {
+              return (
+                <FormItem className="w-full my-4 flex items-center">
+                  <FormControl className="mr-4">
+                    <Checkbox checked={field.value} onChange={field.onChange} />
+                  </FormControl>
+                  <FormLabel className="flex justify-center !m-0">
+                    Are you currently employed
+                  </FormLabel>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
         </div>
 
         <Button
-          // disabled={
-          //   form.getValues().name === data?.user?.name &&
-          //   form.getValues().imageUrl === data?.user?.image
-          // }
+          disabled={
+            form.getValues().bloodGroup ===
+              data?.user?.personalInfo?.bloodGroup &&
+            form.getValues().mobile1 === data?.user?.personalInfo?.mobile1
+          }
           className="m-4"
           type="submit"
         >

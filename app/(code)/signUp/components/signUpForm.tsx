@@ -73,7 +73,6 @@ const SignUpForm = () => {
         "Content-Type": "application/json",
       },
     });
-    console.log(`🚀 ~ res:`, res);
 
     if (res.status === 200) {
       toast({

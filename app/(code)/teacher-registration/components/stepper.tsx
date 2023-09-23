@@ -20,8 +20,16 @@ type Props = {
   session: Session | null;
 };
 function Stepper(props: Props) {
-  const { index, nextStep, prevStep, setIndex } = useUpdateUserStore();
+  const { index, nextStep, prevStep, setIndex, makeIndex } =
+    useUpdateUserStore();
   const { data } = useSession();
+
+  // useEffect(() => {
+  //   if (data) {
+  //     let index1 = makeIndex(data);
+  //     setIndex(index + 1);
+  //   }
+  // }, [data?.user]);
 
   const renderStepContent = () => {
     switch (index) {
