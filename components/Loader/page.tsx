@@ -9,17 +9,11 @@ type Props = {};
 const Loader = (props: Props) => {
   const pathname = usePathname();
 
-  const { loading, setLoading, onceTime } = useStore();
-  useEffect(() => {
-    window.addEventListener("load", onceTime);
-    return () => {
-      window.removeEventListener("load", onceTime);
-    };
-  }, []);
+  const { loading, setLoading } = useStore();
 
   useEffect(() => {
     setLoading(true);
-  }, [pathname]);
+  }, [pathname, setLoading]);
 
   return (
     loading && (

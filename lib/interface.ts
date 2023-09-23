@@ -56,7 +56,7 @@ declare module "next-auth" {
       permanentAddress: string;
       religion: string;
       caste: string;
-      gender: "Male" | "Female" | "Other";
+      gender: "Male" | "Female" | "Other" | null;
     } | null;
   }
 }
