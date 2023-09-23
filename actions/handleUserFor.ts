@@ -27,28 +27,32 @@ export const updateUserInfo = async ({
   if (!session) {
     return { message: "user is not authorized", user: null };
   } else {
-    const user = await prisma.user.update({
-      where: {
-        id: session.user?.id,
-      },
-      data: {
-        name,
-        image: imageUrl,
-        religion,
-        caste,
-        permanentAddress,
-        temporaryAddress,
-        gender,
-      },
-      select: {
-        name: true,
-        image: true,
-      },
-    });
-    return {
-      message: "user updated",
-      user: user,
-    };
+    try {
+      const user = await prisma.user.update({
+        where: {
+          id: session.user?.id,
+        },
+        data: {
+          name,
+          image: imageUrl,
+          religion,
+          caste,
+          permanentAddress,
+          temporaryAddress,
+          gender,
+        },
+        select: {
+          name: true,
+          image: true,
+        },
+      });
+      return {
+        message: "user updated",
+        user: user,
+      };
+    } catch (error) {
+      return { message: "Something went wrong", user: null };
+    }
   }
 };
 export const updateUserDetails = async (formData: PersonalInfo) => {
@@ -65,7 +69,6 @@ export const updateUserDetails = async (formData: PersonalInfo) => {
     });
 
     if (existingPersonalInfo) {
-      console.log(`🚀 ~ formData:`, formData);
       // If the record already exists, update it
       const updatedPersonalInfo = await prisma.personalInfo.update({
         where: {
@@ -109,7 +112,6 @@ export const updateUserDetails = async (formData: PersonalInfo) => {
       };
     }
   } catch (error) {
-    console.error("Error updating/creating user details:", error);
     return {
       message: "error occurred",
       user: null,
@@ -183,7 +185,6 @@ export const updateFamilyDetails = async (array: FamilyDetail[]) => {
       user: user, // You can include the updated user data here
     };
   } catch (error) {
-    console.error("Error updating/creating family details:", error);
     return {
       message: "An error occurred",
       user: null,
@@ -192,7 +193,6 @@ export const updateFamilyDetails = async (array: FamilyDetail[]) => {
 };
 
 export const deleteFamilyItem = async (element: FamilyDetail) => {
-  console.log(`🚀 ~ element:`, element);
   const session = await getServerSession(authOptions);
   if (!session) {
     return { message: "user is not authorized", user: null };
@@ -239,7 +239,6 @@ export const deleteFamilyItem = async (element: FamilyDetail) => {
       user: session,
     };
   } catch (error) {
-    console.error("Error deleting family item:", error);
     return {
       message: "Error occurred while deleting family item",
       user: null,
@@ -262,7 +261,6 @@ export const updatePreviousAcademics = async (array: PreviousAcademic[]) => {
         previousAcademics: true,
       },
     });
-    console.log(`🚀 ~ user:`, user);
 
     // Map the array of previous academics to create or update them
     // const previousAcademicsUpdates =
@@ -271,7 +269,6 @@ export const updatePreviousAcademics = async (array: PreviousAcademic[]) => {
       const existingElement = user?.previousAcademics.find(
         (item) => item.id === element.id
       );
-      console.log(`🚀 ~ existingElement:`, existingElement);
 
       // If it exists, update it; otherwise, create a new one
       if (existingElement) {
@@ -288,7 +285,6 @@ export const updatePreviousAcademics = async (array: PreviousAcademic[]) => {
             percentage: element.percentage,
           },
         });
-        console.log(`🚀 ~ exist:`, exist);
       } else {
         const exist = await prisma.previousAcademic.create({
           data: {
@@ -305,7 +301,6 @@ export const updatePreviousAcademics = async (array: PreviousAcademic[]) => {
             },
           },
         });
-        console.log(`🚀 ~ exist2:`, exist);
       }
     });
 
@@ -318,7 +313,6 @@ export const updatePreviousAcademics = async (array: PreviousAcademic[]) => {
       user: user, // You can include the updated user data here
     };
   } catch (error) {
-    console.error("Error updating/creating previous academics details:", error);
     return {
       message: "An error occurred",
       user: null,
@@ -327,7 +321,6 @@ export const updatePreviousAcademics = async (array: PreviousAcademic[]) => {
 };
 
 export const deleteAcademicsItem = async (element: PreviousAcademic) => {
-  console.log(`🚀 ~ element:`, element);
   const session = await getServerSession(authOptions);
   if (!session) {
     return { message: "user is not authorized", user: null };
@@ -374,7 +367,6 @@ export const deleteAcademicsItem = async (element: PreviousAcademic) => {
       user: session,
     };
   } catch (error) {
-    console.error("Error deleting family item:", error);
     return {
       message: "Error occurred while deleting family item",
       user: null,

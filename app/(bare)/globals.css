@@ -114,6 +114,6 @@
   background: rgb(46, 46, 46) !important;
   padding: 10px;
 }
-select[name="months"] option {
-  padding: 15px !important; /* Adjust the padding as needed */
+select > option {
+  padding: 10px;
 }

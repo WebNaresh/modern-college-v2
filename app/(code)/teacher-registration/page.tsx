@@ -10,7 +10,7 @@ const Page = async (props: Props) => {
 
   return (
     <div>
-      <Card className="w-[80vw] px-4 m-auto">
+      <Card className="w-[90vw] md:w-[60vw] px-4 m-auto">
         <Stepper session={session} />
       </Card>
     </div>

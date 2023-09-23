@@ -81,11 +81,9 @@ const UserInfo2 = (props: Props) => {
       pincode: props.session?.user?.personalInfo?.pincode || "",
       subjectOfTeaching:
         props.session?.user?.personalInfo?.subjectOfTeaching || "",
-      employmentStatus:
-        props.session?.user?.personalInfo?.employmentStatus || undefined,
+      employmentStatus: props.session?.user?.personalInfo?.employmentStatus,
     },
   });
-  let personalInfoDateOfBirth = data?.user?.personalInfo?.dateOfBirth || "";
 
   return (
     <Form {...form}>
@@ -106,7 +104,7 @@ const UserInfo2 = (props: Props) => {
                       <Button
                         variant={"outline"}
                         className={cn(
-                          "w-[240px] pl-3 text-left font-normal",
+                          "w-full pl-3 text-left font-normal",
                           !field.value && "text-muted-foreground"
                         )}
                       >
@@ -119,10 +117,11 @@ const UserInfo2 = (props: Props) => {
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                  <PopoverContent className="w-auto p-0 bg-card" align="start">
                     <Calendar
                       captionLayout="dropdown"
                       mode="single"
+                      className=""
                       fromYear={1900}
                       toYear={2035}
                       selected={field.value}
@@ -264,20 +263,23 @@ const UserInfo2 = (props: Props) => {
           />
           <FormField
             control={form.control}
-            name={"employmentStatus"}
-            render={({ field }) => {
-              return (
-                <FormItem className="w-full my-4 flex items-center">
-                  <FormControl className="mr-4">
-                    <Checkbox checked={field.value} onChange={field.onChange} />
-                  </FormControl>
-                  <FormLabel className="flex justify-center !m-0">
-                    Are you currently employed
-                  </FormLabel>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
+            name="employmentStatus"
+            render={({ field }) => (
+              <FormItem className="flex w-full flex-row items-start space-x-3 space-y-0 rounded-md py-4 shadow">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Are you currrently employed</FormLabel>
+                  <FormDescription>
+                    then we can think about your notice period{" "}
+                  </FormDescription>
+                </div>
+              </FormItem>
+            )}
           />
         </div>
 
@@ -285,7 +287,13 @@ const UserInfo2 = (props: Props) => {
           disabled={
             form.getValues().bloodGroup ===
               data?.user?.personalInfo?.bloodGroup &&
-            form.getValues().mobile1 === data?.user?.personalInfo?.mobile1
+            form.getValues().mobile1 === data?.user?.personalInfo?.mobile1 &&
+            form.getValues().city === data?.user?.personalInfo?.city &&
+            form.getValues().pincode === data?.user?.personalInfo?.pincode &&
+            form.getValues().subjectOfTeaching ===
+              data?.user?.personalInfo.subjectOfTeaching &&
+            form.getValues().employmentStatus ===
+              data?.user?.personalInfo?.employmentStatus
           }
           className="m-4"
           type="submit"

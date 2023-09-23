@@ -47,14 +47,14 @@ function Stepper(props: Props) {
   };
 
   return (
-    <div className="p-5">
+    <div className="py-2">
       <CardHeader>
         <CardTitle>Teacher Registration Form</CardTitle>
         <CardDescription>Welcome {data?.user?.name}</CardDescription>
         <IconBar />
       </CardHeader>
-      <CardContent>
-        <div className="mt-8 p-4">{renderStepContent()}</div>
+      <CardContent className="p-0 md:p-6">
+        <div className="mt-8 p-0 md:p-4">{renderStepContent()}</div>
       </CardContent>
       <CardFooter className=" flex flex-col w-full">
         <BottomBar />

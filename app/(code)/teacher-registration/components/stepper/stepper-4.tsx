@@ -39,7 +39,6 @@ const UserInfo4 = (props: Props) => {
 
     try {
       let res = await updatePreviousAcademics(arrayOfAccademics);
-      console.log(`🚀 ~ res:`, res);
 
       // Show a success toast when the update is successful
       if (res.user) {

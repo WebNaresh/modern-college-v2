@@ -11,13 +11,17 @@ const BottomBar = (props: Props) => {
   return (
     <>
       {" "}
+      {index === 3 &&
+      data?.user?.personalInfo !== null &&
+      data?.user?.familyDetail !== null &&
+      data?.user?.previousAcademics !== null ? (
+        <Button>Submit Your Form</Button>
+      ) : (
+        ""
+      )}
       <div className="flex p-2 mt-4 w-full">
         {index !== 0 && (
-          <Button
-            className="bg-background"
-            variant={"ghost"}
-            onClick={prevStep}
-          >
+          <Button className="bg-primary" variant={"outline"} onClick={prevStep}>
             Previous
           </Button>
         )}
@@ -25,8 +29,8 @@ const BottomBar = (props: Props) => {
           {index < 3 && (
             <Button
               disabled={loading}
-              className="bg-background"
-              variant={"ghost"}
+              className="bg-primary"
+              variant={"outline"}
               onClick={nextStep}
             >
               Next

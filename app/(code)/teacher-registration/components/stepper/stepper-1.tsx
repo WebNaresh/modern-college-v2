@@ -21,10 +21,10 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import useStore from "@/hooks/loader-hook";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -43,24 +43,27 @@ type Props = {
 const UserInfo1 = (props: Props) => {
   const { data, update } = useSession();
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
-
+  const { loading, setLoading } = useStore();
   const onSubmit = async (formData: UserForm1Values) => {
-    // setLoading(true);
-    const { message, user } = await updateUserInfo(formData);
-    if (user) {
-      update({ name: formData.name, image: formData.imageUrl });
-      toast({
-        title: "Updated successfully",
-        description: "User updated successfully now you can go to Next Step",
+    setLoading(true);
+    updateUserInfo(formData)
+      .then(({ message, user }) => {
+        update({ name: formData.name, image: formData.imageUrl });
+        toast({
+          title: "Updated successfully",
+          description: "User updated successfully now you can go to Next Step",
+        });
+      })
+      .catch((res) => {
+        res.toast({
+          title: res.message,
+          description: "Something went wrong",
+          variant: "destructive",
+        });
+      })
+      .finally(() => {
+        setLoading(false);
       });
-    } else {
-      toast({
-        title: message,
-        description: "Something went wrong",
-        variant: "destructive",
-      });
-    }
   };
 
   type UserForm1Values = z.infer<typeof formSchema>;
@@ -107,7 +110,7 @@ const UserInfo1 = (props: Props) => {
             );
           }}
         />
-        <div className="grid place-items-center w-[70%]">
+        <div className="grid place-items-center w-full md:w-[70%]">
           <FormField
             control={form.control}
             name={"name"}
@@ -200,12 +203,6 @@ const UserInfo1 = (props: Props) => {
                 <FormItem className="w-full">
                   <FormLabel>Temporary Address</FormLabel>
                   <FormControl>
-                    {/* <Input
-                      className="w-full"
-                      disabled={loading}
-                      placeholder="Caste"
-                      {...field}
-                    /> */}
                     <Textarea
                       {...field}
                       placeholder="Type temporary address."
@@ -228,7 +225,7 @@ const UserInfo1 = (props: Props) => {
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
-                      <SelectTrigger className="w-[180px]">
+                      <SelectTrigger className="">
                         <SelectValue placeholder="Gender" />
                       </SelectTrigger>
                       <SelectContent>
@@ -248,7 +245,14 @@ const UserInfo1 = (props: Props) => {
         <Button
           disabled={
             form.getValues().name === data?.user?.name &&
-            form.getValues().imageUrl === data?.user?.image
+            form.getValues().imageUrl === data?.user?.image &&
+            form.getValues().religion === data?.user?.religion &&
+            form.getValues().caste === data?.user?.caste &&
+            form.getValues().temporaryAddress ===
+              data?.user?.temporaryAddress &&
+            form.getValues().permanentAddress ===
+              data?.user?.permanentAddress &&
+            form.getValues().gender === data?.user?.gender
           }
           className="m-4"
           type="submit"
