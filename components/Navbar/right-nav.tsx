@@ -6,15 +6,12 @@ import { usePathname } from "next/navigation";
 import { ThemeToggle } from "../toggle-button";
 
 type Props = {
-  teacherArray: User[] | null;
+  teacherArray?: User[] | null;
 };
 
 const RightNav = (props: Props) => {
   const pathname = usePathname();
   const data = useSession();
-  // const data = await getServerSession(authOptions);
-  // data
-  // const TeacherRequestArray = await getTeacherRequestArray();
 
   const routes: RoutesA[] = [
     {
