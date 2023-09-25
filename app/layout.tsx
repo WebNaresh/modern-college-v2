@@ -31,6 +31,7 @@ export default async function RootLayout({
       className="dark"
       style={{ colorScheme: "dark" }}
     >
+      <link rel="shortcut icon" href="biglogo.png" type="image/x-icon" />
       <body className={cn(inter.className, "flex flex-col h-[100dvh] ")}>
         <NextAuthProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
