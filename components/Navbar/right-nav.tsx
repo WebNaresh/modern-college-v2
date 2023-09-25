@@ -1,16 +1,20 @@
 import { RoutesA } from "@/lib/interface";
+import { User } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "../toggle-button";
 
-type Props = {};
+type Props = {
+  teacherArray: User[] | null;
+};
 
 const RightNav = (props: Props) => {
   const pathname = usePathname();
   const data = useSession();
-  // console.log(`🚀 ~ data:`, data.data?.user);
-  // console.log(data.data?.user?.role === "Student" ? "hidden" : "hidden");
+  // const data = await getServerSession(authOptions);
+  // data
+  // const TeacherRequestArray = await getTeacherRequestArray();
 
   const routes: RoutesA[] = [
     {
@@ -46,16 +50,24 @@ const RightNav = (props: Props) => {
       role: data.data?.user?.role === "Admin" ? "" : "hidden",
     },
     {
-      href: "/admin",
-      label: "Admin",
-      active: pathname === "/admin",
+      href: "/request",
+      label: `Request ${
+        (props.teacherArray?.length as number) > 0
+          ? `(${props.teacherArray?.length})`
+          : ""
+      }`,
+      active: pathname === "/request",
       role: data.data?.user?.role === "Admin" ? "" : "hidden",
     },
     {
       href: "/teacher-registration",
       label: "Register As Teacher",
       active: pathname === "/techer-registration",
-      role: data.data?.user?.role === "Teacher" ? "" : "hidden",
+      role:
+        data.data?.user?.role !== "Teacher" ||
+        data.data?.user?.isAuthorize === "Request"
+          ? "hidden"
+          : "",
     },
     {
       href: "/student-registration",

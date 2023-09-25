@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { toast } from "@/components/ui/use-toast";
 import useStore from "@/hooks/loader-hook";
+import useUpdateUserStore from "@/hooks/stepper-user-update-hook";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -35,6 +36,7 @@ const UserInfo3 = (props: Props) => {
   const [arrayOfFamily, setArrayOfFamily] = useState<UserForm1Values[]>(
     data?.user?.familyDetail || []
   );
+  const { nextStep } = useUpdateUserStore();
 
   const { setLoading } = useStore();
   const onSubmit = async (e: React.FormEvent) => {
@@ -53,6 +55,7 @@ const UserInfo3 = (props: Props) => {
 
         update({ data: arrayOfFamily });
         setLoading(false);
+        nextStep();
       } else {
         setLoading(false);
       }

@@ -57,6 +57,7 @@ declare module "next-auth" {
       religion: string;
       caste: string;
       gender: "Male" | "Female" | "Other" | null;
+      isAuthorize: "UnAuthorize" | "Request" | "Authorize";
     } | null;
   }
 }

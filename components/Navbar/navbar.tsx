@@ -1,4 +1,5 @@
 "use client";
+import { User } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
@@ -6,7 +7,9 @@ import LeftNav from "./left-nav";
 import MobileNav from "./mobile-nav";
 import RightNav from "./right-nav";
 
-type Props = {};
+type Props = {
+  teacherArray: User[] | null;
+};
 
 const Navbar = (props: Props) => {
   const isClickedOutsideNavbar = (event: Event) => {
@@ -60,7 +63,7 @@ const Navbar = (props: Props) => {
           <div className="relative col-span-5  flex flex-row-reverse items-center">
             <div className=" md:relative xl:relative lg:relative">
               <ul className="list-style-none mr-auto hidden xl:flex pl-0 lg:flex-row items-center gap-8 align-center font-[fantasy] text-primary px-4  md:flex lg:flex">
-                <RightNav />
+                <RightNav teacherArray={props.teacherArray} />
               </ul>
             </div>
           </div>

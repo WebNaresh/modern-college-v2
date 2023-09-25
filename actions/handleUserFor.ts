@@ -373,3 +373,30 @@ export const deleteAcademicsItem = async (element: PreviousAcademic) => {
     };
   }
 };
+export const teacherIsInProcess = async () => {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return { message: "user is not authorized", user: null };
+  }
+
+  try {
+    const user = await prisma.user.update({
+      where: {
+        id: session.user?.id,
+      },
+      data: {
+        isAuthorize: "Request",
+      },
+    });
+
+    return {
+      message: "Congrats request is initiated",
+      user: user,
+    };
+  } catch (error) {
+    return {
+      message: "Error occurred while deleting family item",
+      user: null,
+    };
+  }
+};

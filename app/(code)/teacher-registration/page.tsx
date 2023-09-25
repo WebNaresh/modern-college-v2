@@ -1,12 +1,17 @@
 import { Card } from "@/components/ui/card";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 import Stepper from "./components/stepper";
 
 type Props = {};
 
 const Page = async (props: Props) => {
   const session = await getServerSession(authOptions);
+  console.log(`🚀 ~ session?.user:`, session?.user);
+  if (session?.user?.isAuthorize === "Request") {
+    redirect("/");
+  }
 
   return (
     <div>

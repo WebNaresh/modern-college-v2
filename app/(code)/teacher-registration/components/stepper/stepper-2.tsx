@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/popover";
 import { useToast } from "@/components/ui/use-toast";
 import useStore from "@/hooks/loader-hook";
+import useUpdateUserStore from "@/hooks/stepper-user-update-hook";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon } from "@radix-ui/react-icons";
@@ -39,7 +40,7 @@ const formSchema = z.object({
   state: z.string().min(2),
   pincode: z.string().min(2),
   subjectOfTeaching: z.string().min(2),
-  employmentStatus: z.boolean(),
+  employmentStatus: z.boolean().default(false),
 });
 type Props = {
   session: Session | null;
@@ -48,6 +49,7 @@ const UserInfo2 = (props: Props) => {
   const { data, update } = useSession();
   const { toast } = useToast();
   const { loading, setLoading } = useStore();
+  const { nextStep } = useUpdateUserStore();
 
   const onSubmit = async (formData: UserForm1Values) => {
     setLoading(true);
@@ -58,6 +60,7 @@ const UserInfo2 = (props: Props) => {
         title: "Updated successfully",
         description: "info updated successfully now you can go to Next Step",
       });
+      nextStep();
     } else {
       toast({
         title: info.message,

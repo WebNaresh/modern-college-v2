@@ -55,6 +55,7 @@ model User {
   personalInfo      PersonalInfo?
   familyDetail      FamilyDetail[]     @relation("FamilyDetails")
   previousAcademics PreviousAcademic[] @relation("previousAcademics")
+  isAuthorize       IsAuthorize        @default(UnAuthorize)
 }
 
 model PreviousAcademic {
@@ -96,9 +97,15 @@ model PersonalInfo {
   state                   String                   @default("")
   pincode                 String                   @default("")
   subjectOfTeaching       String                   @default("")
-  employmentStatus        Boolean
+  employmentStatus        Boolean                  @default(false)
   workHistory             WorkHistory[] //add
   professionalAchievement ProffesionalAchevement[] //add
+}
+
+enum IsAuthorize {
+  UnAuthorize
+  Request
+  Authorize
 }
 
 model WorkHistory {

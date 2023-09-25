@@ -22,6 +22,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import useStore from "@/hooks/loader-hook";
+import useUpdateUserStore from "@/hooks/stepper-user-update-hook";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
@@ -41,9 +42,10 @@ type Props = {
   session: Session | null;
 };
 const UserInfo1 = (props: Props) => {
-  const { data, update } = useSession();
+  const { update } = useSession();
   const { toast } = useToast();
   const { loading, setLoading } = useStore();
+  const { index, nextStep } = useUpdateUserStore();
   const onSubmit = async (formData: UserForm1Values) => {
     setLoading(true);
     updateUserInfo(formData)
@@ -53,6 +55,7 @@ const UserInfo1 = (props: Props) => {
           title: "Updated successfully",
           description: "User updated successfully now you can go to Next Step",
         });
+        nextStep();
       })
       .catch((res) => {
         res.toast({
@@ -79,6 +82,7 @@ const UserInfo1 = (props: Props) => {
       gender: props.session?.user?.gender || undefined,
     },
   });
+  console.log(props.session?.user?.name);
 
   return (
     <Form {...form}>
@@ -90,7 +94,6 @@ const UserInfo1 = (props: Props) => {
           control={form.control}
           name={"imageUrl"}
           render={({ field }) => {
-            const isNameChanged = field.value !== data?.user?.name;
             return (
               <FormItem className="w-full flex flex-col items-center">
                 <FormLabel>Profile image</FormLabel>
@@ -244,15 +247,15 @@ const UserInfo1 = (props: Props) => {
 
         <Button
           disabled={
-            form.getValues().name === data?.user?.name &&
-            form.getValues().imageUrl === data?.user?.image &&
-            form.getValues().religion === data?.user?.religion &&
-            form.getValues().caste === data?.user?.caste &&
+            form.getValues().name === props.session?.user?.name &&
+            form.getValues().imageUrl === props.session?.user?.image &&
+            form.getValues().religion === props.session?.user?.religion &&
+            form.getValues().caste === props.session?.user?.caste &&
             form.getValues().temporaryAddress ===
-              data?.user?.temporaryAddress &&
+              props.session?.user?.temporaryAddress &&
             form.getValues().permanentAddress ===
-              data?.user?.permanentAddress &&
-            form.getValues().gender === data?.user?.gender
+              props.session?.user?.permanentAddress &&
+            form.getValues().gender === props.session?.user?.gender
           }
           className="m-4"
           type="submit"
