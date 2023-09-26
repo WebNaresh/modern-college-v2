@@ -101,7 +101,6 @@ export function DataTableDemo({ data }: Props) {
     }
   };
   const deAuthorize = async (array: any[]) => {
-    console.log(`🚀 ~ array:`, array);
     let restructredArray = array.map((array) => array.original);
     if (array.length > 0) {
       setLoading(true);
@@ -113,7 +112,6 @@ export function DataTableDemo({ data }: Props) {
         },
       })
         .then((res) => {
-          console.log(`🚀 ~ completed:`, res);
           refresh();
           toast({
             title: "User DeAuthorize",
