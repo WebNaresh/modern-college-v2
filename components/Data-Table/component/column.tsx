@@ -1,51 +1,11 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import useStore from "@/hooks/loader-hook";
 import { User } from "@prisma/client";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { ColumnDef } from "@tanstack/react-table";
-import { revalidatePath } from "next/cache";
 import Actions from "./actions";
-const authorize = async (array: User[]) => {
-  const completed = await fetch("/api/update-teacher-position", {
-    method: "POST",
-    body: JSON.stringify({ teacherArray: array }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  revalidatePath("/request");
-};
-const deAuthorize = async (array: User[]) => {
-  const { setLoading } = useStore();
-  setLoading(true);
-  // fetch("/api/degrade-teacher-position", {
-  //   method: "POST",
-  //   body: JSON.stringify({ teacherArray: array }),
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  // })
-  //   .then((res) => {
-  //     console.log(`🚀 ~ completed:`, res);
-  //     revalidatePath("/request");
-  //     toast({
-  //       title: "User DeAuthorize",
-  //       description: "This user is also deleted from database",
-  //     });
-  //   })
-  //   .catch((res) => {
-  //     toast({
-  //       title: "User DeAuthorization failed",
-  //       description: "Error occured in server please try after some time",
-  //       variant: "destructive",
-  //     });
-  //   })
-  //   .finally(() => {
-  //     setLoading(false);
-  //   });
-};
+
 export const columns: ColumnDef<User>[] = [
   {
     id: "select",

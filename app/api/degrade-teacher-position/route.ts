@@ -1,8 +1,14 @@
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/primsa";
 import { User } from "@prisma/client";
+import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return { message: "user is not authorized", users: [] };
+  }
   const { teacherArray } = (await req.json()) as {
     teacherArray: User[];
   };

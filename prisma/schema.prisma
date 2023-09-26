@@ -91,7 +91,7 @@ model PersonalInfo {
   dateOfBirth             DateTime
   mobile1                 String                   @default("")
   bloodGroup              String                   @default("") //add
-  user                    User                     @relation(fields: [userId], references: [id])
+  user                    User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId                  String                   @unique // Add the unique constraint here
   city                    String                   @default("")
   state                   String                   @default("")

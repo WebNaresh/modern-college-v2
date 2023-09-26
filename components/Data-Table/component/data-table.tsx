@@ -17,6 +17,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { toast } from "@/components/ui/use-toast";
+import useStore from "@/hooks/loader-hook";
 import { User } from "@prisma/client";
 import { ChevronDownIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
 import {
@@ -30,6 +32,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { columns } from "./column";
 
@@ -37,6 +40,8 @@ interface Props {
   data: User[];
 }
 export function DataTableDemo({ data }: Props) {
+  const { refresh } = useRouter();
+  const { setLoading } = useStore();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
@@ -61,15 +66,71 @@ export function DataTableDemo({ data }: Props) {
       rowSelection,
     },
   });
+
   const authorize = async (array: any[]) => {
     let restructredArray = array.map((array) => array.original);
-    const completed = await fetch("/api/update-teacher-position", {
-      method: "POST",
-      body: JSON.stringify({ teacherArray: restructredArray }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+
+    if (array.length > 0) {
+      setLoading(true);
+      fetch("/api/update-teacher-position", {
+        method: "POST",
+        body: JSON.stringify({ teacherArray: restructredArray }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => {
+          toast({
+            title: "Succesufully authorize teacher",
+            description: "work done successfully",
+          });
+          refresh();
+        })
+        .catch((res) => {
+          toast({
+            title: "Error Occured Please refresh",
+            description: "something went wrong",
+            variant: "destructive",
+          });
+          refresh();
+        })
+        .finally(() => {
+          setLoading(false);
+          refresh();
+        });
+    }
+  };
+  const deAuthorize = async (array: any[]) => {
+    console.log(`🚀 ~ array:`, array);
+    let restructredArray = array.map((array) => array.original);
+    if (array.length > 0) {
+      setLoading(true);
+      fetch("/api/degrade-teacher-position", {
+        method: "POST",
+        body: JSON.stringify({ teacherArray: restructredArray }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => {
+          console.log(`🚀 ~ completed:`, res);
+          refresh();
+          toast({
+            title: "User DeAuthorize",
+            description: "This user is also deleted from database",
+          });
+        })
+        .catch((res) => {
+          toast({
+            title: "User DeAuthorization failed",
+            description: "Error occured in server please try after some time",
+            variant: "destructive",
+          });
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
   };
   return (
     <div className="w-full   box-border">
@@ -103,7 +164,9 @@ export function DataTableDemo({ data }: Props) {
                   Authorize as Teacher
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                // onClick={() => navigator.clipboard.writeText(payment.id)}
+                  onClick={() =>
+                    deAuthorize(table.getFilteredSelectedRowModel().rows)
+                  }
                 >
                   Reject as Teacher
                 </DropdownMenuItem>
