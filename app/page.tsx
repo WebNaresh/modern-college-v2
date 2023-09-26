@@ -6,7 +6,6 @@ import Utility1 from "./components/utility-1";
 
 const HomeComponent: NextPage = async () => {
   const data = await getServerSession(authOptions);
-  console.log(`🚀 ~ data:`, data);
   return (
     <>
       <CarouselComp />

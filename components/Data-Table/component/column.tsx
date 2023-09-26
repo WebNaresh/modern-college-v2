@@ -1,19 +1,13 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import useStore from "@/hooks/loader-hook";
 import { User } from "@prisma/client";
-import { CaretSortIcon, DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { CaretSortIcon } from "@radix-ui/react-icons";
 import { ColumnDef } from "@tanstack/react-table";
+import { revalidatePath } from "next/cache";
+import Actions from "./actions";
 const authorize = async (array: User[]) => {
-  console.log("hlo");
-  console.log(`🚀 ~ array:`, array);
   const completed = await fetch("/api/update-teacher-position", {
     method: "POST",
     body: JSON.stringify({ teacherArray: array }),
@@ -21,7 +15,36 @@ const authorize = async (array: User[]) => {
       "Content-Type": "application/json",
     },
   });
-  console.log(`🚀 ~ completed:`, completed);
+  revalidatePath("/request");
+};
+const deAuthorize = async (array: User[]) => {
+  const { setLoading } = useStore();
+  setLoading(true);
+  // fetch("/api/degrade-teacher-position", {
+  //   method: "POST",
+  //   body: JSON.stringify({ teacherArray: array }),
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  // })
+  //   .then((res) => {
+  //     console.log(`🚀 ~ completed:`, res);
+  //     revalidatePath("/request");
+  //     toast({
+  //       title: "User DeAuthorize",
+  //       description: "This user is also deleted from database",
+  //     });
+  //   })
+  //   .catch((res) => {
+  //     toast({
+  //       title: "User DeAuthorization failed",
+  //       description: "Error occured in server please try after some time",
+  //       variant: "destructive",
+  //     });
+  //   })
+  //   .finally(() => {
+  //     setLoading(false);
+  //   });
 };
 export const columns: ColumnDef<User>[] = [
   {
@@ -91,27 +114,7 @@ export const columns: ColumnDef<User>[] = [
 
       return (
         <div className="w-full text-center">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <DotsHorizontalIcon className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>
-                <div className="text-xs text-muted-foreground">Actions</div>
-              </DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => authorize([payment])}>
-                Authorize as Teacher
-              </DropdownMenuItem>
-              <DropdownMenuItem
-              // onClick={() => navigator.clipboard.writeText(payment.id)}
-              >
-                Reject as Teacher
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Actions users={[payment]} />
         </div>
       );
     },

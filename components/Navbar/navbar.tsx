@@ -69,7 +69,7 @@ const Navbar = (props: Props) => {
           </div>
         </div>
       </nav>
-      <MobileNav />
+      <MobileNav teacherArray={props.teacherArray} />
     </div>
   );
 };

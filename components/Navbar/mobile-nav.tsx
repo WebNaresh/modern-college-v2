@@ -1,4 +1,5 @@
 "use client";
+import { User } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -6,8 +7,9 @@ import { useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import RightNav from "./right-nav";
 
-type Props = {};
-
+type Props = {
+  teacherArray?: User[] | null;
+};
 const MobileNav = (props: Props) => {
   const [switchNav, setSwitchNav] = useState(false);
   const pathname = usePathname();
@@ -40,7 +42,7 @@ const MobileNav = (props: Props) => {
           <div className="flex">
             <div className="m-auto">
               <ul className="list-style-none mr-auto flex-col py-3 lg:flex-row items-center flex gap-4 align-center font-[fantasy] text-primary px-4  md:flex lg:flex">
-                <RightNav />
+                <RightNav teacherArray={props.teacherArray} />
               </ul>
             </div>
           </div>

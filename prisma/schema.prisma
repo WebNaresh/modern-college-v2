@@ -65,7 +65,7 @@ model PreviousAcademic {
   courseName      String
   passingYear     String
   percentage      String
-  user            User   @relation("previousAcademics", fields: [userId], references: [id])
+  user            User   @relation("previousAcademics", fields: [userId], references: [id], onDelete: Cascade)
   userId          String
 }
 
@@ -77,7 +77,7 @@ model FamilyDetail {
   address      String
   contact      String
   userId       String
-  user         User   @relation("FamilyDetails", fields: [userId], references: [id])
+  user         User   @relation("FamilyDetails", fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum RelationType {

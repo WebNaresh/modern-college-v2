@@ -62,10 +62,7 @@ export function DataTableDemo({ data }: Props) {
     },
   });
   const authorize = async (array: any[]) => {
-    console.log("hlo");
-    console.log(`🚀 ~ array:`, array);
     let restructredArray = array.map((array) => array.original);
-    console.log(`🚀 ~ restructredArray:`, restructredArray);
     const completed = await fetch("/api/update-teacher-position", {
       method: "POST",
       body: JSON.stringify({ teacherArray: restructredArray }),
@@ -73,7 +70,6 @@ export function DataTableDemo({ data }: Props) {
         "Content-Type": "application/json",
       },
     });
-    console.log(`🚀 ~ completed:`, completed);
   };
   return (
     <div className="w-full   box-border">
@@ -148,8 +144,6 @@ export function DataTableDemo({ data }: Props) {
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
-                  console.log(header.getContext().header.id);
-
                   return (
                     <TableHead
                       // className={`${

@@ -11,7 +11,7 @@ type Props = {};
 // <FaUserGraduate />
 
 const IconBar = (props: Props) => {
-  const { stepper, index, setIndex, makeIndex } = useUpdateUserStore();
+  const { stepper, index, setIndex } = useUpdateUserStore();
 
   return (
     <div className="flex items-center">

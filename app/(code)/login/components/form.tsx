@@ -8,7 +8,6 @@ import useStore from "@/hooks/loader-hook";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -38,15 +37,15 @@ const LoginForm = () => {
     },
   });
 
-  useEffect(() => {
-    if (data?.user) {
-      router.push("/");
-      toast({
-        title: "Login Succesfull",
-        description: `Welcome ${data?.user?.name}`,
-      });
-    }
-  }, [data, router, toast]);
+  // useEffect(() => {
+  //   if (data?.user) {
+  //     router.push("/");
+  //     toast({
+  //       title: "Login Succesfull",
+  //       description: `Welcome ${data?.user?.name}`,
+  //     });
+  //   }
+  // }, [data, router, toast]);
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoadingTrue();
     console.log(values);
@@ -54,23 +53,32 @@ const LoginForm = () => {
       redirect: false,
       email: values.email,
       password: values.password,
-    });
-    if (res?.error?.includes("CredentialsSignin")) {
-      toast({
-        title: "Email of Password is not matching",
-        description: "Sorry",
-        variant: "destructive",
+    })
+      .then((res) => {
+        router.push("/");
+        toast({
+          title: "Login Succesfull",
+          description: `Welcome ${data?.user?.name}`,
+        });
+      })
+      .catch((res) => {
+        if (res?.error?.includes("CredentialsSignin")) {
+          toast({
+            title: "Email of Password is not matching",
+            description: "Sorry",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Something went wrong",
+            description: "Try after sometime",
+            variant: "destructive",
+          });
+        }
+      })
+      .finally(() => {
+        setLoadingFalse();
       });
-    } else if (res?.error) {
-      toast({
-        title: "Something went wrong",
-        description: "Try after sometime",
-        variant: "destructive",
-      });
-    } else {
-      setLoadingFalse();
-    }
-    setLoadingFalse();
   }
 
   return (

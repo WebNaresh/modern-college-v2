@@ -1,11 +1,5 @@
-import StepperForm from "./components/stepper";
-
 const page = () => {
-  return (
-    <>
-      <StepperForm />
-    </>
-  );
+  return <>" gdfsfdgsda"</>;
 };
 
 export default page;

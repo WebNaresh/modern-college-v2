@@ -16,7 +16,6 @@ export const getTeacherRequestArray = async () => {
         role: "Teacher",
       },
     });
-    console.log(`🚀 ~ user:`, users);
 
     return {
       message: "Congrats request is initiated",
@@ -46,15 +45,11 @@ export const updateTeachersPosition = async (teacherArray: User[]) => {
       })
     );
 
-    console.log(`🚀 ~ Users updated:`, transaction);
-
     return {
       message: "Congrats request is initiated",
       users: transaction,
     };
   } catch (error) {
-    console.error(`Error occurred while updating users: ${error}`);
-
     return {
       message: "Error occurred while updating users",
       users: null,

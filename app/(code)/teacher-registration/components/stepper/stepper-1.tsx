@@ -82,7 +82,6 @@ const UserInfo1 = (props: Props) => {
       gender: props.session?.user?.gender || undefined,
     },
   });
-  console.log(props.session?.user?.name);
 
   return (
     <Form {...form}>

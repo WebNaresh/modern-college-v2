@@ -11,21 +11,24 @@ type BearStore = {
 
 // Create the Zustand store
 const useStore = create<BearStore>((set) => ({
-  loading: true, // Initial loading state
+  loading: false, // Initial loading state
   setLoading: (value) => {
     // Set loading state to the provided value
     set({ loading: value });
 
     // Automatically set loading to false after 2 seconds
+  },
+  setLoadingTrue: () => {
+    set({ loading: true });
     setTimeout(() => {
       set({ loading: false });
     }, 500);
   },
-  setLoadingTrue: () => {
-    set({ loading: true });
-  },
   setLoadingFalse: () => {
     set({ loading: false });
+    setTimeout(() => {
+      set({ loading: false });
+    }, 500);
   },
   onceTime: () => {
     // Set loading state to the provided value

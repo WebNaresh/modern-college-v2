@@ -9,21 +9,28 @@ export async function POST(req: Request) {
 
   try {
     // Start a Prisma transaction
-    const transaction: User[] = await prisma.$transaction(
-      teacherArray.map((user) => {
-        return prisma.user.update({
-          where: {
-            id: user.id, // Assuming each user object has an 'id' field
-            role: "Teacher",
-          },
-          data: {
-            isAuthorize: "Authorize", // Set the isAuthorize field to 'Authorize'
-          },
-        });
-      })
-    );
+    const updateOperations = teacherArray.map((user) => {
+      return prisma.user.update({
+        where: {
+          id: user.id,
+          role: "Teacher",
+        },
+        data: {
+          isAuthorize: "UnAuthorize",
+        },
+      });
+    });
 
-    console.log(`🚀 ~ Users updated:`, transaction);
+    const deleteOperations = teacherArray.map((user) => {
+      return prisma.user.deleteMany({
+        where: { id: user.id, role: "Teacher" },
+      });
+    });
+
+    const transaction = await prisma.$transaction([
+      ...updateOperations,
+      ...deleteOperations,
+    ]);
 
     return new NextResponse(
       JSON.stringify({

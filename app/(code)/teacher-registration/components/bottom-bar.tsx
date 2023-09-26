@@ -5,11 +5,12 @@ import useCelebration from "@/hooks/celebration";
 import useStore from "@/hooks/loader-hook";
 import useUpdateUserStore from "@/hooks/stepper-user-update-hook";
 import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 type Props = {};
 
 const BottomBar = (props: Props) => {
+  const router = useRouter();
   const { index, nextStep, prevStep, loading } = useUpdateUserStore();
   const { data, update } = useSession();
   const { setCelebration } = useCelebration();
@@ -25,9 +26,10 @@ const BottomBar = (props: Props) => {
           description: `Congrats ${res.user?.name}`,
         });
         setLoading(false);
-        redirect("/");
+        router.push("/");
       })
       .catch((res) => {
+        console.log(`🚀 ~ res:`, res);
         toast({
           title: res.message,
           description: "Something went wrong",
@@ -50,7 +52,7 @@ const BottomBar = (props: Props) => {
       ) : (
         ""
       )}
-      <div className="flex p-2 mt-4 w-full">
+      {/* <div className="flex p-2 mt-4 w-full">
         {index !== 0 && (
           <Button className="bg-primary" variant={"outline"} onClick={prevStep}>
             Previous
@@ -68,7 +70,7 @@ const BottomBar = (props: Props) => {
             </Button>
           )}
         </div>
-      </div>
+      </div> */}
     </>
   );
 };

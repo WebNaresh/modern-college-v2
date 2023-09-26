@@ -13,6 +13,9 @@ const Loader = (props: Props) => {
 
   useEffect(() => {
     setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
   }, [pathname, setLoading]);
 
   return (

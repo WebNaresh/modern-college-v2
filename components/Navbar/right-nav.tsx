@@ -41,9 +41,9 @@ const RightNav = (props: Props) => {
       role: data.data?.user ? "hidden" : "",
     },
     {
-      href: "/admission",
-      label: "Admission",
-      active: pathname === "/admission",
+      href: "/teachers",
+      label: "Teachers",
+      active: pathname === "/teachers",
       role: data.data?.user?.role === "Admin" ? "" : "hidden",
     },
     {
