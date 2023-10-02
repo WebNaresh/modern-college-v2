@@ -8,6 +8,7 @@ import useStore from "@/hooks/loader-hook";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -37,15 +38,10 @@ const LoginForm = () => {
     },
   });
 
-  // useEffect(() => {
-  //   if (data?.user) {
-  //     router.push("/");
-  //     toast({
-  //       title: "Login Succesfull",
-  //       description: `Welcome ${data?.user?.name}`,
-  //     });
-  //   }
-  // }, [data, router, toast]);
+  useEffect(() => {
+    if (data?.user) {
+    }
+  }, [data, router, toast]);
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoadingTrue();
     console.log(values);
@@ -55,6 +51,23 @@ const LoginForm = () => {
       password: values.password,
     })
       .then((res) => {
+        if (res?.error?.includes("CredentialsSignin")) {
+          toast({
+            title: "Email of Password is not matching",
+            description: "Sorry",
+            variant: "destructive",
+          });
+        } else if (
+          res?.error?.includes(
+            "Can't reach database server at `db.ufodydbovxinkjdxorny.supabase.co`:`5432`\n"
+          )
+        ) {
+          toast({
+            title: "Server is under Maintainance",
+            description: "Sorry",
+            variant: "destructive",
+          });
+        }
         router.push("/");
         toast({
           title: "Login Succesfull",
@@ -62,6 +75,7 @@ const LoginForm = () => {
         });
       })
       .catch((res) => {
+        console.log(`🚀 ~ res:`, res);
         if (res?.error?.includes("CredentialsSignin")) {
           toast({
             title: "Email of Password is not matching",

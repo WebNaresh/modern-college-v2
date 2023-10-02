@@ -48,16 +48,23 @@ declare module "next-auth" {
       emailVerified: Date | null;
       image: string | null;
       password: string | null;
-      role: "Teacher" | "Student" | "Admin";
-      personalInfo: PersonalInfo | null;
-      familyDetail: FamilyDetail[] | [];
-      previousAcademics: PreviousAcademic[] | [];
-      temporaryAddress: string;
-      permanentAddress: string;
-      religion: string;
-      caste: string;
-      gender: "Male" | "Female" | "Other" | null;
-      isAuthorize: "UnAuthorize" | "Request" | "Authorize";
+      role: "Teacher" | "Student" | "Principle" | "HOD";
+      academics: {
+        designation: string;
+        dateOfJoining: Date;
+        facultyName: string;
+        departmentName: string;
+      } | null;
+      personalInfo: {
+        mobile1: string;
+      } | null;
+      createdAt: Date;
+      updatedAt: Date;
     } | null;
   }
+}
+export interface FormSteps {
+  status: Boolean;
+  formStep: String;
+  href: String;
 }

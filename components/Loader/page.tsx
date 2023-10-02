@@ -2,7 +2,6 @@
 
 import useStore from "@/hooks/loader-hook";
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
 
 type Props = {};
 
@@ -10,13 +9,6 @@ const Loader = (props: Props) => {
   const pathname = usePathname();
 
   const { loading, setLoading } = useStore();
-
-  useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
-  }, [pathname, setLoading]);
 
   return (
     loading && (

@@ -1,7 +1,6 @@
 "use server";
 
 import { authOptions } from "@/lib/auth";
-import { FamilyDetail, PersonalInfo, PreviousAcademic } from "@/lib/interface";
 import { prisma } from "@/lib/primsa";
 import { getServerSession } from "next-auth";
 
@@ -13,6 +12,16 @@ type Data = {
   permanentAddress: string;
   temporaryAddress: string;
   gender: "Male" | "Female" | "Other";
+};
+type UserForm1Values = {
+  name: string;
+  image: string;
+  contact: string;
+  designation: string;
+  dateOfJoining: Date;
+  facultyName: string;
+  departmentName: string;
+  degreeDuringPeriod: string;
 };
 export const updateUserInfo = async ({
   name,
@@ -35,11 +44,6 @@ export const updateUserInfo = async ({
         data: {
           name,
           image: imageUrl,
-          religion,
-          caste,
-          permanentAddress,
-          temporaryAddress,
-          gender,
         },
         select: {
           name: true,
@@ -55,348 +59,91 @@ export const updateUserInfo = async ({
     }
   }
 };
-export const updateUserDetails = async (formData: PersonalInfo) => {
+export const updateUserDetails = async ({
+  name,
+  image,
+  contact,
+  designation,
+  dateOfJoining,
+  facultyName,
+  departmentName,
+  degreeDuringPeriod,
+}: UserForm1Values) => {
   const session = await getServerSession(authOptions);
   if (!session) {
     return { message: "user is not authorized", user: null };
-  }
-
-  try {
-    const existingPersonalInfo = await prisma.personalInfo.findFirst({
-      where: {
-        userId: session.user?.id!,
-      },
-    });
-
-    if (existingPersonalInfo) {
-      // If the record already exists, update it
-      const updatedPersonalInfo = await prisma.personalInfo.update({
+  } else {
+    try {
+      await prisma.personalInfo.upsert({
         where: {
-          id: existingPersonalInfo.id,
+          userId: session.user?.id,
         },
-        data: {
-          dateOfBirth: formData.dateOfBirth!,
-          bloodGroup: formData.bloodGroup,
-          mobile1: formData.mobile1,
-          city: formData.city,
-          state: formData.state,
-          pincode: formData.pincode,
-          subjectOfTeaching: formData.subjectOfTeaching,
-          employmentStatus: formData.employmentStatus,
+        update: {
+          mobile1: contact,
         },
-      });
-
-      return {
-        message: "user details updated",
-        user: updatedPersonalInfo,
-      };
-    } else {
-      // If the record doesn't exist, create it
-      const newPersonalInfo = await prisma.personalInfo.create({
-        data: {
-          dateOfBirth: formData.dateOfBirth!,
-          bloodGroup: formData.bloodGroup,
-          mobile1: formData.mobile1,
+        create: {
           userId: session.user?.id as string,
-          city: formData.city,
-          state: formData.state,
-          pincode: formData.pincode,
-          subjectOfTeaching: formData.subjectOfTeaching,
-          employmentStatus: formData.employmentStatus,
+          mobile1: contact,
+        },
+      });
+      await prisma.academics.upsert({
+        where: {
+          userId: session.user?.id,
+        },
+        update: {
+          designation,
+          departmentName,
+          facultyName,
+          dateOfJoining,
+        },
+        create: {
+          userId: session.user?.id as string,
+          designation,
+          departmentName,
+          facultyName,
+          dateOfJoining,
+        },
+      });
+      const user = await prisma.user.update({
+        where: {
+          id: session.user?.id,
+        },
+        data: {
+          name,
+          image,
+        },
+        include: {
+          personalInfo: true,
+          academics: true,
+        },
+      });
+      const currentYear = new Date().getFullYear();
+      const existingPerformance = await prisma.performance.findFirst({
+        where: {
+          userId: session.user?.id,
+          createdAt: {
+            gte: new Date(`${currentYear}-01-01T00:00:00.000Z`), // Start of the current year
+            lt: new Date(`${currentYear + 1}-01-01T00:00:00.000Z`), // Start of the next year
+          },
         },
       });
 
+      if (!existingPerformance) {
+        await prisma.performance.create({
+          data: {
+            departmentName,
+            facultyName,
+            userId: session.user?.id as string,
+            degreeDuringPeriod,
+          },
+        });
+      }
       return {
-        message: "user details created",
-        user: newPersonalInfo,
+        message: "user updated",
+        user: user,
       };
+    } catch (error) {
+      return { message: "Something went wrong", user: null };
     }
-  } catch (error) {
-    return {
-      message: "error occurred",
-      user: null,
-    };
-  }
-};
-export const updateFamilyDetails = async (array: FamilyDetail[]) => {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    return { message: "user is not authorized", user: null };
-  }
-
-  try {
-    // Find the user by ID
-    const user = await prisma.user.findUnique({
-      where: {
-        id: session.user?.id!,
-      },
-      include: {
-        familyDetail: true,
-      },
-    });
-
-    // Map the array of family details to create or update them
-    const familyDetailUpdates = array.map((element) => {
-      // Check if the element exists in the user's familyDetail
-      const existingElement = user?.familyDetail.find(
-        (item) => item.id === element.id
-      );
-
-      // If it exists, update it; otherwise, create a new one
-      if (existingElement) {
-        return prisma.familyDetail.update({
-          where: {
-            id: existingElement.id,
-          },
-          data: {
-            // Update fields as needed
-            name: element.name,
-            relationName: element.relationName,
-            occupation: element.occupation,
-            address: element.address,
-            contact: element.contact,
-          },
-        });
-      } else {
-        return prisma.familyDetail.create({
-          data: {
-            // Set fields for a new family detail
-            name: element.name,
-            relationName: element.relationName,
-            occupation: element.occupation,
-            address: element.address,
-            contact: element.contact,
-            user: {
-              connect: {
-                id: session.user?.id!,
-              },
-            },
-          },
-        });
-      }
-    });
-
-    // Use Prisma's transaction to perform updates in a single batch
-    await prisma.$transaction(familyDetailUpdates);
-
-    // Optionally, you can return a success message or updated user data
-    return {
-      message: "Family details updated",
-      user: user, // You can include the updated user data here
-    };
-  } catch (error) {
-    return {
-      message: "An error occurred",
-      user: null,
-    };
-  }
-};
-
-export const deleteFamilyItem = async (element: FamilyDetail) => {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    return { message: "user is not authorized", user: null };
-  }
-
-  try {
-    const existingPersonalInfo = await prisma.user.findFirst({
-      where: {
-        id: session.user?.id!,
-      },
-      include: {
-        familyDetail: true,
-      },
-    });
-
-    if (existingPersonalInfo) {
-      // Filter out the element with the specified ID
-      const updatedFamilyDetail = existingPersonalInfo.familyDetail.filter(
-        (e) => e.id !== element.id
-      );
-
-      // Delete the element from the FamilyDetail table
-      await prisma.familyDetail.delete({
-        where: {
-          id: element.id,
-        },
-      });
-
-      // Update the user's familyDetail field
-      await prisma.user.update({
-        where: {
-          id: session.user?.id!,
-        },
-        data: {
-          familyDetail: {
-            set: updatedFamilyDetail, // Set the updated array
-          },
-        },
-      });
-    }
-
-    return {
-      message: "Family item deleted",
-      user: session,
-    };
-  } catch (error) {
-    return {
-      message: "Error occurred while deleting family item",
-      user: null,
-    };
-  }
-};
-export const updatePreviousAcademics = async (array: PreviousAcademic[]) => {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    return { message: "user is not authorized", user: null };
-  }
-
-  try {
-    // Find the user by ID
-    const user = await prisma.user.findUnique({
-      where: {
-        id: session.user?.id!,
-      },
-      include: {
-        previousAcademics: true,
-      },
-    });
-
-    // Map the array of previous academics to create or update them
-    // const previousAcademicsUpdates =
-    array.map(async (element) => {
-      // Check if the element exists in the user's previous academics
-      const existingElement = user?.previousAcademics.find(
-        (item) => item.id === element.id
-      );
-
-      // If it exists, update it; otherwise, create a new one
-      if (existingElement) {
-        const exist = await prisma.previousAcademic.update({
-          where: {
-            id: existingElement.id,
-          },
-          data: {
-            // Update fields as needed
-            boardUniversity: element.boardUniversity,
-            collegeName: element.collegeName,
-            courseName: element.courseName,
-            passingYear: element.passingYear,
-            percentage: element.percentage,
-          },
-        });
-      } else {
-        const exist = await prisma.previousAcademic.create({
-          data: {
-            // Set fields for a new previous academic
-            boardUniversity: element.boardUniversity,
-            collegeName: element.collegeName,
-            courseName: element.courseName,
-            passingYear: element.passingYear,
-            percentage: element.percentage,
-            user: {
-              connect: {
-                id: session.user?.id,
-              },
-            },
-          },
-        });
-      }
-    });
-
-    // Use Prisma's transaction to perform updates in a single batch
-    // await prisma.$transaction(previousAcademicsUpdates);
-
-    // Optionally, you can return a success message or updated user data
-    return {
-      message: "Previous academics details updated",
-      user: user, // You can include the updated user data here
-    };
-  } catch (error) {
-    return {
-      message: "An error occurred",
-      user: null,
-    };
-  }
-};
-
-export const deleteAcademicsItem = async (element: PreviousAcademic) => {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    return { message: "user is not authorized", user: null };
-  }
-
-  try {
-    const existingPersonalInfo = await prisma.user.findFirst({
-      where: {
-        id: session.user?.id!,
-      },
-      include: {
-        previousAcademics: true,
-      },
-    });
-
-    if (existingPersonalInfo) {
-      // Filter out the element with the specified ID
-      const updateAcademics = existingPersonalInfo.previousAcademics.filter(
-        (e) => e.id !== element.id
-      );
-
-      // Delete the element from the PreviouseAcademicDetail table
-      await prisma.previousAcademic.delete({
-        where: {
-          id: element.id,
-        },
-      });
-
-      // Update the user's familyDetail field
-      await prisma.user.update({
-        where: {
-          id: session.user?.id!,
-        },
-        data: {
-          previousAcademics: {
-            set: updateAcademics, // Set the updated array
-          },
-        },
-      });
-    }
-
-    return {
-      message: "PreviouseAcademic item deleted",
-      user: session,
-    };
-  } catch (error) {
-    return {
-      message: "Error occurred while deleting family item",
-      user: null,
-    };
-  }
-};
-export const teacherIsInProcess = async () => {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    return { message: "user is not authorized", user: null };
-  }
-
-  try {
-    const user = await prisma.user.update({
-      where: {
-        id: session.user?.id,
-      },
-      data: {
-        isAuthorize: "Request",
-      },
-    });
-
-    return {
-      message: "Congrats request is initiated",
-      user: user,
-    };
-  } catch (error) {
-    return {
-      message: "Error occurred while deleting family item",
-      user: null,
-    };
   }
 };

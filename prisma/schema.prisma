@@ -38,124 +38,237 @@ model Session {
 // Student Related Info
 
 model User {
-  id                String             @id @default(cuid())
-  name              String?
-  email             String?            @unique
-  emailVerified     DateTime?
-  image             String?
-  accounts          Account[]
-  sessions          Session[]
-  password          String?
-  religion          String             @default("") //add
-  caste             String             @default("") //add
-  temporaryAddress  String             @default("") //add
-  permanentAddress  String             @default("") //add
-  gender            Gender?
-  role              RelationType       @default(Student)
-  personalInfo      PersonalInfo?
-  familyDetail      FamilyDetail[]     @relation("FamilyDetails")
-  previousAcademics PreviousAcademic[] @relation("previousAcademics")
-  isAuthorize       IsAuthorize        @default(UnAuthorize)
+  id            String        @id @default(cuid())
+  name          String?
+  email         String?       @unique
+  emailVerified DateTime?
+  image         String        @default("/default-user.png")
+  role          Role
+  accounts      Account[]
+  sessions      Session[]
+  password      String?
+  personalInfo  PersonalInfo?
+  academics     Academics?
+  Performance   Performance[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
 
-model PreviousAcademic {
-  id              String @id @default(cuid())
-  boardUniversity String
-  collegeName     String
-  courseName      String
-  passingYear     String
-  percentage      String
-  user            User   @relation("previousAcademics", fields: [userId], references: [id], onDelete: Cascade)
-  userId          String
+model Performance {
+  id                         String                      @id @default(cuid())
+  departmentName             String
+  facultyName                String
+  userId                     String
+  degreeDuringPeriod         String
+  teachingAndLearning        AverageResult[]
+  classEngagement            Int?
+  studentFeedback            StudentFeedback?
+  peerFeedback               PeerFeedback?
+  publications               PublicationAndJournal[]
+  programsOrganized          ProgramsOrganized[]
+  programsAttended           ProgramAttended[]
+  sponsoredResearch          SponsoredResearch[]
+  consultancyServices        ConsultancyService[]
+  intellectualPropertyRights IntellectualPropertyRight[]
+  examinationDuties          ExaminationDuty[]
+  activities                 Activity[]
+  responsibilities           Responsibility[]
+  achievements               String[]
+  grade                      Grade?
+  user                       User                        @relation(fields: [userId], references: [id])
+  gradeId                    String?
+  studentFeedbackId          String?
+  createdAt                  DateTime                    @default(now())
+  updatedAt                  DateTime                    @updatedAt
 }
 
-model FamilyDetail {
-  id           String @id @unique @default(cuid())
-  name         String
-  relationName String
-  occupation   String
-  address      String
-  contact      String
-  userId       String
-  user         User   @relation("FamilyDetails", fields: [userId], references: [id], onDelete: Cascade)
+model AverageResult {
+  id             String      @id @default(cuid())
+  nameOfSubject  String
+  term           Term
+  level          Level
+  courseHead     CourseHead
+  hoursAlloted   Float
+  classConducted Float
+  result         Float
+  Performance    Performance @relation(fields: [performanceId], references: [id])
+  performanceId  String
 }
 
-enum RelationType {
+enum Term {
+  I
+  II
+}
+
+enum Level {
+  UG
+  PG
+}
+
+enum CourseHead {
+  TH
+  PR
+  T
+}
+
+model StudentFeedback {
+  id                 String      @id @default(cuid())
+  termIIPreviousYear Int
+  termICurrentYear   Int
+  Performance        Performance @relation(fields: [performanceId], references: [id])
+  performanceId      String      @unique
+}
+
+model PeerFeedback {
+  id                 String      @id @default(cuid())
+  termIIPreviousYear Int
+  termICurrentYear   Int
+  Performance        Performance @relation(fields: [performanceId], references: [id])
+  performanceId      String      @unique
+}
+
+model PublicationAndJournal {
+  id            String       @id @default(cuid())
+  paperTitle    String
+  level         String
+  name          String
+  issnOrIssbnNo String
+  mainAuthor    Boolean
+  indexing      String?
+  Performance   Performance? @relation(fields: [performanceId], references: [id])
+  performanceId String
+}
+
+model ProgramsOrganized {
+  id            String       @id @default(cuid())
+  title         String
+  duration      String
+  Performance   Performance? @relation(fields: [performanceId], references: [id])
+  performanceId String
+}
+
+model ProgramAttended {
+  id            String       @id @default(cuid())
+  title         String
+  place         String
+  duration      String
+  organizer     String
+  Performance   Performance? @relation(fields: [performanceId], references: [id])
+  performanceId String
+}
+
+model SponsoredResearch {
+  id                        String       @id @default(cuid())
+  scheme                    String
+  agency                    String
+  status                    String
+  dateOfSubmissionOrAwarded DateTime
+  grantReceived             String
+  Performance               Performance? @relation(fields: [performanceId], references: [id])
+  performanceId             String
+}
+
+model ConsultancyService {
+  id             String       @id @default(cuid())
+  natureOfWork   String
+  agency         String
+  duration       String
+  amountReceived String
+  Performance    Performance? @relation(fields: [performanceId], references: [id])
+  performanceId  String
+}
+
+model Patent {
+  id                          String                    @default(cuid())
+  status                      String
+  dateOfApplication           DateTime
+  commercialized              Boolean
+  intellectualPropertyRight   IntellectualPropertyRight @relation(fields: [intellectualPropertyRightId], references: [id])
+  intellectualPropertyRightId String                    @unique
+}
+
+model CopyRights {
+  id                          String                    @default(cuid())
+  status                      String
+  dateOfApplication           DateTime
+  commercialized              Boolean
+  intellectualPropertyRight   IntellectualPropertyRight @relation(fields: [intellectualPropertyRightId], references: [id])
+  intellectualPropertyRightId String                    @unique
+}
+
+model TradeMarks {
+  id                          String                    @default(cuid())
+  status                      String
+  dateOfApplication           DateTime
+  commercialized              Boolean
+  intellectualPropertyRight   IntellectualPropertyRight @relation(fields: [intellectualPropertyRightId], references: [id])
+  intellectualPropertyRightId String                    @unique
+}
+
+model IntellectualPropertyRight {
+  id            String       @unique @default(cuid())
+  patents       Patent[]
+  copyRights    CopyRights[]
+  tradeMarks    TradeMarks[]
+  Performance   Performance? @relation(fields: [performanceId], references: [id])
+  performanceId String
+}
+
+model ExaminationDuty {
+  id            String       @id @default(cuid())
+  dutyType      String
+  assignedBy    String
+  Performance   Performance? @relation(fields: [performanceId], references: [id])
+  performanceId String
+}
+
+model Activity {
+  id            String       @id @default(cuid())
+  name          String
+  duration      String
+  type          String
+  Performance   Performance? @relation(fields: [performanceId], references: [id])
+  performanceId String
+}
+
+model Responsibility {
+  id            String       @id @default(cuid())
+  natureOfWork  String
+  level         String
+  Performance   Performance? @relation(fields: [performanceId], references: [id])
+  performanceId String
+}
+
+enum Grade {
+  OutStanding
+  Excellent
+  VeryGood
+  Satisfactory
+  Average
+}
+
+enum Role {
   Student
   Teacher
-  Admin
+  Principle
+  HOD
 }
 
 model PersonalInfo {
-  id                      String                   @id @default(cuid())
-  dateOfBirth             DateTime
-  mobile1                 String                   @default("")
-  bloodGroup              String                   @default("") //add
-  user                    User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId                  String                   @unique // Add the unique constraint here
-  city                    String                   @default("")
-  state                   String                   @default("")
-  pincode                 String                   @default("")
-  subjectOfTeaching       String                   @default("")
-  employmentStatus        Boolean                  @default(false)
-  workHistory             WorkHistory[] //add
-  professionalAchievement ProffesionalAchevement[] //add
+  id      String @id @default(cuid())
+  mobile1 String @default("")
+  userId  String @unique
+  User    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-enum IsAuthorize {
-  UnAuthorize
-  Request
-  Authorize
-}
-
-model WorkHistory {
-  id             String        @id @default(cuid())
-  jobRole        String
-  subjectTeach   String
-  serviceYear    Int
-  PersonalInfo   PersonalInfo? @relation(fields: [personalInfoId], references: [id])
-  personalInfoId String?
-}
-
-model ProffesionalAchevement {
-  id             String        @id @default(cuid())
-  awardName      String
-  whereYouGot    String
-  aboutAward     String
-  PersonalInfo   PersonalInfo? @relation(fields: [personalInfoId], references: [id])
-  personalInfoId String?
-}
-
-enum Gender {
-  Male
-  Female
-  Other
-}
-
-// Admin related Object
-
-model Academic {
-  id            String  @id @default(cuid())
-  admissionYear Int
-  courseId      String?
-}
-
-model Course {
-  id         String    @id @default(cuid())
-  courseName String
-  totalFee   Int
-  Subjects   Subject[]
-  createAt   DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  createdBy  String?
-}
-
-model Subject {
-  id          String  @id @default(cuid())
-  subjectName String
-  totalMark   Int
-  Course      Course? @relation(fields: [courseId], references: [id])
-  courseId    String?
+model Academics {
+  id             String   @id @default(cuid())
+  designation    String   @default("")
+  dateOfJoining  DateTime @default(now())
+  facultyName    String   @default("")
+  departmentName String   @default("")
+  userId         String   @unique
+  User           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {

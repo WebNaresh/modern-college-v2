@@ -1,5 +1,4 @@
 "use client";
-import { updateUserDetails } from "@/actions/handleUserFor";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -31,9 +30,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
-  dateOfBirth: z.date({
-    required_error: "A date of birth is required.",
-  }),
+    dateOfBirth: z.date({
+      required_error: "A date of birth is required.",
+    }),
   bloodGroup: z.string().min(1),
   mobile1: z.string().min(10),
   city: z.string().min(2),
@@ -53,22 +52,22 @@ const UserInfo2 = (props: Props) => {
 
   const onSubmit = async (formData: UserForm1Values) => {
     setLoading(true);
-    let info = await updateUserDetails(formData);
+    // let info = await updateUserDetails(formData);
 
-    if (info.user) {
-      toast({
-        title: "Updated successfully",
-        description: "info updated successfully now you can go to Next Step",
-      });
-      nextStep();
-    } else {
-      toast({
-        title: info.message,
-        description: "Something went wrong",
-        variant: "destructive",
-      });
-      update({ formData });
-    }
+    // if (info.user) {
+    //   toast({
+    //     title: "Updated successfully",
+    //     description: "info updated successfully now you can go to Next Step",
+    //   });
+    //   nextStep();
+    // } else {
+    //   toast({
+    //     title: info.message,
+    //     description: "Something went wrong",
+    //     variant: "destructive",
+    //   });
+    //   update({ formData });
+    // }
     setLoading(false);
   };
 
@@ -76,15 +75,14 @@ const UserInfo2 = (props: Props) => {
   const form = useForm<UserForm1Values>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      dateOfBirth: props.session?.user?.personalInfo?.dateOfBirth,
-      bloodGroup: props.session?.user?.personalInfo?.bloodGroup || "",
-      mobile1: props.session?.user?.personalInfo?.mobile1 || "",
-      city: props.session?.user?.personalInfo?.city || "",
-      state: props.session?.user?.personalInfo?.state || "",
-      pincode: props.session?.user?.personalInfo?.pincode || "",
-      subjectOfTeaching:
-        props.session?.user?.personalInfo?.subjectOfTeaching || "",
-      employmentStatus: props.session?.user?.personalInfo?.employmentStatus,
+      dateOfBirth: new Date(),
+      bloodGroup: "",
+      mobile1: "",
+      city: "",
+      state: "",
+      pincode: "",
+      subjectOfTeaching: "",
+      employmentStatus: false,
     },
   });
 
@@ -286,21 +284,7 @@ const UserInfo2 = (props: Props) => {
           />
         </div>
 
-        <Button
-          disabled={
-            form.getValues().bloodGroup ===
-              data?.user?.personalInfo?.bloodGroup &&
-            form.getValues().mobile1 === data?.user?.personalInfo?.mobile1 &&
-            form.getValues().city === data?.user?.personalInfo?.city &&
-            form.getValues().pincode === data?.user?.personalInfo?.pincode &&
-            form.getValues().subjectOfTeaching ===
-              data?.user?.personalInfo.subjectOfTeaching &&
-            form.getValues().employmentStatus ===
-              data?.user?.personalInfo?.employmentStatus
-          }
-          className="m-4"
-          type="submit"
-        >
+        <Button className="m-4" type="submit">
           Save Changes
         </Button>
       </form>

@@ -8,13 +8,12 @@ type Props = {};
 
 const Page = async (props: Props) => {
   const session = await getServerSession(authOptions);
-  if (session?.user?.isAuthorize === "Request") {
-    redirect("/");
-  }
+
 
   return (
     <div>
       <Card className="w-[90vw] md:w-[60vw] px-4 m-auto">
+        
         <Stepper session={session} />
       </Card>
     </div>

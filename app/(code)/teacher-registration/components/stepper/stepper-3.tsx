@@ -1,5 +1,4 @@
 "use client";
-import { deleteFamilyItem, updateFamilyDetails } from "@/actions/handleUserFor";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -33,9 +32,7 @@ type UserForm1Values = {
 
 const UserInfo3 = (props: Props) => {
   const { data, update } = useSession();
-  const [arrayOfFamily, setArrayOfFamily] = useState<UserForm1Values[]>(
-    data?.user?.familyDetail || []
-  );
+  const [arrayOfFamily, setArrayOfFamily] = useState<UserForm1Values[]>([]);
   const { nextStep } = useUpdateUserStore();
 
   const { setLoading } = useStore();
@@ -44,21 +41,19 @@ const UserInfo3 = (props: Props) => {
     setLoading(true);
 
     try {
-      let res = await updateFamilyDetails(arrayOfFamily);
-
-      // Show a success toast when the update is successful
-      if (res.user) {
-        toast({
-          title: "Success!",
-          description: "Family details updated successfully.",
-        });
-
-        update({ data: arrayOfFamily });
-        setLoading(false);
-        nextStep();
-      } else {
-        setLoading(false);
-      }
+      // let res = await updateFamilyDetails(arrayOfFamily);
+      // // Show a success toast when the update is successful
+      // if (res.user) {
+      //   toast({
+      //     title: "Success!",
+      //     description: "Family details updated successfully.",
+      //   });
+      //   update({ data: arrayOfFamily });
+      //   setLoading(false);
+      //   nextStep();
+      // } else {
+      //   setLoading(false);
+      // }
     } catch (error) {
       // Show an error toast if the update fails
       toast({
@@ -89,22 +84,22 @@ const UserInfo3 = (props: Props) => {
       setLoading(true);
       try {
         // Assuming you have a function called 'deleteFamilyItem' that makes the API call
-        let res = await deleteFamilyItem(deletedItem);
-        update({ data: arrayOfFamily });
-        if (res?.user) {
-          // Show a success toast when the item is successfully deleted
-          toast({
-            title: "Success!",
-            description: "Item deleted successfully.",
-          });
-        } else {
-          // Show an error toast when the delete operation fails
-          toast({
-            title: "Error!",
-            description: "Failed to delete item. Please try again later.",
-            variant: "destructive", // Use "destructive" variant for error messages
-          });
-        }
+        // let res = await deleteFamilyItem(deletedItem);
+        // update({ data: arrayOfFamily });
+        // if (res?.user) {
+        //   // Show a success toast when the item is successfully deleted
+        //   toast({
+        //     title: "Success!",
+        //     description: "Item deleted successfully.",
+        //   });
+        // } else {
+        //   // Show an error toast when the delete operation fails
+        //   toast({
+        //     title: "Error!",
+        //     description: "Failed to delete item. Please try again later.",
+        //     variant: "destructive", // Use "destructive" variant for error messages
+        //   });
+        // }
       } catch (error) {
         // Handle the error appropriately
 
@@ -136,7 +131,7 @@ const UserInfo3 = (props: Props) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {(arrayOfFamily || data?.user?.familyDetail)?.map((e, i) => {
+              {arrayOfFamily?.map((e, i) => {
                 return (
                   <TableRow key={i}>
                     <TableCell className="font-medium">{e.name}</TableCell>
@@ -155,14 +150,7 @@ const UserInfo3 = (props: Props) => {
               })}
             </TableBody>
           </Table>
-          <Button
-            type="submit"
-            className="mt-4"
-            disabled={
-              !(arrayOfFamily?.length >= 2) ||
-              arrayOfFamily.length <= data?.user?.familyDetail?.length!
-            }
-          >
+          <Button type="submit" className="mt-4">
             Save changes
           </Button>
         </form>

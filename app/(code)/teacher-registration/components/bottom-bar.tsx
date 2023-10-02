@@ -1,6 +1,4 @@
-import { teacherIsInProcess } from "@/actions/handleUserFor";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
 import useCelebration from "@/hooks/celebration";
 import useStore from "@/hooks/loader-hook";
 import useUpdateUserStore from "@/hooks/stepper-user-update-hook";
@@ -17,37 +15,34 @@ const BottomBar = (props: Props) => {
   const { setLoading } = useStore();
   const lastStep = () => {
     setLoading(true);
-    teacherIsInProcess()
-      .then((res) => {
-        setCelebration(true);
-        update({ res });
-        toast({
-          title: res.message,
-          description: `Congrats ${res.user?.name}`,
-        });
-        setLoading(false);
-        router.push("/");
-      })
-      .catch((res) => {
-        console.log(`🚀 ~ res:`, res);
-        toast({
-          title: res.message,
-          description: "Something went wrong",
-          variant: "destructive",
-        });
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    // teacherIsInProcess()
+    //   .then((res) => {
+    //     setCelebration(true);
+    //     update({ res });
+    //     toast({
+    //       title: res.message,
+    //       description: `Congrats ${res.user?.name}`,
+    //     });
+    //     setLoading(false);
+    //     router.push("/");
+    //   })
+    //   .catch((res) => {
+    //     console.log(`🚀 ~ res:`, res);
+    //     toast({
+    //       title: res.message,
+    //       description: "Something went wrong",
+    //       variant: "destructive",
+    //     });
+    //   })
+    //   .finally(() => {
+    setLoading(false);
+    //   });
   };
 
   return (
     <>
       {" "}
-      {index === 3 &&
-      data?.user?.personalInfo !== null &&
-      data?.user?.familyDetail !== null &&
-      data?.user?.previousAcademics.length !== 0 ? (
+      {index === 3 ? (
         <Button onClick={lastStep}>Now You Can Apply For Teacher</Button>
       ) : (
         ""

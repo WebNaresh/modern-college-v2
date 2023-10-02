@@ -1,8 +1,4 @@
 "use client";
-import {
-  deleteAcademicsItem,
-  updatePreviousAcademics,
-} from "@/actions/handleUserFor";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -28,7 +24,7 @@ type Props = {
 const UserInfo4 = (props: Props) => {
   const { data, update } = useSession();
   const [arrayOfAccademics, setArrayOfAcademics] = useState<PreviousAcademic[]>(
-    data?.user?.previousAcademics!
+    []
   );
 
   const { toast } = useToast();
@@ -38,26 +34,24 @@ const UserInfo4 = (props: Props) => {
     setLoading(true);
 
     try {
-      let res = await updatePreviousAcademics(arrayOfAccademics);
-
-      // Show a success toast when the update is successful
-      if (res.user) {
-        toast({
-          title: "Success!",
-          description: "Previous Academics details updated successfully.",
-        });
-
-        update({ data: arrayOfAccademics });
-        setLoading(false);
-      } else {
-        setLoading(false);
-        toast({
-          title: "Error!",
-          description:
-            "Failed to update Previous Academics details. Please try again later.",
-          variant: "destructive", // You may need to adjust this based on your toast component's configuration
-        });
-      }
+      // let res = await updatePreviousAcademics(arrayOfAccademics);
+      // // Show a success toast when the update is successful
+      // if (res.user) {
+      //   toast({
+      //     title: "Success!",
+      //     description: "Previous Academics details updated successfully.",
+      //   });
+      //   update({ data: arrayOfAccademics });
+      //   setLoading(false);
+      // } else {
+      //   setLoading(false);
+      //   toast({
+      //     title: "Error!",
+      //     description:
+      //       "Failed to update Previous Academics details. Please try again later.",
+      //     variant: "destructive", // You may need to adjust this based on your toast component's configuration
+      //   });
+      // }
     } catch (error) {
       // Show an error toast if the update fails
       toast({
@@ -89,22 +83,22 @@ const UserInfo4 = (props: Props) => {
       setLoading(true);
       try {
         // Assuming you have a function called 'deletePreviouse Academics Item' that makes the API call
-        let res = await deleteAcademicsItem(deletedItem);
-        update({ data: arrayOfAccademics });
-        if (res?.user) {
-          // Show a success toast when the item is successfully deleted
-          toast({
-            title: "Success!",
-            description: "Item deleted successfully.",
-          });
-        } else {
-          // Show an error toast when the delete operation fails
-          toast({
-            title: "Error!",
-            description: "Failed to delete item. Please try again later.",
-            variant: "destructive", // Use "destructive" variant for error messages
-          });
-        }
+        // let res = await deleteAcademicsItem(deletedItem);
+        // update({ data: arrayOfAccademics });
+        // if (res?.user) {
+        //   // Show a success toast when the item is successfully deleted
+        //   toast({
+        //     title: "Success!",
+        //     description: "Item deleted successfully.",
+        //   });
+        // } else {
+        //   // Show an error toast when the delete operation fails
+        //   toast({
+        //     title: "Error!",
+        //     description: "Failed to delete item. Please try again later.",
+        //     variant: "destructive", // Use "destructive" variant for error messages
+        //   });
+        // }
       } catch (error) {
         // Handle the error appropriately
 
@@ -137,40 +131,29 @@ const UserInfo4 = (props: Props) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {(arrayOfAccademics || data?.user?.previousAcademics!)?.map(
-                (e, i) => {
-                  return (
-                    <TableRow key={i}>
-                      <TableCell className="font-medium">
-                        {e.collegeName}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {e.percentage}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {" "}
-                        <Button
-                          type="button"
-                          size={"icon"}
-                          onClick={() => deleteFromArray(i)}
-                        >
-                          <MdDelete className="text-lg" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                }
-              )}
+              {arrayOfAccademics?.map((e, i) => {
+                return (
+                  <TableRow key={i}>
+                    <TableCell className="font-medium">
+                      {e.collegeName}
+                    </TableCell>
+                    <TableCell className="text-right">{e.percentage}</TableCell>
+                    <TableCell className="text-right">
+                      {" "}
+                      <Button
+                        type="button"
+                        size={"icon"}
+                        onClick={() => deleteFromArray(i)}
+                      >
+                        <MdDelete className="text-lg" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
-          <Button
-            type="submit"
-            className="mt-4"
-            disabled={
-              !(arrayOfAccademics?.length >= 2) ||
-              arrayOfAccademics.length <= data?.user?.previousAcademics?.length!
-            }
-          >
+          <Button type="submit" className="mt-4">
             Save changes
           </Button>
         </form>

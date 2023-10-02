@@ -21,7 +21,7 @@ const page = () => {
         {/* <AuthForm /> */}
         {/* <LoginForm />
         </div> */}
-        <Card className="sm:w-[60vh] wi[40vh]">
+        <Card className="sm:w-[60vh] w-[480px]">
           <CardHeader>
             <CardTitle>Login to your account</CardTitle>
             <CardDescription>Welcome-back</CardDescription>

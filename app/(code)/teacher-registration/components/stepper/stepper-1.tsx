@@ -1,5 +1,4 @@
 "use client";
-import { updateUserInfo } from "@/actions/handleUserFor";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -48,25 +47,25 @@ const UserInfo1 = (props: Props) => {
   const { index, nextStep } = useUpdateUserStore();
   const onSubmit = async (formData: UserForm1Values) => {
     setLoading(true);
-    updateUserInfo(formData)
-      .then(({ message, user }) => {
-        update({ name: formData.name, image: formData.imageUrl });
-        toast({
-          title: "Updated successfully",
-          description: "User updated successfully now you can go to Next Step",
-        });
-        nextStep();
-      })
-      .catch((res) => {
-        res.toast({
-          title: res.message,
-          description: "Something went wrong",
-          variant: "destructive",
-        });
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    // updateUserInfo(formData)
+    //   .then(({ message, user }) => {
+    //     update({ name: formData.name, image: formData.imageUrl });
+    //     toast({
+    //       title: "Updated successfully",
+    //       description: "User updated successfully now you can go to Next Step",
+    //     });
+    //     nextStep();
+    //   })
+    //   .catch((res) => {
+    //     res.toast({
+    //       title: res.message,
+    //       description: "Something went wrong",
+    //       variant: "destructive",
+    //     });
+    //   })
+    //   .finally(() => {
+    setLoading(false);
+    //   });
   };
 
   type UserForm1Values = z.infer<typeof formSchema>;
@@ -75,11 +74,11 @@ const UserInfo1 = (props: Props) => {
     defaultValues: {
       name: `${props.session?.user?.name}`,
       imageUrl: `${props.session?.user?.image || "/default.png"}`,
-      religion: props.session?.user?.religion || "",
-      caste: props.session?.user?.caste || "",
-      permanentAddress: props.session?.user?.permanentAddress || "",
-      temporaryAddress: props.session?.user?.temporaryAddress || "",
-      gender: props.session?.user?.gender || undefined,
+      religion: "",
+      caste: "",
+      permanentAddress: "",
+      temporaryAddress: "",
+      gender: undefined,
     },
   });
 
@@ -244,21 +243,7 @@ const UserInfo1 = (props: Props) => {
           />
         </div>
 
-        <Button
-          disabled={
-            form.getValues().name === props.session?.user?.name &&
-            form.getValues().imageUrl === props.session?.user?.image &&
-            form.getValues().religion === props.session?.user?.religion &&
-            form.getValues().caste === props.session?.user?.caste &&
-            form.getValues().temporaryAddress ===
-              props.session?.user?.temporaryAddress &&
-            form.getValues().permanentAddress ===
-              props.session?.user?.permanentAddress &&
-            form.getValues().gender === props.session?.user?.gender
-          }
-          className="m-4"
-          type="submit"
-        >
+        <Button className="m-4" type="submit">
           Save Changes
         </Button>
       </form>

@@ -1,5 +1,4 @@
-import { getTeacherRequestArray } from "@/actions/adminAcions";
-import Celebration from "@/components/Celebration/celebration";
+import Celebration from "@/components/Data-Table/Celebration/celebration";
 import Loader from "@/components/Loader/page";
 import Navbar from "@/components/Navbar/navbar";
 import { Toaster } from "@/components/ui/toaster";
@@ -22,8 +21,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const arrray = await getTeacherRequestArray();
-
   return (
     <html
       lang="en"
@@ -36,8 +33,8 @@ export default async function RootLayout({
         <NextAuthProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <Loader />
-            <Navbar teacherArray={arrray.users} />
-            <div className="mt-[120px]">
+            <Navbar />
+            <div className="mt-[90px] lg:[100px">
               <Celebration />
               {children}
             </div>
