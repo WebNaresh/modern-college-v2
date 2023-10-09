@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/popover";
 import { useToast } from "@/components/ui/use-toast";
 import useStore from "@/hooks/loader-hook";
-import useUpdateUserStore from "@/hooks/stepper-user-update-hook";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Performance } from "@prisma/client";
@@ -59,7 +58,6 @@ const FormDetails = (props: Props) => {
 
   const { toast } = useToast();
   const { loading, setLoading } = useStore();
-  const { index, nextStep } = useUpdateUserStore();
 
   const onSubmit = async (formData: UserForm1Values) => {
     setLoading(true);

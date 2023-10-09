@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import useStore from "@/hooks/loader-hook";
-import useUpdateUserStore from "@/hooks/stepper-user-update-hook";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -43,7 +42,6 @@ const FormDetails = (props: Props) => {
 
   const { toast } = useToast();
   const { loading, setLoading } = useStore();
-  const { index, nextStep } = useUpdateUserStore();
   const onSubmit = async () => {
     console.log("hello");
 
