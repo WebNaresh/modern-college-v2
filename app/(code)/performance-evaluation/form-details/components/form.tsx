@@ -37,14 +37,14 @@ import { z } from "zod";
 const formSchema = z.object({
   name: z.string().min(1),
   image: z.string().min(1),
-  contact: z.string().min(10),
+  contact: z.string().min(10).max(10),
   designation: z.string().min(3),
   dateOfJoining: z.date({
     required_error: "A date of birth is required.",
   }),
   facultyName: z.string().min(5),
   departmentName: z.string().min(1),
-  degreeDuringPeriod: z.string(),
+  phdDuringPeriod: z.string(),
 });
 type Props = {
   user: Session;
@@ -93,10 +93,10 @@ const FormDetails = (props: Props) => {
       image: `${props?.user?.user?.image}` || "",
       contact: props?.user?.user?.personalInfo?.mobile1 || "",
       designation: props?.user?.user?.academics?.designation || "",
-      dateOfJoining: props?.user?.user?.academics?.dateOfJoining || new Date(),
+      dateOfJoining: props?.user?.user?.academics?.dateOfJoining || undefined,
       facultyName: props?.user?.user?.academics?.facultyName || "",
       departmentName: props?.user?.user?.academics?.departmentName || "",
-      degreeDuringPeriod: props.performance?.degreeDuringPeriod || "",
+      phdDuringPeriod: props.performance?.phdDuringPeriod || "",
     },
   });
   const UploadButtonCLick = () => {
@@ -104,16 +104,15 @@ const FormDetails = (props: Props) => {
     element?.click();
   };
   console.log(
-    form.getValues().degreeDuringPeriod ===
-      props?.performance?.degreeDuringPeriod
+    form.getValues().phdDuringPeriod === props?.performance?.phdDuringPeriod
   );
   console.log(
-    `🚀 ~ props?.performance?.degreeDuringPeriod:`,
-    props?.performance?.degreeDuringPeriod
+    `🚀 ~ props?.performance?.phdDuringPeriod:`,
+    props?.performance?.phdDuringPeriod
   );
   console.log(
-    `🚀 ~  form.getValues().degreeDuringPeriod :`,
-    form.getValues().degreeDuringPeriod
+    `🚀 ~  form.getValues().phdDuringPeriod :`,
+    form.getValues().phdDuringPeriod
   );
 
   return (
@@ -188,7 +187,7 @@ const FormDetails = (props: Props) => {
             render={({ field }) => {
               return (
                 <FormItem className="w-full">
-                  <FormLabel>contact</FormLabel>
+                  <FormLabel>Contact</FormLabel>
                   <FormControl>
                     <Input
                       className="w-full"
@@ -208,7 +207,7 @@ const FormDetails = (props: Props) => {
             render={({ field }) => {
               return (
                 <FormItem className="w-full">
-                  <FormLabel>designation</FormLabel>
+                  <FormLabel>Designation</FormLabel>
                   <FormControl>
                     <Input
                       className="w-full"
@@ -227,7 +226,7 @@ const FormDetails = (props: Props) => {
             name="dateOfJoining"
             render={({ field }) => (
               <FormItem className="my-4 flex w-full flex-col">
-                {/* <FormLabel>Date of Joining</FormLabel> */}
+                <FormLabel>Date of Joining</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -241,7 +240,7 @@ const FormDetails = (props: Props) => {
                         {field.value ? (
                           format(field.value, "PPP")
                         ) : (
-                          <span>Pick a date</span>
+                          <span>Pick Your Joining Date</span>
                         )}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
@@ -273,7 +272,7 @@ const FormDetails = (props: Props) => {
             render={({ field }) => {
               return (
                 <FormItem className="w-full">
-                  <FormLabel>Temporary Address</FormLabel>
+                  <FormLabel>Faculty Name</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="Type facaulty name" />
                   </FormControl>
@@ -288,7 +287,7 @@ const FormDetails = (props: Props) => {
             render={({ field }) => {
               return (
                 <FormItem className="w-full">
-                  <FormLabel>Temporary Address</FormLabel>
+                  <FormLabel>Department Name</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="Type department name" />
                   </FormControl>
@@ -299,16 +298,16 @@ const FormDetails = (props: Props) => {
           />
           <FormField
             control={form.control}
-            name={"degreeDuringPeriod"}
+            name={"phdDuringPeriod"}
             render={({ field }) => {
               return (
                 <FormItem className="w-full">
-                  <FormLabel>Temporary Address</FormLabel>
+                  <FormLabel>PHD During Period</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="Any degree during period" />
+                    <Input {...field} placeholder="Any phd during period" />
                   </FormControl>
                   <FormDescription>
-                    Leave Blank if no degree during period
+                    Leave Blank if no PHD during period
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -329,8 +328,8 @@ const FormDetails = (props: Props) => {
               props?.user?.user?.academics?.designation &&
             form.getValues().facultyName ===
               props?.user?.user?.academics.facultyName &&
-            form.getValues().degreeDuringPeriod ===
-              props?.performance?.degreeDuringPeriod
+            form.getValues().phdDuringPeriod ===
+              props?.performance?.phdDuringPeriod
           }
           className="m-4"
           type="submit"

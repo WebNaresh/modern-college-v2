@@ -31,12 +31,15 @@ const formSchema = z.object({
   name: z.string().min(1),
   level: z.enum(["UG", "PG"]),
   courseHead: z.enum(["TH", "PR", "T"]),
+  term: z.enum(["I", "II"]),
+  previousYear: z.enum(["Current", "Previous"]),
+
   noOfAllotedHour: z.number({
     required_error: "Mobile number is required",
     invalid_type_error: " number must be type of a number",
   }),
   noOfClassesConducted: z.number(),
-  result: z.number(),
+  result: z.number().int().min(0).max(100),
 });
 
 const MiniForm = (props: Props) => {
@@ -47,6 +50,8 @@ const MiniForm = (props: Props) => {
       name: "",
       level: undefined,
       courseHead: undefined,
+      term: undefined,
+      previousYear: undefined,
       noOfAllotedHour: 0,
       noOfClassesConducted: 0,
       result: 0,
@@ -59,8 +64,8 @@ const MiniForm = (props: Props) => {
       100
   );
   const onSubmit = async (formData: UserForm1Values) => {
-    formData.result =
-      (formData.noOfClassesConducted / formData.noOfAllotedHour) * 100;
+    // formData.result =
+    //   (formData.noOfClassesConducted / formData.noOfAllotedHour) * 100;
     props.arrayOfPreviousYear((prevArray) => [...prevArray, formData]);
     // form.reset();
   };
@@ -83,7 +88,7 @@ const MiniForm = (props: Props) => {
                       <Input
                         className="w-full"
                         disabled={loading}
-                        placeholder="Name"
+                        placeholder="Subject"
                         {...field}
                       />
                     </FormControl>
@@ -147,11 +152,38 @@ const MiniForm = (props: Props) => {
             />
             <FormField
               control={form.control}
+              name={"term"}
+              render={({ field }) => {
+                return (
+                  <FormItem className="w-full">
+                    <FormLabel>Course Term</FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger className="">
+                          <SelectValue placeholder="Select Term" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="I">I</SelectItem>
+                          <SelectItem value="II">II</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+
+            <FormField
+              control={form.control}
               name={"noOfAllotedHour"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>Hours alloted</FormLabel>
+                    <FormLabel>No of Hrs Allotted Week</FormLabel>
                     <FormControl>
                       <Input
                         value={field.value}
@@ -161,13 +193,6 @@ const MiniForm = (props: Props) => {
                         onBlur={field.onBlur}
                         onChange={(e) => {
                           if (e.target.value !== "" && e.target.value !== "0") {
-                            const value =
-                              (form.getValues("noOfClassesConducted") /
-                                form.getValues("noOfAllotedHour")) *
-                              100;
-                            form.setValue("result", value);
-                            console.log(e);
-
                             form.setValue(
                               "noOfAllotedHour",
                               parseInt(e.target.value)
@@ -191,7 +216,7 @@ const MiniForm = (props: Props) => {
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>Hours counducted</FormLabel>
+                    <FormLabel>No of Classes conducted (Hrs)</FormLabel>
                     <FormControl>
                       <Input
                         value={field.value}
@@ -201,13 +226,6 @@ const MiniForm = (props: Props) => {
                         onBlur={field.onBlur}
                         onChange={(e) => {
                           if (e.target.value !== "" && e.target.value !== "0") {
-                            const value =
-                              (form.getValues("noOfClassesConducted") /
-                                form.getValues("noOfAllotedHour")) *
-                              100;
-                            form.setValue("result", value);
-                            console.log(e);
-
                             form.setValue(
                               "noOfClassesConducted",
                               parseInt(e.target.value)
@@ -234,18 +252,48 @@ const MiniForm = (props: Props) => {
                     <FormControl>
                       <>
                         <Input
-                          value={
-                            (form.getValues("noOfClassesConducted") /
-                              form.getValues("noOfAllotedHour")) *
-                            100
-                          }
+                          {...field}
+                          onChange={(e) => {
+                            if (
+                              e.target.value !== "" &&
+                              e.target.value !== "0"
+                            ) {
+                              form.setValue("result", parseInt(e.target.value));
+                            } else {
+                              form.setValue("result", 0);
+                            }
+                          }}
                           className="w-full"
-                          type="number"
-                          disabled
                           placeholder="Result"
                         />
-                        <AiOutlinePercentage className="absolute right-2 top-1/2 bottom-1/2 text-input" />
+                        <AiOutlinePercentage className="absolute right-2 top-1/2 bottom-1/2 text-outline" />
                       </>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name={"previousYear"}
+              render={({ field }) => {
+                return (
+                  <FormItem className="w-full">
+                    <FormLabel>Year Of Subject</FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger className="">
+                          <SelectValue placeholder="Select Year of Teaching" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Current">Current</SelectItem>
+                          <SelectItem value="Previous">Previous</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

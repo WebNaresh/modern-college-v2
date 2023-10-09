@@ -121,14 +121,14 @@ export function DataTableDemo({ data }: Props) {
   };
   return (
     <div className="w-full p-4 box-border">
-      <div className="rounded-md border px-4">
+      <div className="rounded-md border">
         <Table className="">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow className="p-4" key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead className="px-4 m-auto" key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(

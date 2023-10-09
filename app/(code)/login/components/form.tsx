@@ -51,7 +51,13 @@ const LoginForm = () => {
       password: values.password,
     })
       .then((res) => {
+        console.log(`🚀 ~ res:`, res);
         if (res?.error?.includes("CredentialsSignin")) {
+          console.log(
+            `🚀 ~ res?.error?.includes("CredentialsSignin"):`,
+            res?.error?.includes("CredentialsSignin")
+          );
+
           toast({
             title: "Email of Password is not matching",
             description: "Sorry",
@@ -67,12 +73,13 @@ const LoginForm = () => {
             description: "Sorry",
             variant: "destructive",
           });
+        } else {
+          router.push("/");
+          toast({
+            title: "Login Succesfull",
+            description: `Welcome ${data?.user?.name}`,
+          });
         }
-        router.push("/");
-        toast({
-          title: "Login Succesfull",
-          description: `Welcome ${data?.user?.name}`,
-        });
       })
       .catch((res) => {
         console.log(`🚀 ~ res:`, res);

@@ -59,11 +59,11 @@ model Performance {
   departmentName             String
   facultyName                String
   userId                     String
-  degreeDuringPeriod         String
-  teachingAndLearning        AverageResult[]
-  classEngagement            Int?
-  studentFeedback            StudentFeedback?
-  peerFeedback               PeerFeedback?
+  phdDuringPeriod            String
+  teachingAndLearning        AverageResult[] //later
+  classEngagement            Int? //later
+  studentFeedback            StudentFeedback? //later
+  peerFeedback               PeerFeedback? //later
   publications               PublicationAndJournal[]
   programsOrganized          ProgramsOrganized[]
   programsAttended           ProgramAttended[]
@@ -75,7 +75,7 @@ model Performance {
   responsibilities           Responsibility[]
   achievements               String[]
   grade                      Grade?
-  user                       User                        @relation(fields: [userId], references: [id])
+  user                       User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
   gradeId                    String?
   studentFeedbackId          String?
   createdAt                  DateTime                    @default(now())
@@ -83,15 +83,16 @@ model Performance {
 }
 
 model AverageResult {
-  id             String      @id @default(cuid())
+  id             String        @id @default(cuid())
   nameOfSubject  String
   term           Term
   level          Level
   courseHead     CourseHead
+  previouseYear  PreviouseYear
   hoursAlloted   Float
   classConducted Float
   result         Float
-  Performance    Performance @relation(fields: [performanceId], references: [id])
+  Performance    Performance   @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId  String
 }
 
@@ -111,11 +112,16 @@ enum CourseHead {
   T
 }
 
+enum PreviouseYear {
+  Current
+  Previous
+}
+
 model StudentFeedback {
   id                 String      @id @default(cuid())
   termIIPreviousYear Int
   termICurrentYear   Int
-  Performance        Performance @relation(fields: [performanceId], references: [id])
+  Performance        Performance @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId      String      @unique
 }
 
@@ -123,7 +129,7 @@ model PeerFeedback {
   id                 String      @id @default(cuid())
   termIIPreviousYear Int
   termICurrentYear   Int
-  Performance        Performance @relation(fields: [performanceId], references: [id])
+  Performance        Performance @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId      String      @unique
 }
 
@@ -135,7 +141,7 @@ model PublicationAndJournal {
   issnOrIssbnNo String
   mainAuthor    Boolean
   indexing      String?
-  Performance   Performance? @relation(fields: [performanceId], references: [id])
+  Performance   Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId String
 }
 
@@ -143,7 +149,7 @@ model ProgramsOrganized {
   id            String       @id @default(cuid())
   title         String
   duration      String
-  Performance   Performance? @relation(fields: [performanceId], references: [id])
+  Performance   Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId String
 }
 
@@ -153,7 +159,7 @@ model ProgramAttended {
   place         String
   duration      String
   organizer     String
-  Performance   Performance? @relation(fields: [performanceId], references: [id])
+  Performance   Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId String
 }
 
@@ -164,7 +170,7 @@ model SponsoredResearch {
   status                    String
   dateOfSubmissionOrAwarded DateTime
   grantReceived             String
-  Performance               Performance? @relation(fields: [performanceId], references: [id])
+  Performance               Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId             String
 }
 
@@ -174,7 +180,7 @@ model ConsultancyService {
   agency         String
   duration       String
   amountReceived String
-  Performance    Performance? @relation(fields: [performanceId], references: [id])
+  Performance    Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId  String
 }
 
@@ -210,7 +216,7 @@ model IntellectualPropertyRight {
   patents       Patent[]
   copyRights    CopyRights[]
   tradeMarks    TradeMarks[]
-  Performance   Performance? @relation(fields: [performanceId], references: [id])
+  Performance   Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId String
 }
 
@@ -218,7 +224,7 @@ model ExaminationDuty {
   id            String       @id @default(cuid())
   dutyType      String
   assignedBy    String
-  Performance   Performance? @relation(fields: [performanceId], references: [id])
+  Performance   Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId String
 }
 
@@ -227,7 +233,7 @@ model Activity {
   name          String
   duration      String
   type          String
-  Performance   Performance? @relation(fields: [performanceId], references: [id])
+  Performance   Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId String
 }
 
@@ -235,7 +241,7 @@ model Responsibility {
   id            String       @id @default(cuid())
   natureOfWork  String
   level         String
-  Performance   Performance? @relation(fields: [performanceId], references: [id])
+  Performance   Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId String
 }
 
