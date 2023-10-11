@@ -8,19 +8,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
-const page = () => {
+const LoginInfo = async () => {
+  const data = await getServerSession(authOptions);
+  if (data?.user) {
+    redirect("/");
+  }
   return (
     <>
       <section className="flex flex-col items-center justify-center">
-        {/* <div
-          id="container"
-          className=" sm:mx-auto sm:w-full sm:max-w-md  bg  rounded-lg  shadow-md shadow-black/5 dark:bg-slate-900 dark:shadow-black/10 "
-        > */}
-        {/* <AuthForm /> */}
-        {/* <LoginForm />
-        </div> */}
         <Card className="sm:w-[60vh] w-[480px]">
           <CardHeader>
             <CardTitle>Login to your account</CardTitle>
@@ -42,4 +42,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default LoginInfo;

@@ -1,11 +1,19 @@
+"use client";
 import { RoutesA } from "@/lib/interface";
 import { cn } from "@/lib/utils";
-import { User } from "@prisma/client";
-import { useSession } from "next-auth/react";
+import { Academics, Performance, PersonalInfo, User } from "@prisma/client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 import { ThemeToggle } from "../toggle-button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -14,47 +22,79 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "../ui/navigation-menu";
+import { ScrollArea } from "../ui/scroll-area";
+import { ProfileForm } from "./(teacher)/teacherPEModal";
 
 type Props = {
   teacherArray?: User[] | null;
+  peFormDetails?: Performance | null;
+  user?:
+    | (User & {
+        academics: Academics | null;
+        personalInfo: PersonalInfo | null;
+        performance: Performance[];
+      })
+    | null;
 };
 
 const RightNav = (props: Props) => {
+  const isClickedOutsideNavbar = (event: Event) => {
+    const navbar = document.getElementById("navbarSupportedContent1");
+    const button = document.getElementById("button-id-1"); // Replace with your actual button ID
+    const targetElement = event.target as Node;
+
+    if (
+      navbar &&
+      button &&
+      !navbar.contains(targetElement) &&
+      !button.contains(targetElement)
+    ) {
+      navbar.classList.add("hidden");
+    }
+  };
+  useEffect(() => {
+    document.addEventListener("click", isClickedOutsideNavbar);
+    document.addEventListener("scroll", isClickedOutsideNavbar);
+
+    return () => {
+      document.removeEventListener("click", isClickedOutsideNavbar);
+      document.removeEventListener("scroll", isClickedOutsideNavbar);
+    };
+  }, []);
   const pathname = usePathname();
-  const data = useSession();
 
   const routes: RoutesA[] = [
     {
       href: "/",
       label: "Me",
       active: pathname === "/",
-      role: data.data?.user?.role === "Student" ? "hidden" : "hidden",
+      role: props.user?.role === "Student" ? "hidden" : "hidden",
     },
     {
       href: "/courses",
       label: "Courses",
       active: pathname === "/courses",
-      role: data.data?.user?.role === "HOD" ? "hidden" : "hidden",
+      role: props.user?.role === "HOD" ? "hidden" : "hidden",
     },
     {
       href: "/login",
       label: "Login",
-      hide: data?.data?.user ? true : false,
+      hide: props.user ? true : false,
       active: pathname === "/login",
-      role: data.data?.user ? "hidden" : "",
+      role: props.user ? "hidden" : "",
     },
     {
       href: "/signUp",
       label: "signUp",
-      hide: data?.data?.user ? true : false,
+      hide: props.user ? true : false,
       active: pathname === "/signUp",
-      role: data.data?.user ? "hidden" : "",
+      role: props.user ? "hidden" : "",
     },
     {
       href: "/teachers",
       label: "Teachers",
       active: pathname === "/teachers",
-      role: data.data?.user?.role === "HOD" ? "" : "hidden",
+      role: props.user?.role === "HOD" ? "" : "hidden",
     },
     {
       href: "/request",
@@ -64,19 +104,19 @@ const RightNav = (props: Props) => {
           : ""
       }`,
       active: pathname === "/request",
-      role: data.data?.user?.role === "HOD" ? "" : "hidden",
+      role: props.user?.role === "HOD" ? "" : "hidden",
     },
     {
       href: "/teacher-registration",
       label: "Register As Teacher",
       active: pathname === "/techer-registration",
-      role: data.data?.user?.role !== "Teacher" ? "hidden" : "",
+      role: props.user?.role !== "Teacher" ? "hidden" : "",
     },
     {
       href: "/student-registration",
       label: "Register As Student",
       active: pathname === "/student-registration",
-      role: data.data?.user?.role === "Student" ? "" : "hidden",
+      role: props.user?.role === "Student" ? "" : "hidden",
     },
   ];
   const showHideNavbar = () => {
@@ -93,7 +133,7 @@ const RightNav = (props: Props) => {
       {routes.map((ele, i) => {
         return (
           <li key={i} className={`${ele.role}`}>
-            {data?.data?.user?.role !== "Teacher" ? (
+            {props?.user?.role !== "Teacher" ? (
               <Link
                 onClick={showHideNavbar}
                 className={`hover:text-primary ${
@@ -117,25 +157,37 @@ const RightNav = (props: Props) => {
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
                       <ul className="grid gap-3 p-4 md:w-[200px] lg:w-[200px] ">
-                        <ListItem
-                          href="/performance-evaluation"
-                          title=" Performance Evaluation"
-                        >
-                          Here You can fill performance evaluation form of
-                          Modern College Of Engineering MCA branch
-                        </ListItem>
-                        {/* <ListItem
-                          href="/docs/installation"
-                          title="Installation"
-                        >
-                          How to install dependencies and structure your app.
-                        </ListItem>
-                        <ListItem
-                          href="/docs/primitives/typography"
-                          title="Typography"
-                        >
-                          Styles for headings, paragraphs, lists...etc
-                        </ListItem> */}
+                        {props.peFormDetails !== null ? (
+                          <ListItem
+                            href={`/performance/${props.peFormDetails?.id}`}
+                            className="border"
+                            title="Existing PE form"
+                          >
+                            Click to see
+                          </ListItem>
+                        ) : (
+                          <Dialog modal={true}>
+                            <DialogTrigger className="w-full border rounded-sm p-2 ">
+                              New PE Form
+                            </DialogTrigger>
+                            <DialogContent className="h-[70vh] p-0">
+                              <ScrollArea className="h-full w-full rounded-md p-6">
+                                <DialogHeader>
+                                  <DialogTitle>
+                                    1st question to start
+                                  </DialogTitle>
+                                  <DialogDescription>
+                                    Are you sure to start new Performance
+                                    Evaluation form for this year
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <ProfileForm
+                                  user={props.user ? props.user : null}
+                                />
+                              </ScrollArea>
+                            </DialogContent>
+                          </Dialog>
+                        )}
                       </ul>
                     </NavigationMenuContent>
                   </NavigationMenuItem>
@@ -147,7 +199,7 @@ const RightNav = (props: Props) => {
       })}
 
       <li>
-        <ThemeToggle />
+        <ThemeToggle user={props.user} />
       </li>
     </>
   );

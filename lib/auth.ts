@@ -39,6 +39,7 @@ export const authOptions: NextAuthOptions = {
               email: credentials.email,
             },
           });
+          console.log(`🚀 ~ user:`, user);
           if (!user) {
             return null;
           } else {
@@ -47,6 +48,7 @@ export const authOptions: NextAuthOptions = {
               user.password as string
             );
             if (comparePassword) {
+              console.log(`🚀 ~ comparePassword,`, user);
               return user;
             }
             return null;

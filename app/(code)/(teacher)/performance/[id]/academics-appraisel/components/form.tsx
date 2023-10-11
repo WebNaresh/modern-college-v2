@@ -144,38 +144,52 @@ const FormDetails = (props: Props) => {
   return (
     <div className="flex-col flex items-center">
       <MiniForm arrayOfPreviousYear={setArrayOfPreviousYear} />
-      <Table>
-        <TableCaption>
-          Minimum 1 subject of current Year and 1 subject of previous Year
-          Cumplsory
-        </TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="">Name</TableHead>
-            <TableHead className="text-center">Result</TableHead>
-            <TableHead className="text-center">Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {arrayOfPreviousYear?.map((e, i) => {
-            return (
-              <TableRow key={i}>
-                <TableCell className="font-medium">{e.name}</TableCell>
-                <TableCell className="text-center">{e.result}%</TableCell>
-                <TableCell className="text-center">
-                  <Button
-                    type="button"
-                    size={"icon"}
-                    onClick={() => deleteFromArray(i)}
-                  >
-                    <MdDelete className="text-lg" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+      <div className="rounded-lg w-full overflow-auto">
+        <Table>
+          <TableCaption>
+            Minimum 1 subject of current Year and 1 subject of previous Year
+            Cumplsory
+          </TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-left">Name</TableHead>
+              <TableHead className="text-left">Term</TableHead>
+              <TableHead className="text-left">Year</TableHead>
+              <TableHead className="text-left">Result</TableHead>
+              <TableHead className="text-center">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {arrayOfPreviousYear?.map((e, i) => {
+              return (
+                <TableRow key={i}>
+                  <TableCell className="font-medium text-left">
+                    {e.name}
+                  </TableCell>
+                  <TableCell className="font-medium text-left">
+                    {e.term}
+                  </TableCell>
+                  <TableCell className="font-medium text-left">
+                    {e.previousYear}
+                  </TableCell>
+                  <TableCell className="text-left">{e.result}%</TableCell>
+                  <TableCell className="text-center">
+                    <Button
+                      variant={"ghost"}
+                      type="button"
+                      size={"icon"}
+                      onClick={() => deleteFromArray(i)}
+                    >
+                      <MdDelete className="text-lg" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+
       <Button
         onClick={onSubmit}
         disabled={!(arrayOfPreviousYear.length > 0)}

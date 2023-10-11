@@ -1,5 +1,10 @@
 export { default } from "next-auth/middleware";
 
 export const config = {
-  matcher: ["/teacher-registration", "/student-registration", "/request"],
+  matcher: [
+    "/teacher-registration",
+    "/student-registration",
+    "/request",
+    "/performance/:path*",
+  ],
 };

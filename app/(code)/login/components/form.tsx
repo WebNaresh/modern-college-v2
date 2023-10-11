@@ -8,7 +8,6 @@ import useStore from "@/hooks/loader-hook";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -25,8 +24,8 @@ const formSchema = z.object({
 });
 
 const LoginForm = () => {
-  const { data } = useSession();
-  const { setLoadingFalse, setLoadingTrue } = useStore();
+  const { data, update } = useSession();
+  const { setLoading } = useStore();
   const { toast } = useToast();
   const router = useRouter();
 
@@ -38,14 +37,9 @@ const LoginForm = () => {
     },
   });
 
-  useEffect(() => {
-    if (data?.user) {
-    }
-  }, [data, router, toast]);
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setLoadingTrue();
-    console.log(values);
-    const res = await signIn("credentials", {
+    setLoading(true);
+    signIn("credentials", {
       redirect: false,
       email: values.email,
       password: values.password,
@@ -53,11 +47,7 @@ const LoginForm = () => {
       .then((res) => {
         console.log(`🚀 ~ res:`, res);
         if (res?.error?.includes("CredentialsSignin")) {
-          console.log(
-            `🚀 ~ res?.error?.includes("CredentialsSignin"):`,
-            res?.error?.includes("CredentialsSignin")
-          );
-
+          console.log(`🚀 ~ res2:`, res);
           toast({
             title: "Email of Password is not matching",
             description: "Sorry",
@@ -68,17 +58,20 @@ const LoginForm = () => {
             "Can't reach database server at `db.ufodydbovxinkjdxorny.supabase.co`:`5432`\n"
           )
         ) {
-          toast({
+          console.log(`🚀 ~ res3:`, res);
+          return toast({
             title: "Server is under Maintainance",
             description: "Sorry",
             variant: "destructive",
           });
         } else {
-          router.push("/");
           toast({
             title: "Login Succesfull",
             description: `Welcome ${data?.user?.name}`,
           });
+          setLoading(false);
+          update(res);
+          return router.refresh();
         }
       })
       .catch((res) => {
@@ -95,10 +88,8 @@ const LoginForm = () => {
             description: "Try after sometime",
             variant: "destructive",
           });
+          setLoading(false);
         }
-      })
-      .finally(() => {
-        setLoadingFalse();
       });
   }
 

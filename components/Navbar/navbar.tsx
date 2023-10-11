@@ -1,39 +1,41 @@
-"use client";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/primsa";
+import { getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect } from "react";
 import LeftNav from "./left-nav";
 import MobileNav from "./mobile-nav";
 import RightNav from "./right-nav";
 
 type Props = {};
 
-const Navbar = (props: Props) => {
-  const isClickedOutsideNavbar = (event: Event) => {
-    const navbar = document.getElementById("navbarSupportedContent1");
-    const button = document.getElementById("button-id-1"); // Replace with your actual button ID
-    const targetElement = event.target as Node;
-
-    if (
-      navbar &&
-      button &&
-      !navbar.contains(targetElement) &&
-      !button.contains(targetElement)
-    ) {
-      navbar.classList.add("hidden");
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("click", isClickedOutsideNavbar);
-    document.addEventListener("scroll", isClickedOutsideNavbar);
-
-    return () => {
-      document.removeEventListener("click", isClickedOutsideNavbar);
-      document.removeEventListener("scroll", isClickedOutsideNavbar);
-    };
-  }, []);
-
+const Navbar = async (props: Props) => {
+  const data = await getServerSession(authOptions);
+  const currentYear = new Date().getFullYear();
+  let user;
+  if (data?.user) {
+    user = await prisma.user.findUnique({
+      where: {
+        id: data?.user?.id as string,
+      },
+      include: {
+        academics: true,
+        personalInfo: true,
+        performance: true,
+      },
+    });
+  } else {
+    user = null;
+  }
+  const existingPerformance = await prisma.performance.findFirst({
+    where: {
+      userId: data?.user?.id,
+      createdAt: {
+        gte: new Date(`${currentYear}-01-01T00:00:00.000Z`), // Start of the current year
+        lt: new Date(`${currentYear + 1}-01-01T00:00:00.000Z`), // Start of the next year
+      },
+    },
+  });
   return (
     <div className=" transition-all">
       <nav
@@ -60,7 +62,7 @@ const Navbar = (props: Props) => {
           <div className="relative col-span-5  flex flex-row-reverse items-center">
             <div className=" md:relative xl:relative lg:relative">
               <ul className="list-style-none mr-auto hidden xl:flex pl-0 lg:flex-row items-center gap-8 align-center font-[fantasy] text-primary px-4  md:flex lg:flex">
-                <RightNav />
+                <RightNav peFormDetails={existingPerformance} user={user} />
               </ul>
             </div>
           </div>

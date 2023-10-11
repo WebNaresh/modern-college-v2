@@ -8,6 +8,7 @@ import {
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import Form from "./components/form";
+import FormDetails2 from "./components/form.2";
 
 type Props = {};
 
@@ -25,6 +26,7 @@ const page = async (props: Props) => {
         </CardHeader>
         <CardContent>
           <Form user={data} />
+          <FormDetails2 user={data} />
         </CardContent>
       </Card>
     </div>

@@ -10,23 +10,23 @@ import { prisma } from "@/lib/primsa";
 import { getServerSession } from "next-auth";
 import Form from "./components/form";
 
-type Props = {};
+type Props = {
+  params: {
+    id: string;
+  };
+};
 
 const page = async (props: Props) => {
   const data = await getServerSession(authOptions);
-  const currentYear = new Date().getFullYear();
-  const existingPerformance = await prisma.performance.findFirst({
-    where: {
-      userId: data?.user?.id,
-      createdAt: {
-        gte: new Date(`${currentYear}-01-01T00:00:00.000Z`), // Start of the current year
-        lt: new Date(`${currentYear + 1}-01-01T00:00:00.000Z`), // Start of the next year
-      },
-    },
-  });
-  console.log(`🚀 ~ existingPerformance:`, existingPerformance);
   if (data?.user === undefined) {
     return <div>Please Login FIrst</div>;
+  }
+  const existingPerformance = await prisma.performance.findUnique({
+    where: {
+      id: props.params.id,
+    },
+  });
+  if (existingPerformance === null || undefined) {
   }
   return (
     <div>

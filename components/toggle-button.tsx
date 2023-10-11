@@ -4,10 +4,13 @@ import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
+import { User } from "next-auth";
 import { signOut, useSession } from "next-auth/react";
 import { HiOutlineLogout } from "react-icons/hi";
-
-export function ThemeToggle() {
+type Props = {
+  user?: User | null;
+};
+export function ThemeToggle(props: Props) {
   const data = useSession();
   const { setTheme, theme } = useTheme();
   const toggleMode = () => {
@@ -20,7 +23,7 @@ export function ThemeToggle() {
 
   return (
     <div className="gap-2 flex">
-      {data.data?.user ? (
+      {props.user ? (
         <Button
           suppressHydrationWarning
           onClick={() => signOut()}

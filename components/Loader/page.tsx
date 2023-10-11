@@ -1,14 +1,11 @@
 "use client";
 
 import useStore from "@/hooks/loader-hook";
-import { usePathname } from "next/navigation";
 
 type Props = {};
 
 const Loader = (props: Props) => {
-  const pathname = usePathname();
-
-  const { loading, setLoading } = useStore();
+  const { loading } = useStore();
 
   return (
     loading && (
