@@ -45,6 +45,7 @@ const LoginForm = () => {
       password: values.password,
     })
       .then((res) => {
+        setLoading(false);
         console.log(`🚀 ~ res:`, res);
         if (res?.error?.includes("CredentialsSignin")) {
           console.log(`🚀 ~ res2:`, res);
@@ -69,12 +70,12 @@ const LoginForm = () => {
             title: "Login Succesfull",
             description: `Welcome ${data?.user?.name}`,
           });
-          setLoading(false);
           update(res);
           return router.refresh();
         }
       })
       .catch((res) => {
+        setLoading(false);
         console.log(`🚀 ~ res:`, res);
         if (res?.error?.includes("CredentialsSignin")) {
           toast({
@@ -88,7 +89,6 @@ const LoginForm = () => {
             description: "Try after sometime",
             variant: "destructive",
           });
-          setLoading(false);
         }
       });
   }

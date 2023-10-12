@@ -142,7 +142,7 @@ const FormDetails2 = (props: Props) => {
   };
 
   return (
-    <div className="flex-col flex items-center">
+    <div className="flex-col flex items-center pt-4">
       <MiniForm2 arrayOfPreviousYear={setArrayOfPreviousYear} />
       <div className="rounded-lg w-full overflow-auto">
         <Table>

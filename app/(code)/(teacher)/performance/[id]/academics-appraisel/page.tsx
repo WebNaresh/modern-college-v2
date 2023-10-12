@@ -26,6 +26,8 @@ const page = async (props: Props) => {
         </CardHeader>
         <CardContent>
           <Form user={data} />
+          <CardTitle>Academic Evaluation</CardTitle>
+          <CardDescription>Average-Feedback</CardDescription>
           <FormDetails2 user={data} />
         </CardContent>
       </Card>

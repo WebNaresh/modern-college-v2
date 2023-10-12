@@ -19,7 +19,6 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { AiOutlinePercentage } from "react-icons/ai";
 import { MdAdd } from "react-icons/md";
 import { z } from "zod";
 
@@ -83,7 +82,9 @@ const MiniForm2 = (props: Props) => {
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>Name of subject</FormLabel>
+                    <FormLabel>
+                      Average Student Feedback score for term-II
+                    </FormLabel>
                     <FormControl>
                       <Input
                         className="w-full"
@@ -103,7 +104,9 @@ const MiniForm2 = (props: Props) => {
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>Course level</FormLabel>
+                    <FormLabel>
+                      Average Student Feedback score for term-I
+                    </FormLabel>
                     <FormControl>
                       <Select
                         onValueChange={field.onChange}
@@ -129,7 +132,9 @@ const MiniForm2 = (props: Props) => {
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>Course head</FormLabel>
+                    <FormLabel>
+                      Average Peer Feedback score for term-II
+                    </FormLabel>
                     <FormControl>
                       <Select
                         onValueChange={field.onChange}
@@ -156,7 +161,9 @@ const MiniForm2 = (props: Props) => {
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>Course Term</FormLabel>
+                    <FormLabel>
+                      Average Peer Feedback score for term-I
+                    </FormLabel>
                     <FormControl>
                       <Select
                         onValueChange={field.onChange}
@@ -183,7 +190,9 @@ const MiniForm2 = (props: Props) => {
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>No of Hrs Allotted Week</FormLabel>
+                    <FormLabel>
+                      Efforts for Effective Curriculum Delivery
+                    </FormLabel>
                     <FormControl>
                       <Input
                         value={field.value}
@@ -216,7 +225,7 @@ const MiniForm2 = (props: Props) => {
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>No of Classes conducted (Hrs)</FormLabel>
+                    <FormLabel>Average of Peer+Student Feedback</FormLabel>
                     <FormControl>
                       <Input
                         value={field.value}
@@ -236,64 +245,6 @@ const MiniForm2 = (props: Props) => {
                         }}
                         placeholder="Number of hour conducted"
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name={"result"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full relative">
-                    <FormLabel>Your result</FormLabel>
-                    <FormControl>
-                      <>
-                        <Input
-                          {...field}
-                          onChange={(e) => {
-                            if (
-                              e.target.value !== "" &&
-                              e.target.value !== "0"
-                            ) {
-                              form.setValue("result", parseInt(e.target.value));
-                            } else {
-                              form.setValue("result", 0);
-                            }
-                          }}
-                          className="w-full"
-                          placeholder="Result"
-                        />
-                        <AiOutlinePercentage className="absolute right-2 top-1/2 bottom-1/2 text-outline" />
-                      </>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name={"previousYear"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>Year Of Subject</FormLabel>
-                    <FormControl>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <SelectTrigger className="">
-                          <SelectValue placeholder="Select Year of Teaching" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Current">Current</SelectItem>
-                          <SelectItem value="Previous">Previous</SelectItem>
-                        </SelectContent>
-                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
