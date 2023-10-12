@@ -20,10 +20,10 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-}: // teacher,
-{
+  teacher,
+}: {
   children: React.ReactNode;
-  // teacher: React.ReactNode;
+  teacher: React.ReactNode;
 }) {
   const user = await getServerSession(authOptions);
 
@@ -45,13 +45,13 @@ export default async function RootLayout({
             <Navbar />
             <div className="mt-[90px] lg:[100px">
               <Celebration />
-              {/* {user !== null
+              {user !== null
                 ? user?.user?.role === "Teacher" &&
                   user?.user?.academics !== null &&
                   user?.user?.personalInfo !== null
                   ? null
                   : teacher
-                : ""} */}
+                : ""}
 
               {children}
             </div>
