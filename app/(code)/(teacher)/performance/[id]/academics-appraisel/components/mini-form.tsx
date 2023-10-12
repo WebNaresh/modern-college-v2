@@ -57,12 +57,7 @@ const MiniForm = (props: Props) => {
       result: 0,
     },
   });
-  console.log(
-    `🚀 ~ formData:`,
-    (form.getValues("noOfClassesConducted") /
-      form.getValues("noOfAllotedHour")) *
-      100
-  );
+
   const onSubmit = async (formData: UserForm1Values) => {
     // formData.result =
     //   (formData.noOfClassesConducted / formData.noOfAllotedHour) * 100;

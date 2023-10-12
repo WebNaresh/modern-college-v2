@@ -68,7 +68,7 @@ const LoginForm = () => {
         } else {
           toast({
             title: "Login Succesfull",
-            description: `Welcome ${data?.user?.name}`,
+            description: `Welcome`,
           });
           update(res);
           return router.refresh();

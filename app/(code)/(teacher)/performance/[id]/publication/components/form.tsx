@@ -22,30 +22,28 @@ import MiniForm2 from "./mini-form.2";
 type Props = {
   user: Session;
 };
-const FormDetails = (props: Props) => {
-  type UserForm1Values = {
+const PublicationForm = (props: Props) => {
+  type PublicationValues = {
     id?: string;
+    paperTitle: string;
+    level: "State" | "Local" | "International" | "National";
     name: string;
-    level: "UG" | "PG";
-    courseHead: "TH" | "PR" | "T";
-    term: "I" | "II";
-    previousYear: "Current" | "Previous";
-    noOfAllotedHour: number;
-    noOfClassesConducted: number;
-    result: number;
+    issnNo: number;
+    isMainAuthor: boolean;
+    indexedIn: string;
   };
-  type UserForm2Values = {
+  type BookValues = {
     id?: string;
-    averageStudentFeedbackScoreTermI: number;
-    averageStudentFeedbackScoreTermII: number;
-    averagePeerFeedbackScoreTermI: number;
-    averagePeerFeedbackScoreTermII: number;
-    averagePeerStudentFeedback: number;
+    title: string;
+    titleWithPageNo: string;
+    isbnNo: number;
+    detailOfCoAuthors: string;
+    publishedMonthAndYear: string;
   };
-  const [arrayOfPreviousYear, setArrayOfPreviousYear] = useState<
-    UserForm1Values[]
+  const [arrayOfPublications, setArrayOfPublications] = useState<
+    PublicationValues[]
   >([]);
-  const [evaluation, setEvaluation] = useState<UserForm2Values[]>([]);
+  const [arrayOfBooks, setArrayOfBooks] = useState<BookValues[]>([]);
   const router = useRouter();
   if (props.user === undefined) {
     router.push("/login");
@@ -56,65 +54,22 @@ const FormDetails = (props: Props) => {
   const onSubmit = async () => {
     console.log("hello");
 
-    console.log(arrayOfPreviousYear);
-    const hasCurrentYearEntry = arrayOfPreviousYear.some(
-      (entry) => entry.previousYear === "Current"
-    );
-
-    // Check if there is at least one entry for the previous year
-    const hasPreviousYearEntry = arrayOfPreviousYear.some(
-      (entry) => entry.previousYear === "Previous"
-    );
-    if (hasCurrentYearEntry && hasPreviousYearEntry) {
-      setLoading(true);
-      // updateUserDetails(formData)
-      //   .then(({ message, user }) => {
-      //     update(user);
-      //     toast({
-      //       title: "Updated successfully",
-      //       description: "User updated successfully now you can go to Next Step",
-      //     });
-      //     router.refresh();
-      //   })
-      //   .catch((res) => {
-      //     res.toast({
-      //       title: res.message,
-      //       description: "Something went wrong",
-      //       variant: "destructive",
-      //     });
-      //   })
-      //   .finally(() => {
-      setLoading(false);
-      // });
-    } else {
-      if (hasCurrentYearEntry) {
-        toast({
-          title: "Add Entry",
-          description: "Add minimum one entry of current Year",
-        });
-      } else {
-        toast({
-          title: "Add Entry",
-          description: "Add minimum one entry of current Year",
-        });
-      }
-      return;
-    }
+    console.log(arrayOfPublications);
   };
   const deleteFromArray = async (i: number) => {
     // Make sure the index is within the valid range of the array
-    if (i < 0 || i >= arrayOfPreviousYear.length) {
+    if (i < 0 || i >= arrayOfPublications.length) {
       return;
     }
 
     // Clone the original array to avoid mutating it directly
-    const newArray = [...arrayOfPreviousYear];
+    const newArray = [...arrayOfPublications];
 
     // Remove the element at index i from the cloned array
     const deletedItem = newArray.splice(i, 1)[0];
 
     // Update the state with the new array (if you're using React)
-    setArrayOfPreviousYear(newArray);
+    setArrayOfPublications(newArray);
 
     // Check if the deleted item has an 'id' property and perform an API delete
     if (deletedItem && deletedItem.id) {
@@ -122,7 +77,7 @@ const FormDetails = (props: Props) => {
       try {
         // Assuming you have a function called 'deleteFamilyItem' that makes the API call
         // let res = await deleteFamilyItem(deletedItem);
-        // update({ data: arrayOfPreviousYear });
+        // update({ data: arrayOfPublications });
         // if (res?.user) {
         //   // Show a success toast when the item is successfully deleted
         //   toast({
@@ -154,7 +109,7 @@ const FormDetails = (props: Props) => {
 
   return (
     <div className="flex-col flex items-center">
-      <MiniForm arrayOfPreviousYear={setArrayOfPreviousYear} />
+      <MiniForm arrayOfPublications={setArrayOfPublications} />
       <div className="rounded-lg w-full overflow-auto mb-10">
         <Table>
           <TableCaption>
@@ -163,27 +118,29 @@ const FormDetails = (props: Props) => {
           </TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-left">Name</TableHead>
-              <TableHead className="text-left">Term</TableHead>
-              <TableHead className="text-left">Year</TableHead>
-              <TableHead className="text-left">Result</TableHead>
+              <TableHead className="text-left">Paper Title</TableHead>
+              <TableHead className="text-left">Paper Level</TableHead>
+              <TableHead className="text-left">Name Of journal</TableHead>
+              <TableHead className="text-left">ISSN No.</TableHead>
+              <TableHead className="text-left">indexed in</TableHead>
               <TableHead className="text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {arrayOfPreviousYear?.map((e, i) => {
+            {arrayOfPublications?.map((e, i) => {
               return (
                 <TableRow key={i}>
                   <TableCell className="font-medium text-left">
+                    {e.paperTitle}
+                  </TableCell>
+                  <TableCell className="font-medium text-left">
+                    {e.level}
+                  </TableCell>
+                  <TableCell className="font-medium text-left">
                     {e.name}
                   </TableCell>
-                  <TableCell className="font-medium text-left">
-                    {e.term}
-                  </TableCell>
-                  <TableCell className="font-medium text-left">
-                    {e.previousYear}
-                  </TableCell>
-                  <TableCell className="text-left">{e.result}%</TableCell>
+                  <TableCell className="text-left">{e.issnNo}</TableCell>
+                  <TableCell className="text-left">{e.indexedIn}</TableCell>
                   <TableCell className="text-center">
                     <Button
                       variant={"ghost"}
@@ -200,11 +157,11 @@ const FormDetails = (props: Props) => {
           </TableBody>
         </Table>
       </div>
-      <div className="w-full p-4">
+      <div className="w-full my-4">
         <CardTitle>Academic-Evaluation</CardTitle>
         <CardDescription>Average-Feedback</CardDescription>
       </div>
-      <MiniForm2 setEvaluation={setEvaluation} />
+      <MiniForm2 setArrayOfBooks={setArrayOfBooks} />
       <div className="rounded-lg w-full overflow-auto">
         <Table>
           <TableCaption>
@@ -213,36 +170,34 @@ const FormDetails = (props: Props) => {
           </TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-left">
-                Student Feedback term I
+              <TableHead className="text-left">Title</TableHead>
+              <TableHead className="text-left">Title with page No</TableHead>
+              <TableHead className="text-left">ISSBN No</TableHead>
+              <TableHead className="text-center">
+                Published Month and year
               </TableHead>
-              <TableHead className="text-left">
-                Student Feedback term II
-              </TableHead>
-              <TableHead className="text-left">Peer Feedback term I</TableHead>
-              <TableHead className="text-left">Peer Feedback term II</TableHead>
-              <TableHead className="text-center">Average</TableHead>
+              <TableHead className="text-left">Co-Authors</TableHead>
               <TableHead className="text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {evaluation?.map((e, i) => {
+            {arrayOfBooks?.map((e, i) => {
               return (
                 <TableRow key={i}>
                   <TableCell className="font-medium text-left">
-                    {e.averageStudentFeedbackScoreTermI}
+                    {e.title}
                   </TableCell>
                   <TableCell className="font-medium text-left">
-                    {e.averageStudentFeedbackScoreTermII}
+                    {e.titleWithPageNo}
                   </TableCell>
                   <TableCell className="font-medium text-left">
-                    {e.averagePeerFeedbackScoreTermI}
+                    {e.isbnNo}
                   </TableCell>
                   <TableCell className="text-left">
-                    {e.averagePeerFeedbackScoreTermII}%
+                    {e.publishedMonthAndYear}%
                   </TableCell>
                   <TableCell className="text-left">
-                    {e.averagePeerStudentFeedback}%
+                    {e.detailOfCoAuthors}%
                   </TableCell>
                   <TableCell className="text-center">
                     <Button
@@ -263,7 +218,7 @@ const FormDetails = (props: Props) => {
 
       <Button
         onClick={onSubmit}
-        disabled={!(arrayOfPreviousYear.length > 0)}
+        disabled={!(arrayOfPublications.length > 0)}
         className="m-10 text-center w-fit"
       >
         Save Changes
@@ -272,4 +227,4 @@ const FormDetails = (props: Props) => {
   );
 };
 
-export default FormDetails;
+export default PublicationForm;
