@@ -60,7 +60,7 @@ const Page = async (props: Props) => {
           ? true
           : false,
       formStep: "Organized program-details",
-      href: `/performance//${existingPerformance?.id}`,
+      href: `/performance//${existingPerformance?.id}/program-organized`,
     },
     {
       status:

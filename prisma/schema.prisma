@@ -56,15 +56,15 @@ model User {
 
 model Performance {
   id                         String                        @id @default(cuid())
-  departmentName             String
-  facultyName                String
-  phdDuringPeriod            String
-  teachingAndLearning        AverageResult[] //later
-  studentFeedback            StudentFeedback? //later
-  peerFeedback               PeerFeedback? //later
   effectiveCurriculamEfforts String[]
-  publications               PublicationAndJournal[]
-  booksArticleChpter         BookArticleChapterPublished[]
+  departmentName             String //done
+  facultyName                String //done
+  phdDuringPeriod            String //done
+  teachingAndLearning        AverageResult[] //done
+  studentFeedback            StudentFeedback? //done
+  peerFeedback               PeerFeedback? //done
+  publications               PublicationAndJournal[] //done
+  booksArticleChpter         BookArticleChapterPublished[] //done
   programsOrganized          ProgramsOrganized[]
   programsAttended           ProgramAttended[]
   sponsoredResearch          SponsoredResearch[]
@@ -159,6 +159,8 @@ model ProgramsOrganized {
   id            String       @id @default(cuid())
   title         String
   duration      String
+  place         String
+  organizerName String
   Performance   Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId String
 }
@@ -166,9 +168,7 @@ model ProgramsOrganized {
 model ProgramAttended {
   id            String       @id @default(cuid())
   title         String
-  place         String
   duration      String
-  organizer     String
   Performance   Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId String
 }
