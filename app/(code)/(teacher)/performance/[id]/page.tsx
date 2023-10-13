@@ -52,61 +52,39 @@ const Page = async (props: Props) => {
           ? true
           : false,
       formStep: "Publication-details",
-      href: `/performance//${existingPerformance?.id}/publication`,
+      href: `/performance/${existingPerformance?.id}/publication`,
     },
     {
       status:
         (existingPerformance?.programsOrganized?.length as number) >= 2
           ? true
           : false,
-      formStep: "Organized program-details",
-      href: `/performance//${existingPerformance?.id}/program-organized`,
+      formStep: "Program-details",
+      href: `/performance/${existingPerformance?.id}/program`,
+    },
+    {
+      status:
+        (existingPerformance?.programsOrganized?.length as number) >= 2
+          ? true
+          : false,
+      formStep: "Personal Evaluation",
+      href: `/performance/${existingPerformance?.id}/evaluation`,
     },
     {
       status:
         (existingPerformance?.programsAttended?.length as number) >= 2
           ? true
           : false,
-      formStep: "Attended program-details",
-      href: `/performance//${existingPerformance?.id}`,
+      formStep: "Intelectual property rights",
+      href: `/performance/${existingPerformance?.id}/property-rights`,
     },
     {
       status:
-        (existingPerformance?.sponsoredResearch?.length as number) >= 2
+        (existingPerformance?.programsAttended?.length as number) >= 2
           ? true
           : false,
-      formStep: "Sposored research-details",
-      href: `/performance//${existingPerformance?.id}`,
-    },
-    {
-      status:
-        (existingPerformance?.consultancyServices?.length as number) >= 2
-          ? true
-          : false,
-      formStep: "Consultancy service-details",
-      href: `/performance//${existingPerformance?.id}`,
-    },
-    {
-      status:
-        (existingPerformance?.intellectualPropertyRights?.length as number) >= 2
-          ? true
-          : false,
-      formStep: "Inteleactual property-details",
-      href: `/performance//${existingPerformance?.id}`,
-    },
-    {
-      status:
-        (existingPerformance?.examinationDuties?.length as number) >= 2
-          ? true
-          : false,
-      formStep: "examination duties-details",
-      href: `/performance//${existingPerformance?.id}`,
-    },
-    {
-      status:
-        (existingPerformance?.activities?.length as number) >= 2 ? true : false,
-      formStep: "Extra activities-details",
-      href: `/performance//${existingPerformance?.id}`,
+      formStep: "College Envolvement",
+      href: `/performance/${existingPerformance?.id}/envolvement`,
     },
   ];
 
