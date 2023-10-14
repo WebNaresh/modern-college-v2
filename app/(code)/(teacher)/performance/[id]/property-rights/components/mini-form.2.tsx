@@ -8,6 +8,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,16 +24,21 @@ import { MdAdd } from "react-icons/md";
 import { z } from "zod";
 
 type Props = {
-  setArrayOfBooks: React.Dispatch<React.SetStateAction<UserForm1Values[]>>;
+  setArrayOfExaminationDuties: React.Dispatch<
+    React.SetStateAction<UserForm1Values[]>
+  >;
 };
 type UserForm1Values = z.infer<typeof formSchema>;
 
 const formSchema = z.object({
-  title: z.string().min(1),
-  titleWithPageNo: z.string().min(1),
-  isbnNo: z.number().min(0),
-  detailOfCoAuthors: z.string().min(1),
-  publishedMonthAndYear: z.string().min(1),
+  // title: z.string().min(1),
+  // titleWithPageNo: z.string().min(1),
+  // isbnNo: z.number().min(0),
+  // detailOfCoAuthors: z.string().min(1),
+  // publishedMonthAndYear: z.string().min(1),
+  invigilation: z.enum(["University", "Institute"]),
+  evaluation: z.enum(["University", "Institute"]),
+  questionpaper: z.enum(["University", "Institute"]),
 });
 
 const MiniForm2 = (props: Props) => {
@@ -34,19 +46,20 @@ const MiniForm2 = (props: Props) => {
 
   const form = useForm<UserForm1Values>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      titleWithPageNo: "",
-      isbnNo: undefined,
-      detailOfCoAuthors: "",
-      publishedMonthAndYear: "",
-    },
+    // ,
+    // defaultValues: {
+    //   evaluation: "",
+    //   invigilation: "",
+    //   isbnNo: undefined,
+    //   detailOfCoAuthors: "",
+    //   publishedMonthAndYear: "",
+    // },
   });
   const onSubmit = async (formData: UserForm1Values) => {
     console.log(`🚀 ~ formData:`, formData);
     // formData.result =
     //   (formData.noOfClassesConducted / formData.noOfAllotedHour) * 100;
-    props.setArrayOfBooks((prevArray) => [...prevArray, formData]);
+    props.setArrayOfExaminationDuties((prevArray) => [...prevArray, formData]);
     // form.reset();
   };
   return (
@@ -57,7 +70,7 @@ const MiniForm2 = (props: Props) => {
           className="grid place-items-center w-full"
         >
           <div className=" flex flex-col md:grid md:grid-cols-2 place-items-center w-full gap-x-4 gap-y-4">
-            <FormField
+            {/* <FormField
               control={form.control}
               name={"title"}
               render={({ field }) => {
@@ -137,6 +150,90 @@ const MiniForm2 = (props: Props) => {
                     <FormLabel>Detail of Co-Authors</FormLabel>
                     <FormControl>
                       <Textarea {...field} placeholder="Co-Authors" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          </div> */}
+
+            <FormField
+              control={form.control}
+              name={"invigilation"}
+              render={({ field }) => {
+                return (
+                  <FormItem className="w-full">
+                    <FormLabel>
+                      Invigilation, flying squad duties, exam duties
+                    </FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger className="">
+                          <SelectValue placeholder="Assigned by" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="University">University</SelectItem>
+                          <SelectItem value="Institute">Institute</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+
+            <FormField
+              control={form.control}
+              name={"evaluation"}
+              render={({ field }) => {
+                return (
+                  <FormItem className="w-full">
+                    <FormLabel>Evaluation of Answer Scripts</FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger className="">
+                          <SelectValue placeholder="Assigned by" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="University">University</SelectItem>
+                          <SelectItem value="Institute">Institute</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+
+            <FormField
+              control={form.control}
+              name={"questionpaper"}
+              render={({ field }) => {
+                return (
+                  <FormItem className="w-full">
+                    <FormLabel>Question Paper Setting</FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger className="">
+                          <SelectValue placeholder="Assigned by" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="University">University</SelectItem>
+                          <SelectItem value="Institute">Institute</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
