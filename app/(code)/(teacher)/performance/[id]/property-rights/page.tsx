@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
-import PublicationForm from "./components/form";
+import PropertyRightForm from "./components/form";
 
 type Props = {};
 
@@ -20,11 +20,11 @@ const page = async (props: Props) => {
     <div className="px-4">
       <Card className="w-full px-4 my-4">
         <CardHeader>
-          <CardTitle>Publications</CardTitle>
-          <CardDescription>Faculty Performance Evaluation</CardDescription>
+          <CardTitle>Intellectual Property Rights</CardTitle>
+          <CardDescription>Patents</CardDescription>
         </CardHeader>
         <CardContent>
-          <PublicationForm user={data} />
+          <PropertyRightForm user={data} />
         </CardContent>
       </Card>
     </div>

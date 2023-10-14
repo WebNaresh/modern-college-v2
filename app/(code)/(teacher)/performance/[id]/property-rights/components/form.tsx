@@ -18,44 +18,65 @@ import { useState } from "react";
 import { MdDelete } from "react-icons/md";
 import MiniForm from "./mini-form";
 import MiniForm2 from "./mini-form.2";
+import { format } from "date-fns";
 
 type Props = {
   user: Session;
 };
-const PublicationForm = (props: Props) => {
-  type PublicationValues = {
+const PropertyRightForm = (props: Props) => {
+  type PropertyRightValues = {
     id?: string;
-    paperTitle: string;
-    level: "State" | "Local" | "International" | "National";
-    name: string;
-    issnNo: number;
-    isMainAuthor: boolean;
-    indexedIn: string;
+    status: "Applied" | "Not Applied";
+    dateofpatent: Date;
+    isCommetcialiazed: boolean;
+    // indexedIn: string;
   };
   type BookValues = {
     id?: string;
-    title: string;
-    titleWithPageNo: string;
-    isbnNo: number;
-    detailOfCoAuthors: string;
-    publishedMonthAndYear: string;
+    invigilation: "University" | "Institute";
+    evaluation: "University" | "Institute";
+    questionpaper: "University" | "Institute";
+    // titleWithPageNo: string;
+    // isbnNo: number;
+    // detailOfCoAuthors: string;
+    // publishedMonthAndYear: string;
   };
+  // Publication Array
   const [arrayOfPublications, setArrayOfPublications] = useState<
-    PublicationValues[]
+    PropertyRightValues[]
   >([]);
-  const [arrayOfBooks, setArrayOfBooks] = useState<BookValues[]>([]);
+
+  // CopyRights Array
+  const [arrayOfCopyRights, setArrayOfCopyRights] = useState<
+    PropertyRightValues[]
+  >([]);
+
+  // TradeMark Array
+  const [arrayOfTradeMark, setArrayOfTradeMark] = useState<
+    PropertyRightValues[]
+  >([]);
+
+  const [arrayOfExaminationDuties, setArrayOfExaminationDuties] = useState<
+    BookValues[]
+  >([]);
+
   const router = useRouter();
   if (props.user === undefined) {
     router.push("/login");
   }
 
   const { toast } = useToast();
+
   const { loading, setLoading } = useStore();
   const onSubmit = async () => {
     console.log("hello");
 
     console.log(arrayOfPublications);
+    console.log(arrayOfCopyRights);
+    console.log(arrayOfTradeMark);
+    console.log(arrayOfExaminationDuties);
   };
+
   const deleteFromArray = async (i: number) => {
     // Make sure the index is within the valid range of the array
     if (i < 0 || i >= arrayOfPublications.length) {
@@ -107,22 +128,124 @@ const PublicationForm = (props: Props) => {
     }
   };
 
+  // TODO Delete for copyrights from
+  const deleteFromCopyRightsArray = async (i: number) => {
+    // Make sure the index is within the valid range of the array
+    if (i < 0 || i >= arrayOfCopyRights.length) {
+      return;
+    }
+
+    // Clone the original array to avoid mutating it directly
+    const newCopyRightsArray = [...arrayOfCopyRights];
+
+    // Remove the element at index i from the cloned array
+    const deletedCopyRightsItem = newCopyRightsArray.splice(i, 1)[0];
+
+    // Update the state with the new array (if you're using React)
+    setArrayOfCopyRights(newCopyRightsArray);
+
+    // Check if the deleted item has an 'id' property and perform an API delete
+    if (deletedCopyRightsItem && deletedCopyRightsItem.id) {
+      setLoading(true);
+      try {
+        // Assuming you have a function called 'deleteFamilyItem' that makes the API call
+        // let res = await deleteFamilyItem(deletedItem);
+        // update({ data: arrayOfPublications });
+        // if (res?.user) {
+        //   // Show a success toast when the item is successfully deleted
+        //   toast({
+        //     title: "Success!",
+        //     description: "Item deleted successfully.",
+        //   });
+        // } else {
+        //   // Show an error toast when the delete operation fails
+        //   toast({
+        //     title: "Error!",
+        //     description: "Failed to delete item. Please try again later.",
+        //     variant: "destructive", // Use "destructive" variant for error messages
+        //   });
+        // }
+      } catch (error) {
+        // Handle the error appropriately
+
+        // Show an error toast when the delete operation fails
+        toast({
+          title: "Error!",
+          description: "Failed to delete item. Please try again later.",
+          variant: "destructive", // Use "destructive" variant for error messages
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  // TODO Delete for copyrights from
+  const deleteFromTradeMarkArray = async (i: number) => {
+    // Make sure the index is within the valid range of the array
+    if (i < 0 || i >= arrayOfTradeMark.length) {
+      return;
+    }
+
+    // Clone the original array to avoid mutating it directly
+    const newTradeMarkArray = [...arrayOfTradeMark];
+
+    // Remove the element at index i from the cloned array
+    const deletedTradeMarkItem = newTradeMarkArray.splice(i, 1)[0];
+
+    // Update the state with the new array (if you're using React)
+    setArrayOfTradeMark(newTradeMarkArray);
+
+    // Check if the deleted item has an 'id' property and perform an API delete
+    if (deletedTradeMarkItem && deletedTradeMarkItem.id) {
+      setLoading(true);
+      try {
+        // Assuming you have a function called 'deleteFamilyItem' that makes the API call
+        // let res = await deleteFamilyItem(deletedItem);
+        // update({ data: arrayOfPublications });
+        // if (res?.user) {
+        //   // Show a success toast when the item is successfully deleted
+        //   toast({
+        //     title: "Success!",
+        //     description: "Item deleted successfully.",
+        //   });
+        // } else {
+        //   // Show an error toast when the delete operation fails
+        //   toast({
+        //     title: "Error!",
+        //     description: "Failed to delete item. Please try again later.",
+        //     variant: "destructive", // Use "destructive" variant for error messages
+        //   });
+        // }
+      } catch (error) {
+        // Handle the error appropriately
+
+        // Show an error toast when the delete operation fails
+        toast({
+          title: "Error!",
+          description: "Failed to delete item. Please try again later.",
+          variant: "destructive", // Use "destructive" variant for error messages
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   return (
     <div className="flex-col flex items-center">
       <MiniForm arrayOfPublications={setArrayOfPublications} />
       <div className="rounded-lg w-full overflow-auto mb-10">
         <Table>
-          <TableCaption>
+          {/* <TableCaption>
             Minimum 1 subject of current Year and 1 subject of previous Year
             Cumplsory
-          </TableCaption>
+          </TableCaption> */}
           <TableHeader>
             <TableRow>
-              <TableHead className="text-left">Paper Title</TableHead>
-              <TableHead className="text-left">Paper Level</TableHead>
-              <TableHead className="text-left">Name Of journal</TableHead>
-              <TableHead className="text-left">ISSN No.</TableHead>
-              <TableHead className="text-left">indexed in</TableHead>
+              <TableHead className="text-left">Sr No .</TableHead>
+              <TableHead className="text-left">Status</TableHead>
+              <TableHead className="text-left">Commetcialiazed</TableHead>
               <TableHead className="text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -131,16 +254,14 @@ const PublicationForm = (props: Props) => {
               return (
                 <TableRow key={i}>
                   <TableCell className="font-medium text-left">
-                    {e.paperTitle}
+                    {i + 1}
                   </TableCell>
                   <TableCell className="font-medium text-left">
-                    {e.level}
+                    {e.status}
                   </TableCell>
                   <TableCell className="font-medium text-left">
-                    {e.name}
+                    {format(new Date(e.dateofpatent), "PPP")}
                   </TableCell>
-                  <TableCell className="text-left">{e.issnNo}</TableCell>
-                  <TableCell className="text-left">{e.indexedIn}</TableCell>
                   <TableCell className="text-center">
                     <Button
                       variant={"ghost"}
@@ -158,53 +279,43 @@ const PublicationForm = (props: Props) => {
         </Table>
       </div>
       <div className="w-full my-4">
-        <CardTitle>Book-Publication</CardTitle>
-        <CardDescription>Faculty Performance Evaluation </CardDescription>
+        <CardTitle>Copyrights</CardTitle>
+        {/* <CardDescription>Faculty Performance Evaluation </CardDescription> */}
       </div>
-      <MiniForm2 setArrayOfBooks={setArrayOfBooks} />
-      <div className="rounded-lg w-full overflow-auto">
+      <MiniForm arrayOfPublications={setArrayOfCopyRights} />
+      <div className="rounded-lg w-full overflow-auto mb-10">
         <Table>
-          <TableCaption>
+          {/* <TableCaption>
             Minimum 1 subject of current Year and 1 subject of previous Year
             Cumplsory
-          </TableCaption>
+          </TableCaption> */}
           <TableHeader>
             <TableRow>
-              <TableHead className="text-left">Title</TableHead>
-              <TableHead className="text-left">Title with page No</TableHead>
-              <TableHead className="text-left">ISSBN No</TableHead>
-              <TableHead className="text-center">
-                Published Month and year
-              </TableHead>
-              <TableHead className="text-left">Co-Authors</TableHead>
+              <TableHead className="text-left">Sr No .</TableHead>
+              <TableHead className="text-left">Status</TableHead>
+              <TableHead className="text-left">Commetcialiazed</TableHead>
               <TableHead className="text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {arrayOfBooks?.map((e, i) => {
+            {arrayOfCopyRights?.map((e, i) => {
               return (
                 <TableRow key={i}>
                   <TableCell className="font-medium text-left">
-                    {e.title}
+                    {i + 1}
                   </TableCell>
                   <TableCell className="font-medium text-left">
-                    {e.titleWithPageNo}
+                    {e.status}
                   </TableCell>
                   <TableCell className="font-medium text-left">
-                    {e.isbnNo}
-                  </TableCell>
-                  <TableCell className="text-left">
-                    {e.publishedMonthAndYear}%
-                  </TableCell>
-                  <TableCell className="text-left">
-                    {e.detailOfCoAuthors}%
+                    {format(new Date(e.dateofpatent), "PPP")}
                   </TableCell>
                   <TableCell className="text-center">
                     <Button
                       variant={"ghost"}
                       type="button"
                       size={"icon"}
-                      onClick={() => deleteFromArray(i)}
+                      onClick={() => deleteFromCopyRightsArray(i)}
                     >
                       <MdDelete className="text-lg" />
                     </Button>
@@ -216,6 +327,57 @@ const PublicationForm = (props: Props) => {
         </Table>
       </div>
 
+      <div className="w-full my-4">
+        <CardTitle>Trademarks</CardTitle>
+        {/* <CardDescription>Faculty Performance Evaluation </CardDescription> */}
+      </div>
+      <MiniForm arrayOfPublications={setArrayOfTradeMark} />
+      <div className="rounded-lg w-full overflow-auto mb-10">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-left">Sr No .</TableHead>
+              <TableHead className="text-left">Status</TableHead>
+              <TableHead className="text-left">Commetcialiazed</TableHead>
+              <TableHead className="text-center">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {arrayOfTradeMark?.map((e, i) => {
+              return (
+                <TableRow key={i}>
+                  <TableCell className="font-medium text-left">
+                    {i + 1}
+                  </TableCell>
+                  <TableCell className="font-medium text-left">
+                    {e.status}
+                  </TableCell>
+                  <TableCell className="font-medium text-left">
+                    {format(new Date(e.dateofpatent), "PPP")}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Button
+                      variant={"ghost"}
+                      type="button"
+                      size={"icon"}
+                      onClick={() => deleteFromTradeMarkArray(i)}
+                    >
+                      <MdDelete className="text-lg" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+
+      <div className="w-full my-4">
+        <CardTitle>Examination Duties Assigned & Performed </CardTitle>
+        {/* <CardDescription>Faculty Performance Evaluation </CardDescription> */}
+      </div>
+
+      <MiniForm2 setArrayOfExaminationDuties={setArrayOfExaminationDuties} />
       <Button
         onClick={onSubmit}
         disabled={!(arrayOfPublications.length > 0)}
@@ -227,4 +389,4 @@ const PublicationForm = (props: Props) => {
   );
 };
 
-export default PublicationForm;
+export default PropertyRightForm;
