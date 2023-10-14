@@ -1,10 +1,9 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { CardDescription, CardTitle } from "@/components/ui/card";
+import { CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -12,13 +11,13 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import useStore from "@/hooks/loader-hook";
+import { format } from "date-fns";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { MdDelete } from "react-icons/md";
 import MiniForm from "./mini-form";
 import MiniForm2 from "./mini-form.2";
-import { format } from "date-fns";
 
 type Props = {
   user: Session;
@@ -36,10 +35,6 @@ const PropertyRightForm = (props: Props) => {
     invigilation: "University" | "Institute";
     evaluation: "University" | "Institute";
     questionpaper: "University" | "Institute";
-    // titleWithPageNo: string;
-    // isbnNo: number;
-    // detailOfCoAuthors: string;
-    // publishedMonthAndYear: string;
   };
   // Publication Array
   const [arrayOfPublications, setArrayOfPublications] = useState<
@@ -92,7 +87,7 @@ const PropertyRightForm = (props: Props) => {
     // Update the state with the new array (if you're using React)
     setArrayOfPublications(newArray);
 
-    // Check if the deleted item has an 'id' property and perform an API delete
+    // Check if the deleted item has an 'id' property and pCerform an API delete
     if (deletedItem && deletedItem.id) {
       setLoading(true);
       try {
@@ -237,15 +232,11 @@ const PropertyRightForm = (props: Props) => {
       <MiniForm arrayOfPublications={setArrayOfPublications} />
       <div className="rounded-lg w-full overflow-auto mb-10">
         <Table>
-          {/* <TableCaption>
-            Minimum 1 subject of current Year and 1 subject of previous Year
-            Cumplsory
-          </TableCaption> */}
           <TableHeader>
             <TableRow>
               <TableHead className="text-left">Sr No .</TableHead>
               <TableHead className="text-left">Status</TableHead>
-              <TableHead className="text-left">Commetcialiazed</TableHead>
+              <TableHead className="text-left">Date</TableHead>
               <TableHead className="text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -293,7 +284,7 @@ const PropertyRightForm = (props: Props) => {
             <TableRow>
               <TableHead className="text-left">Sr No .</TableHead>
               <TableHead className="text-left">Status</TableHead>
-              <TableHead className="text-left">Commetcialiazed</TableHead>
+              <TableHead className="text-left">Date</TableHead>
               <TableHead className="text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -373,7 +364,9 @@ const PropertyRightForm = (props: Props) => {
       </div>
 
       <div className="w-full my-4">
-        <CardTitle>Examination Duties Assigned & Performed </CardTitle>
+        <CardTitle className="text-muted">
+          Examination Duties Assigned & Performed{" "}
+        </CardTitle>
         {/* <CardDescription>Faculty Performance Evaluation </CardDescription> */}
       </div>
 

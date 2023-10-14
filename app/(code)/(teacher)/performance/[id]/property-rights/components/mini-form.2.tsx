@@ -15,8 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -31,11 +29,6 @@ type Props = {
 type UserForm1Values = z.infer<typeof formSchema>;
 
 const formSchema = z.object({
-  // title: z.string().min(1),
-  // titleWithPageNo: z.string().min(1),
-  // isbnNo: z.number().min(0),
-  // detailOfCoAuthors: z.string().min(1),
-  // publishedMonthAndYear: z.string().min(1),
   invigilation: z.enum(["University", "Institute"]),
   evaluation: z.enum(["University", "Institute"]),
   questionpaper: z.enum(["University", "Institute"]),
@@ -46,14 +39,12 @@ const MiniForm2 = (props: Props) => {
 
   const form = useForm<UserForm1Values>({
     resolver: zodResolver(formSchema),
-    // ,
-    // defaultValues: {
-    //   evaluation: "",
-    //   invigilation: "",
-    //   isbnNo: undefined,
-    //   detailOfCoAuthors: "",
-    //   publishedMonthAndYear: "",
-    // },
+
+    defaultValues: {
+      invigilation: undefined,
+      evaluation: undefined,
+      questionpaper: undefined,
+    },
   });
   const onSubmit = async (formData: UserForm1Values) => {
     console.log(`🚀 ~ formData:`, formData);
@@ -70,94 +61,6 @@ const MiniForm2 = (props: Props) => {
           className="grid place-items-center w-full"
         >
           <div className=" flex flex-col md:grid md:grid-cols-2 place-items-center w-full gap-x-4 gap-y-4">
-            {/* <FormField
-              control={form.control}
-              name={"title"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>Book title</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="w-full"
-                        disabled={loading}
-                        placeholder="Title"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name={"titleWithPageNo"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>Title with Page No</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="description" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name={"isbnNo"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>ISBN Number</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          form.setValue("isbnNo", parseInt(e.target.value));
-                        }}
-                        placeholder="Enter 13 digit ISSN No"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name={"publishedMonthAndYear"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>Published Month and Year</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="June 2002" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name={"detailOfCoAuthors"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>Detail of Co-Authors</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} placeholder="Co-Authors" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-          </div> */}
-
             <FormField
               control={form.control}
               name={"invigilation"}
@@ -173,7 +76,7 @@ const MiniForm2 = (props: Props) => {
                         defaultValue={field.value}
                       >
                         <SelectTrigger className="">
-                          <SelectValue placeholder="Assigned by" />
+                          <SelectValue placeholder="University / Insitute" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="University">University</SelectItem>
@@ -200,7 +103,7 @@ const MiniForm2 = (props: Props) => {
                         defaultValue={field.value}
                       >
                         <SelectTrigger className="">
-                          <SelectValue placeholder="Assigned by" />
+                          <SelectValue placeholder="University / Insitute" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="University">University</SelectItem>
@@ -227,7 +130,7 @@ const MiniForm2 = (props: Props) => {
                         defaultValue={field.value}
                       >
                         <SelectTrigger className="">
-                          <SelectValue placeholder="Assigned by" />
+                          <SelectValue placeholder="University / Insitute" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="University">University</SelectItem>

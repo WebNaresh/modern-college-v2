@@ -14,11 +14,11 @@ const Actions = (props: Props) => {
   const router = useRouter();
 
   return (
-    <Button variant="ghost" className="h-8 w-8 p-0 ">
-      <Link href={props.formStep.href as string}>
+    <Link href={props.formStep.href as string}>
+      <Button variant="ghost" className="h-8 w-8 p-0 ">
         <FiExternalLink className="h-4 w-4 text-primary" />
-      </Link>
-    </Button>
+      </Button>
+    </Link>
   );
 };
 

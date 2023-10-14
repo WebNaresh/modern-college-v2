@@ -1,5 +1,4 @@
 "use client";
-import { DatePickerForm } from "@/components/Calendar/page";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,7 +10,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
@@ -28,7 +26,6 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { MdAdd } from "react-icons/md";
 import { z } from "zod";
@@ -41,26 +38,18 @@ type Props = {
 type PropertyRightValues = z.infer<typeof formSchema>;
 
 const formSchema = z.object({
-  // paperTitle: z.string().min(1),
   status: z.enum(["Applied", "Not Applied"]),
   dateofpatent: z.date(),
-  // name: z.string().min(1),
-  // issnNo: z.number(),
   isCommetcialiazed: z.boolean(),
-  // indexedIn: z.string().min(1),
 });
 
 const MiniForm = (props: Props) => {
-  const [loading, setLoading] = useState(false);
   const form = useForm<PropertyRightValues>({
     resolver: zodResolver(formSchema),
 
     defaultValues: {
       isCommetcialiazed: false,
-      status: "Applied",
-      // paperTitle: "",
-      // name: "",
-      // indexedIn: "",
+      status: undefined,
     },
   });
 
@@ -68,10 +57,6 @@ const MiniForm = (props: Props) => {
     props.arrayOfPublications((prevArray) => [...prevArray, formData]);
 
     console.log(props.arrayOfPublications);
-
-    // formData.result =
-    //   (formData.noOfClassesConducted / formData.noOfAllotedHour) * 100;
-    // form.reset();
   };
   return (
     <>
@@ -81,26 +66,6 @@ const MiniForm = (props: Props) => {
           className="grid place-items-center w-full"
         >
           <div className=" flex flex-col md:grid md:grid-cols-2 place-items-center w-full gap-x-4 gap-y-4">
-            {/* <FormField
-              control={form.control}
-              name={"paperTitle"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>Status</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="w-full"
-                        disabled={loading}
-                        placeholder="Title"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            /> */}
             <FormField
               control={form.control}
               name={"status"}
@@ -130,67 +95,12 @@ const MiniForm = (props: Props) => {
               }}
             />
 
-            {/* <FormField
-              control={form.control}
-              name={"name"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>Name of jounal/conference</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Jounal/Conference" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            /> */}
-            {/* <FormField
-              control={form.control}
-              name={"issnNo"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>ISSN Number</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          form.setValue("issnNo", parseInt(e.target.value));
-                        }}
-                        placeholder="Enter 13 digit ISSN No"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            /> */}
-
-            {/* <FormField
-              control={form.control}
-              name={"indexedIn"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>
-                      Indexed in SCI/Scopus/ UGC Care / peer reviewed
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Indexed in" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            /> */}
-
             <FormField
               control={form.control}
               name="dateofpatent"
               render={({ field }) => (
                 <FormItem className="my-4 flex w-full flex-col">
-                  <FormLabel>Date of Joining</FormLabel>
+                  <FormLabel>Date of Awarded / Granted</FormLabel>
                   <Popover modal={true}>
                     <PopoverTrigger
                       type="button"
@@ -200,14 +110,16 @@ const MiniForm = (props: Props) => {
                       <FormControl>
                         <div
                           className={cn(
-                            "w-full pl-3 mt-2 text-left font-normal flex rounded-sm outline-primary border py-[0.30rem] px-2 items-center",
+                            "w-full pl-3 mt-2 text-left font-normal flex rounded-sm outline-primary py-2 border px-2 items-center",
                             !field.value && "text-muted-foreground "
                           )}
                         >
                           {field.value ? (
                             format(field.value as any, "PPP")
                           ) : (
-                            <span>Pick Your Joining Date</span>
+                            <span className="text-xs">
+                              Pick Your Date of Awarded / Granted
+                            </span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </div>

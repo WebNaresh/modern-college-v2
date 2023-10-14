@@ -29,9 +29,9 @@ type Props = {
   user: Session;
   performance: Performance | null;
 };
-const FormDetails = (props: Props) => {
+const FormDetails = ({ user, performance }: Props) => {
   const router = useRouter();
-  if (props.user === undefined) {
+  if (user === undefined) {
     router.push("/login");
   }
 
@@ -40,7 +40,7 @@ const FormDetails = (props: Props) => {
 
   const onSubmit = async (formData: UserForm1Values) => {
     setLoading(true);
-    updateUserDetails({ ...formData, id: props.performance?.id as string })
+    updateUserDetails({ ...formData, id: performance?.id as string })
       .then(({ message, performance }) => {
         toast({
           title: "Updated successfully",
@@ -67,84 +67,85 @@ const FormDetails = (props: Props) => {
   const form = useForm<UserForm1Values>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      facultyName: props.performance?.facultyName || "",
-      departmentName: props.performance?.departmentName || "",
-      phdDuringPeriod: props.performance?.phdDuringPeriod || "",
+      facultyName: performance?.facultyName || "",
+      departmentName: performance?.departmentName || "",
+      phdDuringPeriod: performance?.phdDuringPeriod || "",
     },
   });
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="grid place-items-center w-full "
-      >
-        <div className="grid place-items-center w-full gap-4">
-          <FormField
-            control={form.control}
-            name={"facultyName"}
-            render={({ field }) => {
-              return (
-                <FormItem className="w-full">
-                  <FormLabel>Faculty Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Type facaulty name" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-          <FormField
-            control={form.control}
-            name={"departmentName"}
-            render={({ field }) => {
-              return (
-                <FormItem className="w-full">
-                  <FormLabel>Department Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Type department name" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-          <FormField
-            control={form.control}
-            name={"phdDuringPeriod"}
-            render={({ field }) => {
-              return (
-                <FormItem className="w-full">
-                  <FormLabel>PHD During Period</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Any phd during period" />
-                  </FormControl>
-                  <FormDescription>
-                    Leave Blank if no PHD during period
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-        </div>
-
-        <Button
-          disabled={
-            form.getValues().departmentName ===
-              props.performance?.departmentName &&
-            form.getValues().facultyName === props.performance.facultyName &&
-            form.getValues().phdDuringPeriod ===
-              props?.performance?.phdDuringPeriod
-          }
-          className="m-4"
-          type="submit"
+    <>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="grid place-items-center w-full "
         >
-          Save Changes
-        </Button>
-      </form>
-    </Form>
+          <div className="grid place-items-center w-full gap-4">
+            <FormField
+              control={form.control}
+              name={"facultyName"}
+              render={({ field }) => {
+                return (
+                  <FormItem className="w-full">
+                    <FormLabel>Faculty Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Type facaulty name" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name={"departmentName"}
+              render={({ field }) => {
+                return (
+                  <FormItem className="w-full">
+                    <FormLabel>Department Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Type department name" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+
+            <FormField
+              control={form.control}
+              name={"phdDuringPeriod"}
+              render={({ field }) => {
+                return (
+                  <FormItem className="w-full">
+                    <FormLabel>PHD During Period</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Any phd during period" />
+                    </FormControl>
+                    <FormDescription>
+                      Leave Blank if no PHD during period
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          </div>
+
+          <Button
+            disabled={
+              form.getValues().departmentName === performance?.departmentName &&
+              form.getValues().facultyName === performance.facultyName &&
+              form.getValues().phdDuringPeriod === performance?.phdDuringPeriod
+            }
+            className="m-4"
+            type="submit"
+          >
+            Save Changes
+          </Button>
+        </form>
+      </Form>
+    </>
   );
 };
 

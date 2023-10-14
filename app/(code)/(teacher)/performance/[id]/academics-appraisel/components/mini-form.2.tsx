@@ -1,5 +1,4 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -10,44 +9,44 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Feedback } from "@prisma/client";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FiPercent } from "react-icons/fi";
-import { MdAdd } from "react-icons/md";
 import { z } from "zod";
 
 type Props = {
-  setEvaluation: React.Dispatch<React.SetStateAction<UserForm1Values[]>>;
+  feedback: Feedback | null | undefined;
 };
 type UserForm1Values = z.infer<typeof formSchema>;
 const formSchema = z.object({
-  averageStudentFeedbackScoreTermI: z.number().min(0).max(100),
-  averageStudentFeedbackScoreTermII: z.number().min(0).max(100),
-  averagePeerFeedbackScoreTermI: z.number().min(0).max(100),
-  averagePeerFeedbackScoreTermII: z.number().min(0).max(100),
-  averagePeerStudentFeedback: z.number().min(0).max(100),
+  studentTermICurrentYear: z.number().min(0).max(100),
+  studentTermIIPreviousYear: z.number().min(0).max(100),
+  peerTermICurrentYear: z.number().min(0).max(100),
+  peerTermIIPreviousYear: z.number().min(0).max(100),
+  peerAndStudentFeedback: z.number().min(0).max(100),
 });
 
-const MiniForm2 = (props: Props) => {
+const MiniForm2 = ({ feedback }: Props) => {
   const [loading, setLoading] = useState(false);
 
   const form = useForm<UserForm1Values>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      averageStudentFeedbackScoreTermI: undefined,
-      averageStudentFeedbackScoreTermII: undefined,
-      averagePeerFeedbackScoreTermI: undefined,
-      averagePeerFeedbackScoreTermII: undefined,
-      averagePeerStudentFeedback: undefined,
+      studentTermICurrentYear: feedback?.studentTermICurrentYear,
+      studentTermIIPreviousYear: feedback?.studentTermIIPreviousYear,
+      peerTermICurrentYear: feedback?.peerTermICurrentYear,
+      peerTermIIPreviousYear: feedback?.peerTermIIPreviousYear,
+      peerAndStudentFeedback: feedback?.peerAndStudentFeedback,
     },
   });
   const onSubmit = async (formData: UserForm1Values) => {
     console.log(`🚀 ~ formData:`, formData);
     // formData.result =
     //   (formData.noOfClassesConducted / formData.noOfAllotedHour) * 100;
-    props.setEvaluation((prevArray) => [...prevArray, formData]);
     // form.reset();
   };
+
   return (
     <>
       <Form {...form}>
@@ -58,12 +57,12 @@ const MiniForm2 = (props: Props) => {
           <div className=" flex flex-col md:grid md:grid-cols-2 place-items-center w-full gap-x-4 gap-y-4">
             <FormField
               control={form.control}
-              name={"averageStudentFeedbackScoreTermI"}
+              name={"studentTermICurrentYear"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
                     <FormLabel>
-                      Average Student Feedback score for term-I
+                      Average Student Feedback score for term-I Current Year
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
@@ -74,7 +73,7 @@ const MiniForm2 = (props: Props) => {
                             e: React.ChangeEvent<HTMLInputElement>
                           ) => {
                             form.setValue(
-                              "averageStudentFeedbackScoreTermI",
+                              "studentTermICurrentYear",
                               parseInt(e.target.value)
                             );
                           }}
@@ -92,12 +91,12 @@ const MiniForm2 = (props: Props) => {
             />
             <FormField
               control={form.control}
-              name={"averageStudentFeedbackScoreTermII"}
+              name={"studentTermIIPreviousYear"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
                     <FormLabel>
-                      Average Student Feedback score for term-II
+                      Average Student Feedback score for term-II Previous Year
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
@@ -110,7 +109,7 @@ const MiniForm2 = (props: Props) => {
                             e: React.ChangeEvent<HTMLInputElement>
                           ) => {
                             form.setValue(
-                              "averageStudentFeedbackScoreTermII",
+                              "studentTermIIPreviousYear",
                               parseInt(e.target.value)
                             );
                           }}
@@ -126,12 +125,12 @@ const MiniForm2 = (props: Props) => {
             />
             <FormField
               control={form.control}
-              name={"averagePeerFeedbackScoreTermI"}
+              name={"peerTermICurrentYear"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
                     <FormLabel>
-                      Average Peer Feedback score for term-I
+                      Average Peer Feedback score for term-I Current Year
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
@@ -145,7 +144,7 @@ const MiniForm2 = (props: Props) => {
                             e: React.ChangeEvent<HTMLInputElement>
                           ) => {
                             form.setValue(
-                              "averagePeerFeedbackScoreTermI",
+                              "peerTermICurrentYear",
                               parseInt(e.target.value)
                             );
                           }}
@@ -159,12 +158,12 @@ const MiniForm2 = (props: Props) => {
             />
             <FormField
               control={form.control}
-              name={"averagePeerFeedbackScoreTermII"}
+              name={"peerTermIIPreviousYear"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
                     <FormLabel>
-                      Average Peer Feedback score for term-II
+                      Average Peer Feedback score for term-II Previous Year
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
@@ -178,7 +177,7 @@ const MiniForm2 = (props: Props) => {
                             e: React.ChangeEvent<HTMLInputElement>
                           ) => {
                             form.setValue(
-                              "averagePeerFeedbackScoreTermII",
+                              "peerTermIIPreviousYear",
                               parseInt(e.target.value)
                             );
                           }}
@@ -193,7 +192,7 @@ const MiniForm2 = (props: Props) => {
 
             <FormField
               control={form.control}
-              name={"averagePeerStudentFeedback"}
+              name={"peerAndStudentFeedback"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
@@ -210,7 +209,7 @@ const MiniForm2 = (props: Props) => {
                             e: React.ChangeEvent<HTMLInputElement>
                           ) => {
                             form.setValue(
-                              "averagePeerStudentFeedback",
+                              "peerAndStudentFeedback",
                               parseInt(e.target.value)
                             );
                           }}
@@ -223,13 +222,6 @@ const MiniForm2 = (props: Props) => {
               }}
             />
           </div>
-          <Button
-            variant={"outline"}
-            type="submit"
-            className="m-4 h-14 w-14 rounded-full"
-          >
-            <MdAdd className="text-primary text-2xl" />
-          </Button>
         </form>
       </Form>
     </>

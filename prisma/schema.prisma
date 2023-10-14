@@ -56,13 +56,12 @@ model User {
 
 model Performance {
   id                         String                        @id @default(cuid())
-  effectiveCurriculamEfforts String[]
   departmentName             String //done
   facultyName                String //done
   phdDuringPeriod            String //done
   teachingAndLearning        AverageResult[] //done
-  studentFeedback            StudentFeedback? //done
-  peerFeedback               PeerFeedback? //done
+  feedback                   Feedback? //done
+  effectiveCurriculamEfforts String[]
   publications               PublicationAndJournal[] //done
   booksArticleChpter         BookArticleChapterPublished[] //done
   programsOrganized          ProgramsOrganized[]
@@ -87,7 +86,7 @@ model AverageResult {
   term           Term
   level          Level
   courseHead     CourseHead
-  previouseYear  PreviouseYear
+  previousYear   PreviouseYear
   hoursAlloted   Float
   classConducted Float
   result         Float
@@ -116,20 +115,14 @@ enum PreviouseYear {
   Previous
 }
 
-model StudentFeedback {
-  id                 String      @id @default(cuid())
-  termIIPreviousYear Int
-  termICurrentYear   Int
-  Performance        Performance @relation(fields: [performanceId], references: [id], onDelete: Cascade)
-  performanceId      String      @unique
-}
-
-model PeerFeedback {
-  id                 String      @id @default(cuid())
-  termIIPreviousYear Int
-  termICurrentYear   Int
-  Performance        Performance @relation(fields: [performanceId], references: [id], onDelete: Cascade)
-  performanceId      String      @unique
+model Feedback {
+  studentTermIIPreviousYear Int         @default(0)
+  studentTermICurrentYear   Int         @default(0)
+  peerTermIIPreviousYear    Int         @default(0)
+  peerTermICurrentYear      Int         @default(0)
+  peerAndStudentFeedback    Int         @default(0)
+  Performance               Performance @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  performanceId             String      @unique
 }
 
 model PublicationAndJournal {
