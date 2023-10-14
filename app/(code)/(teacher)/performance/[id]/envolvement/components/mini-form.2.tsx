@@ -9,7 +9,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -17,16 +23,13 @@ import { MdAdd } from "react-icons/md";
 import { z } from "zod";
 
 type Props = {
-  setArrayOfBooks: React.Dispatch<React.SetStateAction<UserForm1Values[]>>;
+  setResponsibility: React.Dispatch<React.SetStateAction<UserForm1Values[]>>;
 };
 type UserForm1Values = z.infer<typeof formSchema>;
 
 const formSchema = z.object({
-  title: z.string().min(1),
-  titleWithPageNo: z.string().min(1),
-  isbnNo: z.number().min(0),
-  detailOfCoAuthors: z.string().min(1),
-  publishedMonthAndYear: z.string().min(1),
+  nature: z.string().min(1),
+  level: z.enum(["Department", "Institute"]),
 });
 
 const MiniForm2 = (props: Props) => {
@@ -35,18 +38,15 @@ const MiniForm2 = (props: Props) => {
   const form = useForm<UserForm1Values>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      titleWithPageNo: "",
-      isbnNo: undefined,
-      detailOfCoAuthors: "",
-      publishedMonthAndYear: "",
+      nature: "",
+      level: undefined,
     },
   });
   const onSubmit = async (formData: UserForm1Values) => {
     console.log(`🚀 ~ formData:`, formData);
     // formData.result =
     //   (formData.noOfClassesConducted / formData.noOfAllotedHour) * 100;
-    props.setArrayOfBooks((prevArray) => [...prevArray, formData]);
+    props.setResponsibility((prevArray) => [...prevArray, formData]);
     // form.reset();
   };
   return (
@@ -59,16 +59,16 @@ const MiniForm2 = (props: Props) => {
           <div className=" flex flex-col md:grid md:grid-cols-2 place-items-center w-full gap-x-4 gap-y-4">
             <FormField
               control={form.control}
-              name={"title"}
+              name={"nature"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>Book title</FormLabel>
+                    <FormLabel>Nature of Work</FormLabel>
                     <FormControl>
                       <Input
                         className="w-full"
                         disabled={loading}
-                        placeholder="Title"
+                        placeholder="Nature"
                         {...field}
                       />
                     </FormControl>
@@ -79,64 +79,27 @@ const MiniForm2 = (props: Props) => {
             />
             <FormField
               control={form.control}
-              name={"titleWithPageNo"}
+              name={"level"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>Title with Page No</FormLabel>
+                    <FormLabel>
+                      {" "}
+                      Extra- curricular/ Co-Curricular Activities{" "}
+                    </FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="description" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name={"isbnNo"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>ISBN Number</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          form.setValue("isbnNo", parseInt(e.target.value));
-                        }}
-                        placeholder="Enter 13 digit ISSN No"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name={"publishedMonthAndYear"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>Published Month and Year</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="June 2002" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name={"detailOfCoAuthors"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>Detail of Co-Authors</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} placeholder="Co-Authors" />
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger className="">
+                          <SelectValue placeholder="Type of Activity" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Department">Department</SelectItem>
+                          <SelectItem value="Institute">Institute</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

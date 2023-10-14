@@ -17,7 +17,7 @@ export const updateTeacherDetails = async ({
     return { message: "user is not authorized", user: null };
   } else {
     try {
-      prisma.personalInfo.upsert({
+      const primsse = await prisma.personalInfo.upsert({
         where: {
           userId: session.user?.id,
         },
@@ -29,7 +29,8 @@ export const updateTeacherDetails = async ({
           mobile1,
         },
       });
-      prisma.academics.upsert({
+      console.log(`🚀 ~ primsse:`, primsse);
+      await prisma.academics.upsert({
         where: {
           userId: session.user?.id,
         },
@@ -48,15 +49,6 @@ export const updateTeacherDetails = async ({
         },
       });
 
-      await prisma.academics.create({
-        data: {
-          designation,
-          dateOfJoining,
-          facultyName,
-          departmentName,
-          userId: session.user?.id as string,
-        },
-      });
       return {
         message: "user updated",
         user: session.user,

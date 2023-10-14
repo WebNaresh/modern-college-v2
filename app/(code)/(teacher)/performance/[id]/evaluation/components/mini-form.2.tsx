@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
@@ -9,24 +10,33 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CalendarIcon } from "@radix-ui/react-icons";
+import { format } from "date-fns";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { MdAdd } from "react-icons/md";
 import { z } from "zod";
 
 type Props = {
-  setArrayOfBooks: React.Dispatch<React.SetStateAction<UserForm1Values[]>>;
+  setConsultancyServices: React.Dispatch<
+    React.SetStateAction<UserForm1Values[]>
+  >;
 };
 type UserForm1Values = z.infer<typeof formSchema>;
 
 const formSchema = z.object({
-  title: z.string().min(1),
-  titleWithPageNo: z.string().min(1),
-  isbnNo: z.number().min(0),
-  detailOfCoAuthors: z.string().min(1),
-  publishedMonthAndYear: z.string().min(1),
+  natureOfWork: z.string().min(1),
+  agency: z.string().min(1),
+  workCommendamentDate: z.date(),
+  DateOfCompletion: z.date(),
+  publishingMonthAndYear: z.string().min(1),
 });
 
 const MiniForm2 = (props: Props) => {
@@ -35,18 +45,18 @@ const MiniForm2 = (props: Props) => {
   const form = useForm<UserForm1Values>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      titleWithPageNo: "",
-      isbnNo: undefined,
-      detailOfCoAuthors: "",
-      publishedMonthAndYear: "",
+      natureOfWork: "",
+      agency: "",
+      workCommendamentDate: undefined,
+      DateOfCompletion: undefined,
+      publishingMonthAndYear: "",
     },
   });
   const onSubmit = async (formData: UserForm1Values) => {
     console.log(`🚀 ~ formData:`, formData);
     // formData.result =
     //   (formData.noOfClassesConducted / formData.noOfAllotedHour) * 100;
-    props.setArrayOfBooks((prevArray) => [...prevArray, formData]);
+    props.setConsultancyServices((prevArray) => [...prevArray, formData]);
     // form.reset();
   };
   return (
@@ -59,16 +69,16 @@ const MiniForm2 = (props: Props) => {
           <div className=" flex flex-col md:grid md:grid-cols-2 place-items-center w-full gap-x-4 gap-y-4">
             <FormField
               control={form.control}
-              name={"title"}
+              name={"natureOfWork"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>Book title</FormLabel>
+                    <FormLabel>Nature of Work</FormLabel>
                     <FormControl>
                       <Input
                         className="w-full"
                         disabled={loading}
-                        placeholder="Title"
+                        placeholder="Nature"
                         {...field}
                       />
                     </FormControl>
@@ -79,13 +89,13 @@ const MiniForm2 = (props: Props) => {
             />
             <FormField
               control={form.control}
-              name={"titleWithPageNo"}
+              name={"agency"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>Title with Page No</FormLabel>
+                    <FormLabel>Consultancy Agency</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="description" />
+                      <Input {...field} placeholder="Agency" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -94,49 +104,115 @@ const MiniForm2 = (props: Props) => {
             />
             <FormField
               control={form.control}
-              name={"isbnNo"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>ISBN Number</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          form.setValue("isbnNo", parseInt(e.target.value));
-                        }}
-                        placeholder="Enter 13 digit ISSN No"
+              name="workCommendamentDate"
+              render={({ field }) => (
+                <FormItem className="my-4 flex w-full flex-col">
+                  <FormLabel>Date of Work Commendament</FormLabel>
+                  <Popover modal={true}>
+                    <PopoverTrigger
+                      type="button"
+                      aria-modal={true}
+                      className="flex items-center "
+                    >
+                      <FormControl>
+                        <div
+                          className={cn(
+                            "w-full pl-3 text-left font-normal flex rounded-sm border-slate-800 border p-2 items-center",
+                            !field.value && "text-muted-foreground "
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </div>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto p-0 bg-card "
+                      align="start"
+                    >
+                      <Calendar
+                        captionLayout="dropdown"
+                        mode="single"
+                        className="z-50"
+                        fromYear={1900}
+                        toYear={2035}
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date > new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
             <FormField
               control={form.control}
-              name={"publishedMonthAndYear"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>Published Month and Year</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="June 2002" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+              name="DateOfCompletion"
+              render={({ field }) => (
+                <FormItem className="my-4 flex w-full flex-col">
+                  <FormLabel>Date of Work Completion</FormLabel>
+                  <Popover modal={true}>
+                    <PopoverTrigger
+                      type="button"
+                      aria-modal={true}
+                      className="flex items-center "
+                    >
+                      <FormControl>
+                        <div
+                          className={cn(
+                            "w-full pl-3 text-left font-normal flex rounded-sm border-slate-800 border p-2 items-center",
+                            !field.value && "text-muted-foreground "
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </div>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto p-0 bg-card "
+                      align="start"
+                    >
+                      <Calendar
+                        captionLayout="dropdown"
+                        mode="single"
+                        className="z-50"
+                        fromYear={1900}
+                        toYear={2035}
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date > new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
             <FormField
               control={form.control}
-              name={"detailOfCoAuthors"}
+              name={"publishingMonthAndYear"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>Detail of Co-Authors</FormLabel>
+                    <FormLabel>Publishing Month and Year</FormLabel>
                     <FormControl>
-                      <Textarea {...field} placeholder="Co-Authors" />
+                      <Input {...field} placeholder="June 2002..." />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

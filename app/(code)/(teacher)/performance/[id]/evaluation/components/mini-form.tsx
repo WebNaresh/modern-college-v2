@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
@@ -11,51 +11,57 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { CalendarIcon } from "@radix-ui/react-icons";
+import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import { MdAdd } from "react-icons/md";
 import { z } from "zod";
 
 type Props = {
-  arrayOfPublications: React.Dispatch<React.SetStateAction<UserForm1Values[]>>;
+  setSponseredReasearch: React.Dispatch<
+    React.SetStateAction<UserForm1Values[]>
+  >;
 };
 type UserForm1Values = z.infer<typeof formSchema>;
 
 const formSchema = z.object({
-  paperTitle: z.string().min(1),
-  level: z.enum(["State", "Local", "International", "National"]),
-  name: z.string().min(1),
-  issnNo: z.number(),
-  isMainAuthor: z.boolean(),
-  indexedIn: z.string().min(1),
+  scheme: z.string().min(1),
+  agency: z.string().min(1),
+  status: z.enum(["Awarded", "Submitted"]),
+  dateOfSubmissionOrAwarded: z.date(),
+  grantReceived: z.string().min(1),
 });
 
 const MiniForm = (props: Props) => {
-  const [loading, setLoading] = useState(false);
   const form = useForm<UserForm1Values>({
     resolver: zodResolver(formSchema),
 
     defaultValues: {
-      paperTitle: "",
-      level: undefined,
-      name: "",
-      issnNo: undefined,
-      isMainAuthor: false,
-      indexedIn: "",
+      scheme: "",
+      agency: "",
+      status: undefined,
+      dateOfSubmissionOrAwarded: undefined,
+      grantReceived: "",
     },
   });
 
   const onSubmit = async (formData: UserForm1Values) => {
     // formData.result =
     //   (formData.noOfClassesConducted / formData.noOfAllotedHour) * 100;
-    props.arrayOfPublications((prevArray) => [...prevArray, formData]);
+    props.setSponseredReasearch((prevArray) => [...prevArray, formData]);
     // form.reset();
   };
   return (
@@ -68,16 +74,15 @@ const MiniForm = (props: Props) => {
           <div className=" flex flex-col md:grid md:grid-cols-2 place-items-center w-full gap-x-4 gap-y-4">
             <FormField
               control={form.control}
-              name={"paperTitle"}
+              name={"scheme"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>What is your Paper Title</FormLabel>
+                    <FormLabel>Scheme info</FormLabel>
                     <FormControl>
                       <Input
                         className="w-full"
-                        disabled={loading}
-                        placeholder="Title"
+                        placeholder="Scheme"
                         {...field}
                       />
                     </FormControl>
@@ -86,28 +91,40 @@ const MiniForm = (props: Props) => {
                 );
               }}
             />
+
             <FormField
               control={form.control}
-              name={"level"}
+              name={"agency"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>Jounal/Conference</FormLabel>
+                    <FormLabel>Agency Details</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Agency" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name={"status"}
+              render={({ field }) => {
+                return (
+                  <FormItem className="w-full">
+                    <FormLabel>Status</FormLabel>
                     <FormControl>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <SelectTrigger className="">
-                          <SelectValue placeholder="Local/State/National/International" />
+                          <SelectValue placeholder="Awarded / Submitted" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Local">Local</SelectItem>
-                          <SelectItem value="State">State</SelectItem>
-                          <SelectItem value="National">National</SelectItem>
-                          <SelectItem value="International">
-                            International
-                          </SelectItem>
+                          <SelectItem value="Awarded">Awarded</SelectItem>
+                          <SelectItem value="Submitted">Submitted</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -116,77 +133,67 @@ const MiniForm = (props: Props) => {
                 );
               }}
             />
-
             <FormField
               control={form.control}
-              name={"name"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>Name of jounal/conference</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Jounal/Conference" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name={"issnNo"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>ISSN Number</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          form.setValue("issnNo", parseInt(e.target.value));
-                        }}
-                        placeholder="Enter 13 digit ISSN No"
+              name="dateOfSubmissionOrAwarded"
+              render={({ field }) => (
+                <FormItem className="my-4 flex w-full flex-col">
+                  <FormLabel>Date of Joining</FormLabel>
+                  <Popover modal={true}>
+                    <PopoverTrigger
+                      type="button"
+                      aria-modal={true}
+                      className="flex items-center "
+                    >
+                      <FormControl>
+                        <div
+                          className={cn(
+                            "w-full pl-3 text-left font-normal flex rounded-sm border-slate-800 border p-2 items-center",
+                            !field.value && "text-muted-foreground "
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Date of (Awarded/Submission)</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </div>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto p-0 bg-card "
+                      align="start"
+                    >
+                      <Calendar
+                        captionLayout="dropdown"
+                        mode="single"
+                        className="z-50"
+                        fromYear={1900}
+                        toYear={2035}
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date > new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-
             <FormField
               control={form.control}
-              name={"indexedIn"}
+              name={"grantReceived"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>
-                      Indexed in SCI/Scopus/ UGC Care / peer reviewed
-                    </FormLabel>
+                    <FormLabel>Grant Recieved</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Indexed in" />
+                      <Input {...field} placeholder="Recieved" />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name={"isMainAuthor"}
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full flex gap-4 items-center p-2 mt-8">
-                    <FormControl>
-                      <Checkbox
-                        type="button"
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <div className="!mt-0 leading-none ">
-                      <FormLabel>Are you main Author</FormLabel>
-                    </div>
                     <FormMessage />
                   </FormItem>
                 );

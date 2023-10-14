@@ -185,13 +185,14 @@ model SponsoredResearch {
 }
 
 model ConsultancyService {
-  id             String       @id @default(cuid())
-  natureOfWork   String
-  agency         String
-  duration       String
-  amountReceived String
-  Performance    Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
-  performanceId  String
+  id                     String       @id @default(cuid())
+  natureOfWork           String
+  agency                 String
+  workCommendamentDate   DateTime
+  DateOfCompletion       DateTime
+  publishingMonthAndYear String
+  Performance            Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  performanceId          String
 }
 
 model Patent {
@@ -239,20 +240,30 @@ model ExaminationDuty {
 }
 
 model Activity {
-  id            String       @id @default(cuid())
+  id            String        @id @default(cuid())
   name          String
   duration      String
-  type          String
-  Performance   Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  type          ActivityTypes
+  Performance   Performance?  @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId String
 }
 
 model Responsibility {
-  id            String       @id @default(cuid())
+  id            String              @id @default(cuid())
   natureOfWork  String
-  level         String
-  Performance   Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  level         ResponsibilityLevel
+  Performance   Performance?        @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId String
+}
+
+enum ResponsibilityLevel {
+  Department
+  Institute
+}
+
+enum ActivityTypes {
+  ExtraCurricular
+  CoCurricular
 }
 
 enum Grade {

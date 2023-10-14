@@ -22,28 +22,20 @@ import MiniForm2 from "./mini-form.2";
 type Props = {
   user: Session;
 };
-const PublicationForm = (props: Props) => {
-  type PublicationValues = {
+const Envolvement = (props: Props) => {
+  type Activity = {
     id?: string;
-    paperTitle: string;
-    level: "State" | "Local" | "International" | "National";
     name: string;
-    issnNo: number;
-    isMainAuthor: boolean;
-    indexedIn: string;
+    duration: string;
+    type: "ExtraCurricular" | "CoCurricular";
   };
-  type BookValues = {
+  type Responsibility = {
     id?: string;
-    title: string;
-    titleWithPageNo: string;
-    isbnNo: number;
-    detailOfCoAuthors: string;
-    publishedMonthAndYear: string;
+    nature: string;
+    level: "Department" | "Institute";
   };
-  const [arrayOfPublications, setArrayOfPublications] = useState<
-    PublicationValues[]
-  >([]);
-  const [arrayOfBooks, setArrayOfBooks] = useState<BookValues[]>([]);
+  const [activity, setActivity] = useState<Activity[]>([]);
+  const [responsibility, setResponsibility] = useState<Responsibility[]>([]);
   const router = useRouter();
   if (props.user === undefined) {
     router.push("/login");
@@ -54,22 +46,22 @@ const PublicationForm = (props: Props) => {
   const onSubmit = async () => {
     console.log("hello");
 
-    console.log(arrayOfPublications);
+    console.log(activity);
   };
   const deleteFromArray = async (i: number) => {
     // Make sure the index is within the valid range of the array
-    if (i < 0 || i >= arrayOfPublications.length) {
+    if (i < 0 || i >= activity.length) {
       return;
     }
 
     // Clone the original array to avoid mutating it directly
-    const newArray = [...arrayOfPublications];
+    const newArray = [...activity];
 
     // Remove the element at index i from the cloned array
     const deletedItem = newArray.splice(i, 1)[0];
 
     // Update the state with the new array (if you're using React)
-    setArrayOfPublications(newArray);
+    setActivity(newArray);
 
     // Check if the deleted item has an 'id' property and perform an API delete
     if (deletedItem && deletedItem.id) {
@@ -77,7 +69,7 @@ const PublicationForm = (props: Props) => {
       try {
         // Assuming you have a function called 'deleteFamilyItem' that makes the API call
         // let res = await deleteFamilyItem(deletedItem);
-        // update({ data: arrayOfPublications });
+        // update({ data: activity });
         // if (res?.user) {
         //   // Show a success toast when the item is successfully deleted
         //   toast({
@@ -109,7 +101,7 @@ const PublicationForm = (props: Props) => {
 
   return (
     <div className="flex-col flex items-center">
-      <MiniForm arrayOfPublications={setArrayOfPublications} />
+      <MiniForm setActivity={setActivity} />
       <div className="rounded-lg w-full overflow-auto mb-10">
         <Table>
           <TableCaption>
@@ -118,29 +110,25 @@ const PublicationForm = (props: Props) => {
           </TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-left">Paper Title</TableHead>
-              <TableHead className="text-left">Paper Level</TableHead>
-              <TableHead className="text-left">Name Of journal</TableHead>
-              <TableHead className="text-left">ISSN No.</TableHead>
-              <TableHead className="text-left">indexed in</TableHead>
+              <TableHead className="text-left">Activity Name</TableHead>
+              <TableHead className="text-left">Duration</TableHead>
+              <TableHead className="text-left">Type</TableHead>
               <TableHead className="text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {arrayOfPublications?.map((e, i) => {
+            {activity?.map((e, i) => {
               return (
                 <TableRow key={i}>
                   <TableCell className="font-medium text-left">
-                    {e.paperTitle}
-                  </TableCell>
-                  <TableCell className="font-medium text-left">
-                    {e.level}
-                  </TableCell>
-                  <TableCell className="font-medium text-left">
                     {e.name}
                   </TableCell>
-                  <TableCell className="text-left">{e.issnNo}</TableCell>
-                  <TableCell className="text-left">{e.indexedIn}</TableCell>
+                  <TableCell className="font-medium text-left">
+                    {e.duration}
+                  </TableCell>
+                  <TableCell className="font-medium text-left">
+                    {e.type}
+                  </TableCell>
                   <TableCell className="text-center">
                     <Button
                       variant={"ghost"}
@@ -157,11 +145,11 @@ const PublicationForm = (props: Props) => {
           </TableBody>
         </Table>
       </div>
-      <div className="w-full my-4">
-        <CardTitle>Book-Publication</CardTitle>
-        <CardDescription>Faculty Performance Evaluation </CardDescription>
+      <div className="w-full my-4 flex gap-4 flex-col">
+        <CardTitle>Consultancy/Internal Revenue Generation (IRG)</CardTitle>
+        <CardDescription>Faculty Performance Envolvement </CardDescription>
       </div>
-      <MiniForm2 setArrayOfBooks={setArrayOfBooks} />
+      <MiniForm2 setResponsibility={setResponsibility} />
       <div className="rounded-lg w-full overflow-auto">
         <Table>
           <TableCaption>
@@ -170,34 +158,20 @@ const PublicationForm = (props: Props) => {
           </TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-left">Title</TableHead>
-              <TableHead className="text-left">Title with page No</TableHead>
-              <TableHead className="text-left">ISSBN No</TableHead>
-              <TableHead className="text-center">
-                Published Month and year
-              </TableHead>
-              <TableHead className="text-left">Co-Authors</TableHead>
+              <TableHead className="text-left">Nature of Work</TableHead>
+              <TableHead className="text-left">Level of Work</TableHead>
               <TableHead className="text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {arrayOfBooks?.map((e, i) => {
+            {responsibility?.map((e, i) => {
               return (
                 <TableRow key={i}>
                   <TableCell className="font-medium text-left">
-                    {e.title}
+                    {e.nature}
                   </TableCell>
                   <TableCell className="font-medium text-left">
-                    {e.titleWithPageNo}
-                  </TableCell>
-                  <TableCell className="font-medium text-left">
-                    {e.isbnNo}
-                  </TableCell>
-                  <TableCell className="text-left">
-                    {e.publishedMonthAndYear}%
-                  </TableCell>
-                  <TableCell className="text-left">
-                    {e.detailOfCoAuthors}%
+                    {e.level}
                   </TableCell>
                   <TableCell className="text-center">
                     <Button
@@ -218,7 +192,7 @@ const PublicationForm = (props: Props) => {
 
       <Button
         onClick={onSubmit}
-        disabled={!(arrayOfPublications.length > 0)}
+        disabled={!(activity.length > 0)}
         className="m-10 text-center w-fit"
       >
         Save Changes
@@ -227,4 +201,4 @@ const PublicationForm = (props: Props) => {
   );
 };
 
-export default PublicationForm;
+export default Envolvement;
