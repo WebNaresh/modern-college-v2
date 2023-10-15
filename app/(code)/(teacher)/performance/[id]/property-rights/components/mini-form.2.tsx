@@ -1,5 +1,4 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -16,41 +15,39 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ExaminationDuty } from "@prisma/client";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { MdAdd } from "react-icons/md";
 import { z } from "zod";
 
 type Props = {
-  setArrayOfExaminationDuties: React.Dispatch<
-    React.SetStateAction<UserForm1Values[]>
-  >;
+  examinationDuties: ExaminationDuty | null;
 };
 type UserForm1Values = z.infer<typeof formSchema>;
 
 const formSchema = z.object({
-  invigilation: z.enum(["University", "Institute"]),
-  evaluation: z.enum(["University", "Institute"]),
-  questionpaper: z.enum(["University", "Institute"]),
+  invigilationFlyingSquadDuty: z.enum(["University", "Institute"]),
+  answerEvaluationDuty: z.enum(["University", "Institute"]),
+  questionPaperSettingDuty: z.enum(["University", "Institute"]),
 });
 
-const MiniForm2 = (props: Props) => {
+const MiniForm2 = ({ examinationDuties }: Props) => {
   const [loading, setLoading] = useState(false);
 
   const form = useForm<UserForm1Values>({
     resolver: zodResolver(formSchema),
 
     defaultValues: {
-      invigilation: undefined,
-      evaluation: undefined,
-      questionpaper: undefined,
+      invigilationFlyingSquadDuty:
+        examinationDuties?.invigilationFlyingSquadDuty,
+      answerEvaluationDuty: examinationDuties?.answerEvaluationDuty,
+      questionPaperSettingDuty: examinationDuties?.questionPaperSettingDuty,
     },
   });
   const onSubmit = async (formData: UserForm1Values) => {
     console.log(`🚀 ~ formData:`, formData);
     // formData.result =
     //   (formData.noOfClassesConducted / formData.noOfAllotedHour) * 100;
-    props.setArrayOfExaminationDuties((prevArray) => [...prevArray, formData]);
     // form.reset();
   };
   return (
@@ -63,7 +60,7 @@ const MiniForm2 = (props: Props) => {
           <div className=" flex flex-col md:grid md:grid-cols-2 place-items-center w-full gap-x-4 gap-y-4">
             <FormField
               control={form.control}
-              name={"invigilation"}
+              name={"invigilationFlyingSquadDuty"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
@@ -92,7 +89,7 @@ const MiniForm2 = (props: Props) => {
 
             <FormField
               control={form.control}
-              name={"evaluation"}
+              name={"answerEvaluationDuty"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
@@ -119,7 +116,7 @@ const MiniForm2 = (props: Props) => {
 
             <FormField
               control={form.control}
-              name={"questionpaper"}
+              name={"questionPaperSettingDuty"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
@@ -144,13 +141,6 @@ const MiniForm2 = (props: Props) => {
               }}
             />
           </div>
-          <Button
-            variant={"outline"}
-            type="submit"
-            className="m-4 h-14 w-14 rounded-full"
-          >
-            <MdAdd className="text-primary text-2xl" />
-          </Button>
         </form>
       </Form>
     </>

@@ -11,52 +11,52 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import useStore from "@/hooks/loader-hook";
+import {
+  CopyRights,
+  ExaminationDuty,
+  Patent,
+  Performance,
+  TradeMarks,
+} from "@prisma/client";
 import { format } from "date-fns";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
 import MiniForm from "./mini-form";
 import MiniForm2 from "./mini-form.2";
 
 type Props = {
   user: Session;
+  performance: Performance & {
+    intellectualPropertyRights: {
+      patents: Patent[];
+      copyRights: CopyRights[];
+      tradeMarks: TradeMarks[];
+    } | null;
+    examinationDuties: ExaminationDuty | null;
+  };
 };
-const PropertyRightForm = (props: Props) => {
-  type PropertyRightValues = {
+const PropertyRightForm = ({ user, performance }: Props) => {
+  type Patents = {
     id?: string;
-    status: "Applied" | "Not Applied";
-    dateofpatent: Date;
-    isCommetcialiazed: boolean;
-    // indexedIn: string;
+    status: "Applied" | "NotApplied";
+    dateOfAppliedGranted: Date;
+    commercialized: boolean;
+    intellectualPropertyRightId?: string;
   };
-  type BookValues = {
-    id?: string;
-    invigilation: "University" | "Institute";
-    evaluation: "University" | "Institute";
-    questionpaper: "University" | "Institute";
-  };
+
   // Publication Array
-  const [arrayOfPublications, setArrayOfPublications] = useState<
-    PropertyRightValues[]
-  >([]);
+  const [arrayOfPatents, setArrayOfPatents] = useState<Patents[]>([]);
 
   // CopyRights Array
-  const [arrayOfCopyRights, setArrayOfCopyRights] = useState<
-    PropertyRightValues[]
-  >([]);
+  const [arrayOfCopyRights, setArrayOfCopyRights] = useState<Patents[]>([]);
 
   // TradeMark Array
-  const [arrayOfTradeMark, setArrayOfTradeMark] = useState<
-    PropertyRightValues[]
-  >([]);
-
-  const [arrayOfExaminationDuties, setArrayOfExaminationDuties] = useState<
-    BookValues[]
-  >([]);
+  const [arrayOfTradeMark, setArrayOfTradeMark] = useState<Patents[]>([]);
 
   const router = useRouter();
-  if (props.user === undefined) {
+  if (user === undefined) {
     router.push("/login");
   }
 
@@ -66,26 +66,25 @@ const PropertyRightForm = (props: Props) => {
   const onSubmit = async () => {
     console.log("hello");
 
-    console.log(arrayOfPublications);
+    console.log(arrayOfPatents);
     console.log(arrayOfCopyRights);
     console.log(arrayOfTradeMark);
-    console.log(arrayOfExaminationDuties);
   };
 
   const deleteFromArray = async (i: number) => {
     // Make sure the index is within the valid range of the array
-    if (i < 0 || i >= arrayOfPublications.length) {
+    if (i < 0 || i >= arrayOfPatents.length) {
       return;
     }
 
     // Clone the original array to avoid mutating it directly
-    const newArray = [...arrayOfPublications];
+    const newArray = [...arrayOfPatents];
 
     // Remove the element at index i from the cloned array
     const deletedItem = newArray.splice(i, 1)[0];
 
     // Update the state with the new array (if you're using React)
-    setArrayOfPublications(newArray);
+    setArrayOfPatents(newArray);
 
     // Check if the deleted item has an 'id' property and pCerform an API delete
     if (deletedItem && deletedItem.id) {
@@ -226,10 +225,21 @@ const PropertyRightForm = (props: Props) => {
       }
     }
   };
+  useEffect(() => {
+    if (performance.intellectualPropertyRights?.patents !== undefined) {
+      setArrayOfPatents(performance.intellectualPropertyRights?.patents);
+    }
+    if (performance.intellectualPropertyRights?.copyRights !== undefined) {
+      setArrayOfCopyRights(performance.intellectualPropertyRights?.copyRights);
+    }
+    if (performance.intellectualPropertyRights?.tradeMarks !== undefined) {
+      setArrayOfTradeMark(performance.intellectualPropertyRights?.tradeMarks);
+    }
+  }, []);
 
   return (
     <div className="flex-col flex items-center">
-      <MiniForm arrayOfPublications={setArrayOfPublications} />
+      <MiniForm arrayOfPublications={setArrayOfPatents} />
       <div className="rounded-lg w-full overflow-auto mb-10">
         <Table>
           <TableHeader>
@@ -241,7 +251,7 @@ const PropertyRightForm = (props: Props) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {arrayOfPublications?.map((e, i) => {
+            {arrayOfPatents?.map((e, i) => {
               return (
                 <TableRow key={i}>
                   <TableCell className="font-medium text-left">
@@ -251,7 +261,7 @@ const PropertyRightForm = (props: Props) => {
                     {e.status}
                   </TableCell>
                   <TableCell className="font-medium text-left">
-                    {format(new Date(e.dateofpatent), "PPP")}
+                    {format(new Date(e.dateOfAppliedGranted), "PPP")}
                   </TableCell>
                   <TableCell className="text-center">
                     <Button
@@ -299,7 +309,7 @@ const PropertyRightForm = (props: Props) => {
                     {e.status}
                   </TableCell>
                   <TableCell className="font-medium text-left">
-                    {format(new Date(e.dateofpatent), "PPP")}
+                    {format(new Date(e.dateOfAppliedGranted), "PPP")}
                   </TableCell>
                   <TableCell className="text-center">
                     <Button
@@ -344,7 +354,7 @@ const PropertyRightForm = (props: Props) => {
                     {e.status}
                   </TableCell>
                   <TableCell className="font-medium text-left">
-                    {format(new Date(e.dateofpatent), "PPP")}
+                    {format(new Date(e.dateOfAppliedGranted), "PPP")}
                   </TableCell>
                   <TableCell className="text-center">
                     <Button
@@ -367,13 +377,12 @@ const PropertyRightForm = (props: Props) => {
         <CardTitle className="text-muted">
           Examination Duties Assigned & Performed{" "}
         </CardTitle>
-        {/* <CardDescription>Faculty Performance Evaluation </CardDescription> */}
       </div>
 
-      <MiniForm2 setArrayOfExaminationDuties={setArrayOfExaminationDuties} />
+      <MiniForm2 examinationDuties={performance.examinationDuties} />
       <Button
         onClick={onSubmit}
-        disabled={!(arrayOfPublications.length > 0)}
+        // disabled={!(arrayOfPublications.length > 0)}
         className="m-10 text-center w-fit"
       >
         Save Changes

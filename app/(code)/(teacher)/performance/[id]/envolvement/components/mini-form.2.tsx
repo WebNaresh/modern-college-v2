@@ -28,7 +28,7 @@ type Props = {
 type UserForm1Values = z.infer<typeof formSchema>;
 
 const formSchema = z.object({
-  nature: z.string().min(1),
+  natureOfWork: z.string().min(1),
   level: z.enum(["Department", "Institute"]),
 });
 
@@ -38,7 +38,7 @@ const MiniForm2 = (props: Props) => {
   const form = useForm<UserForm1Values>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      nature: "",
+      natureOfWork: "",
       level: undefined,
     },
   });
@@ -59,7 +59,7 @@ const MiniForm2 = (props: Props) => {
           <div className=" flex flex-col md:grid md:grid-cols-2 place-items-center w-full gap-x-4 gap-y-4">
             <FormField
               control={form.control}
-              name={"nature"}
+              name={"natureOfWork"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">

@@ -12,6 +12,11 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import useStore from "@/hooks/loader-hook";
+import {
+  BookArticleChapterPublished,
+  Performance,
+  PublicationAndJournal,
+} from "@prisma/client";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -21,31 +26,36 @@ import MiniForm2 from "./mini-form.2";
 
 type Props = {
   user: Session;
+  performance: Performance & {
+    publications: PublicationAndJournal[];
+    booksArticleChpter: BookArticleChapterPublished[];
+  };
 };
-const PublicationForm = (props: Props) => {
+const PublicationForm = ({ performance, user }: Props) => {
   type PublicationValues = {
     id?: string;
     paperTitle: string;
     level: "State" | "Local" | "International" | "National";
     name: string;
-    issnNo: number;
+    issnNo: string;
     isMainAuthor: boolean;
     indexedIn: string;
+    performanceId?: string;
   };
   type BookValues = {
     id?: string;
     title: string;
     titleWithPageNo: string;
-    isbnNo: number;
+    isbnNo: string;
     detailOfCoAuthors: string;
     publishedMonthAndYear: string;
   };
   const [arrayOfPublications, setArrayOfPublications] = useState<
     PublicationValues[]
-  >([]);
+  >(performance.publications);
   const [arrayOfBooks, setArrayOfBooks] = useState<BookValues[]>([]);
   const router = useRouter();
-  if (props.user === undefined) {
+  if (user === undefined) {
     router.push("/login");
   }
 

@@ -24,7 +24,7 @@ import { MdAdd } from "react-icons/md";
 import { z } from "zod";
 
 type Props = {
-  arrayOfPreviousYear: React.Dispatch<React.SetStateAction<UserForm1Values[]>>;
+  setAcademicAppraisel: React.Dispatch<React.SetStateAction<UserForm1Values[]>>;
 };
 type UserForm1Values = z.infer<typeof formSchema>;
 const formSchema = z.object({
@@ -32,17 +32,13 @@ const formSchema = z.object({
   level: z.enum(["UG", "PG"]),
   courseHead: z.enum(["TH", "PR", "T"]),
   term: z.enum(["I", "II"]),
-  previousYear: z.enum(["Current", "Previous"]),
-
-  noOfAllotedHour: z.number({
-    required_error: "Mobile number is required",
-    invalid_type_error: " number must be type of a number",
-  }),
-  noOfClassesConducted: z.number(),
+  year: z.enum(["Current", "Previous"]),
+  hoursAlloted: z.number(),
+  classConducted: z.number(),
   result: z.number().int().min(0).max(100),
 });
 
-const MiniForm = (props: Props) => {
+const MiniForm = ({ setAcademicAppraisel }: Props) => {
   const [loading, setLoading] = useState(false);
   const form = useForm<UserForm1Values>({
     resolver: zodResolver(formSchema),
@@ -51,17 +47,22 @@ const MiniForm = (props: Props) => {
       level: undefined,
       courseHead: undefined,
       term: undefined,
-      previousYear: undefined,
-      noOfAllotedHour: 0,
-      noOfClassesConducted: 0,
+      year: undefined,
+      hoursAlloted: 0,
+      classConducted: 0,
       result: 0,
     },
   });
 
   const onSubmit = async (formData: UserForm1Values) => {
+    console.log(`🚀 ~ formData:`, formData);
     // formData.result =
-    //   (formData.noOfClassesConducted / formData.noOfAllotedHour) * 100;
-    props.arrayOfPreviousYear((prevArray) => [...prevArray, formData]);
+    //   (formData.classConducted / formData.hoursAlloted) * 100;
+    setAcademicAppraisel((prevArray) => {
+      console.log(`🚀 ~ prevArray:`, [...prevArray, formData]);
+      return [...prevArray, formData];
+    });
+    console.log(`🚀 ~ setAcademicAppraisel:`, setAcademicAppraisel);
     // form.reset();
   };
   return (
@@ -174,7 +175,7 @@ const MiniForm = (props: Props) => {
 
             <FormField
               control={form.control}
-              name={"noOfAllotedHour"}
+              name={"hoursAlloted"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
@@ -189,11 +190,11 @@ const MiniForm = (props: Props) => {
                         onChange={(e) => {
                           if (e.target.value !== "" && e.target.value !== "0") {
                             form.setValue(
-                              "noOfAllotedHour",
+                              "hoursAlloted",
                               parseInt(e.target.value)
                             );
                           } else {
-                            form.setValue("noOfAllotedHour", 0);
+                            form.setValue("hoursAlloted", 0);
                           }
                         }}
                         placeholder="Number of hour alloted"
@@ -207,7 +208,7 @@ const MiniForm = (props: Props) => {
 
             <FormField
               control={form.control}
-              name={"noOfClassesConducted"}
+              name={"classConducted"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
@@ -222,11 +223,11 @@ const MiniForm = (props: Props) => {
                         onChange={(e) => {
                           if (e.target.value !== "" && e.target.value !== "0") {
                             form.setValue(
-                              "noOfClassesConducted",
+                              "classConducted",
                               parseInt(e.target.value)
                             );
                           } else {
-                            form.setValue("noOfClassesConducted", 0);
+                            form.setValue("classConducted", 0);
                           }
                         }}
                         placeholder="Number of hour conducted"
@@ -271,7 +272,7 @@ const MiniForm = (props: Props) => {
             />
             <FormField
               control={form.control}
-              name={"previousYear"}
+              name={"year"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">

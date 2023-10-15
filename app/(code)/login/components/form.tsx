@@ -39,14 +39,13 @@ const LoginForm = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
-    signIn("credentials", {
+    let user = false;
+    await signIn("credentials", {
       redirect: false,
       email: values.email,
       password: values.password,
     })
-      .then((res) => {
-        setLoading(false);
-        console.log(`🚀 ~ res:`, res);
+      .then(async (res) => {
         if (res?.error?.includes("CredentialsSignin")) {
           console.log(`🚀 ~ res2:`, res);
           toast({
@@ -60,23 +59,23 @@ const LoginForm = () => {
           )
         ) {
           console.log(`🚀 ~ res3:`, res);
-          return toast({
+          toast({
             title: "Server is under Maintainance",
             description: "Sorry",
             variant: "destructive",
           });
         } else {
+          console.log(`🚀 ~ res:`, res);
+          user = true;
           toast({
             title: "Login Succesfull",
             description: `Welcome`,
           });
           update(res);
-          return router.refresh();
         }
       })
       .catch((res) => {
-        setLoading(false);
-        console.log(`🚀 ~ res:`, res);
+        console.log(`🚀 ~ res error:`, res);
         if (res?.error?.includes("CredentialsSignin")) {
           toast({
             title: "Email of Password is not matching",
@@ -90,7 +89,13 @@ const LoginForm = () => {
             variant: "destructive",
           });
         }
+      })
+      .finally(() => {
+        setLoading(false);
       });
+    if (user) {
+      router.refresh();
+    }
   }
 
   return (

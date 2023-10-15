@@ -12,6 +12,11 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import useStore from "@/hooks/loader-hook";
+import {
+  ConsultancyService,
+  Performance,
+  SponsoredResearch,
+} from "@prisma/client";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -21,8 +26,12 @@ import MiniForm2 from "./mini-form.2";
 
 type Props = {
   user: Session;
+  performance: Performance & {
+    sponsoredResearch: SponsoredResearch[];
+    consultancyServices: ConsultancyService[];
+  };
 };
-const Evaluation = (props: Props) => {
+const Evaluation = ({ user, performance }: Props) => {
   type SponseredReasearch = {
     id?: string;
     scheme: string;
@@ -30,6 +39,7 @@ const Evaluation = (props: Props) => {
     status: "Awarded" | "Submitted";
     dateOfSubmissionOrAwarded: Date;
     grantReceived: string;
+    performanceId?: string;
   };
   type ConsultancyServices = {
     id?: string;
@@ -38,15 +48,16 @@ const Evaluation = (props: Props) => {
     workCommendamentDate: Date;
     DateOfCompletion: Date;
     publishingMonthAndYear: string;
+    performanceId?: string;
   };
   const [sponseredReasearch, setSponseredReasearch] = useState<
     SponseredReasearch[]
-  >([]);
+  >(performance.sponsoredResearch);
   const [consultancyServices, setConsultancyServices] = useState<
     ConsultancyServices[]
-  >([]);
+  >(performance.consultancyServices);
   const router = useRouter();
-  if (props.user === undefined) {
+  if (user === undefined) {
     router.push("/login");
   }
 

@@ -1,10 +1,15 @@
 "use server";
 
+import { AcademicAppraisel } from "@/app/(code)/(teacher)/performance/[id]/academics-appraisel/components/form";
+import { FeedbackFormTypes } from "@/app/(code)/(teacher)/performance/[id]/academics-appraisel/components/mini-form-3";
 import { authOptions } from "@/lib/auth";
 import { TeacherBasicInfo } from "@/lib/interface";
 import { prisma } from "@/lib/primsa";
 import { getServerSession } from "next-auth";
 
+type FeedbackCreateManyInput = AcademicAppraisel & {
+  performanceId: string;
+};
 export const updateTeacherDetails = async ({
   mobile1,
   designation,
@@ -96,6 +101,70 @@ export const pEFormStep1 = async ({
       };
     } catch (error) {
       return { message: "Something went wrong", user: null };
+    }
+  }
+};
+export const pEFormStep2 = async ({
+  formData,
+  academicAppraisel,
+  arrayOfECD,
+  performanceId,
+}: {
+  formData: FeedbackFormTypes;
+  academicAppraisel: AcademicAppraisel[];
+  arrayOfECD: string[];
+  performanceId: string;
+}) => {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return { message: "user is not authorized", user: null };
+  } else {
+    const academicAppraiselWithoutId = academicAppraisel
+      .filter((value) => !value.id)
+      .map((appraisal) => ({
+        ...appraisal,
+        performanceId, // Add your actual performanceId here
+      }));
+
+    try {
+      const createdFeedback = await prisma.averageResult.createMany({
+        data: academicAppraiselWithoutId,
+      });
+      const addEffectiveCurriculumEffortsInPerformance =
+        await prisma.performance.update({
+          where: {
+            id: performanceId,
+          },
+          data: {
+            effectiveCurriculamEfforts: arrayOfECD,
+          },
+        });
+      const feedback = await prisma.feedback.upsert({
+        where: {
+          performanceId,
+        },
+        create: {
+          ...formData,
+          performanceId,
+        },
+        update: {
+          ...formData,
+          performanceId,
+        },
+      });
+      console.log(`🚀 ~ feedback:`, feedback);
+      console.log(
+        `🚀 ~ addEffectiveCurriculumEffortsInPerformance:`,
+        addEffectiveCurriculumEffortsInPerformance
+      );
+      console.log(`🚀 ~ createdFeedback:`, createdFeedback);
+
+      return {
+        message: "user updated",
+        status: true,
+      };
+    } catch (error) {
+      return { message: "Something went wrong", status: false };
     }
   }
 };

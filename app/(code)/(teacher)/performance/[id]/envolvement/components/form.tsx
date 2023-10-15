@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import useStore from "@/hooks/loader-hook";
+import { Activity, Performance, Responsibility } from "@prisma/client";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -21,23 +22,31 @@ import MiniForm2 from "./mini-form.2";
 
 type Props = {
   user: Session;
+  performance: Performance & {
+    activities: Activity[];
+    responsibilities: Responsibility[];
+  };
 };
-const Envolvement = (props: Props) => {
+const Envolvement = ({ user, performance }: Props) => {
   type Activity = {
     id?: string;
     name: string;
     duration: string;
     type: "ExtraCurricular" | "CoCurricular";
+    performanceId?: string;
   };
   type Responsibility = {
     id?: string;
-    nature: string;
+    natureOfWork: string;
     level: "Department" | "Institute";
+    performanceId?: string;
   };
-  const [activity, setActivity] = useState<Activity[]>([]);
-  const [responsibility, setResponsibility] = useState<Responsibility[]>([]);
+  const [activity, setActivity] = useState<Activity[]>(performance.activities);
+  const [responsibility, setResponsibility] = useState<Responsibility[]>(
+    performance.responsibilities
+  );
   const router = useRouter();
-  if (props.user === undefined) {
+  if (user === undefined) {
     router.push("/login");
   }
 
@@ -146,8 +155,8 @@ const Envolvement = (props: Props) => {
         </Table>
       </div>
       <div className="w-full my-4 flex gap-4 flex-col">
-        <CardTitle>Consultancy/Internal Revenue Generation (IRG)</CardTitle>
-        <CardDescription>Faculty Performance Envolvement </CardDescription>
+        <CardTitle>Major Responsibilities Handled</CardTitle>
+        <CardDescription>At Department/Institute level</CardDescription>
       </div>
       <MiniForm2 setResponsibility={setResponsibility} />
       <div className="rounded-lg w-full overflow-auto">
@@ -168,7 +177,7 @@ const Envolvement = (props: Props) => {
               return (
                 <TableRow key={i}>
                   <TableCell className="font-medium text-left">
-                    {e.nature}
+                    {e.natureOfWork}
                   </TableCell>
                   <TableCell className="font-medium text-left">
                     {e.level}

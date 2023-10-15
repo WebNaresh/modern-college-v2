@@ -38,9 +38,9 @@ type Props = {
 type PropertyRightValues = z.infer<typeof formSchema>;
 
 const formSchema = z.object({
-  status: z.enum(["Applied", "Not Applied"]),
-  dateofpatent: z.date(),
-  isCommetcialiazed: z.boolean(),
+  status: z.enum(["Applied", "NotApplied"]),
+  dateOfAppliedGranted: z.date(),
+  commercialized: z.boolean(),
 });
 
 const MiniForm = (props: Props) => {
@@ -48,7 +48,7 @@ const MiniForm = (props: Props) => {
     resolver: zodResolver(formSchema),
 
     defaultValues: {
-      isCommetcialiazed: false,
+      commercialized: false,
       status: undefined,
     },
   });
@@ -83,7 +83,7 @@ const MiniForm = (props: Props) => {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="Applied">Applied</SelectItem>
-                          <SelectItem value="Not Applied">
+                          <SelectItem value="NotApplied">
                             Not Applied
                           </SelectItem>
                         </SelectContent>
@@ -97,7 +97,7 @@ const MiniForm = (props: Props) => {
 
             <FormField
               control={form.control}
-              name="dateofpatent"
+              name="dateOfAppliedGranted"
               render={({ field }) => (
                 <FormItem className="my-4 flex w-full flex-col">
                   <FormLabel>Date of Awarded / Granted</FormLabel>
@@ -151,7 +151,7 @@ const MiniForm = (props: Props) => {
 
             <FormField
               control={form.control}
-              name={"isCommetcialiazed"}
+              name={"commercialized"}
               render={({ field }) => {
                 return (
                   <FormItem className="w-full flex gap-4 items-center p-2 mt-8">

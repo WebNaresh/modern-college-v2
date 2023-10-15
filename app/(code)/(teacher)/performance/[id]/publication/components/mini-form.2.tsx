@@ -24,7 +24,7 @@ type UserForm1Values = z.infer<typeof formSchema>;
 const formSchema = z.object({
   title: z.string().min(1),
   titleWithPageNo: z.string().min(1),
-  isbnNo: z.number().min(0),
+  isbnNo: z.string().min(1),
   detailOfCoAuthors: z.string().min(1),
   publishedMonthAndYear: z.string().min(1),
 });
@@ -37,7 +37,7 @@ const MiniForm2 = (props: Props) => {
     defaultValues: {
       title: "",
       titleWithPageNo: "",
-      isbnNo: undefined,
+      isbnNo: "",
       detailOfCoAuthors: "",
       publishedMonthAndYear: "",
     },
@@ -100,13 +100,7 @@ const MiniForm2 = (props: Props) => {
                   <FormItem className="w-full">
                     <FormLabel>ISBN Number</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          form.setValue("isbnNo", parseInt(e.target.value));
-                        }}
-                        placeholder="Enter 13 digit ISSN No"
-                      />
+                      <Input {...field} placeholder="Enter 13 digit ISSN No" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

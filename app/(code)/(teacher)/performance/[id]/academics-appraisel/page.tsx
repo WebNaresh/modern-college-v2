@@ -8,6 +8,7 @@ import {
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/primsa";
 import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 import Form from "./components/form";
 
 type Props = {
@@ -31,6 +32,7 @@ const page = async (props: Props) => {
     },
   });
   if (existingPerformance === null || undefined) {
+    redirect("/");
   }
   return (
     <div className="px-4">

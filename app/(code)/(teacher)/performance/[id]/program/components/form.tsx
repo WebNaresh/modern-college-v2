@@ -12,6 +12,11 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import useStore from "@/hooks/loader-hook";
+import {
+  Performance,
+  ProgramsAttended,
+  ProgramsOrganized,
+} from "@prisma/client";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -21,26 +26,34 @@ import MiniForm2 from "./mini-form.2";
 
 type Props = {
   user: Session;
+  performance: Performance & {
+    programsOrganized: ProgramsOrganized[];
+    programsAttended: ProgramsAttended[];
+  };
 };
-const PublicationForm = (props: Props) => {
+const PublicationForm = ({ performance, user }: Props) => {
+  type ProgramOrganized = {
+    id?: string;
+    title: string;
+    duration: string;
+    performanceId?: string;
+  };
   type ProgramAttended = {
     id?: string;
     title: string;
     duration: string;
     place: string;
     organizerName: string;
+    performanceId?: string;
   };
-  type ProgramOrganized = {
-    id?: string;
-    title: string;
-    duration: string;
-  };
-  const [programAttended, setProgramAttended] = useState<ProgramAttended[]>([]);
+  const [programAttended, setProgramAttended] = useState<ProgramAttended[]>(
+    performance.programsAttended
+  );
   const [programOrganized, setProgramOrganized] = useState<ProgramOrganized[]>(
-    []
+    performance.programsOrganized
   );
   const router = useRouter();
-  if (props.user === undefined) {
+  if (user === undefined) {
     router.push("/login");
   }
 

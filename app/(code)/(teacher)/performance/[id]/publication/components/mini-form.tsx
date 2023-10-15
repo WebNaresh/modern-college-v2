@@ -32,7 +32,7 @@ const formSchema = z.object({
   paperTitle: z.string().min(1),
   level: z.enum(["State", "Local", "International", "National"]),
   name: z.string().min(1),
-  issnNo: z.number(),
+  issnNo: z.string().min(1),
   isMainAuthor: z.boolean(),
   indexedIn: z.string().min(1),
 });
@@ -46,7 +46,7 @@ const MiniForm = (props: Props) => {
       paperTitle: "",
       level: undefined,
       name: "",
-      issnNo: undefined,
+      issnNo: "",
       isMainAuthor: false,
       indexedIn: "",
     },
@@ -140,13 +140,7 @@ const MiniForm = (props: Props) => {
                   <FormItem className="w-full">
                     <FormLabel>ISSN Number</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          form.setValue("issnNo", parseInt(e.target.value));
-                        }}
-                        placeholder="Enter 13 digit ISSN No"
-                      />
+                      <Input {...field} placeholder="Enter 13 digit ISSN No" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

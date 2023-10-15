@@ -16,43 +16,35 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { MdDelete } from "react-icons/md";
 import MiniForm from "./mini-form";
+import MiniForm2 from "./mini-form-2";
 import MiniForm3 from "./mini-form-3";
-import MiniForm2 from "./mini-form.2";
 
 type Props = {
   user: Session;
-  performance:
-    | (Performance & {
-        teachingAndLearning: AverageResult[];
-        feedback: Feedback | null;
-      })
-    | null;
+  performance: Performance & {
+    teachingAndLearning: AverageResult[];
+    feedback: Feedback | null;
+  };
+};
+export type AcademicAppraisel = {
+  id?: string;
+  nameOfSubject: string;
+  level: "UG" | "PG";
+  courseHead: "TH" | "PR" | "T";
+  term: "I" | "II";
+  year: "Current" | "Previous";
+  hoursAlloted: number;
+  classConducted: number;
+  result: number;
+  performanceId?: string;
 };
 const FormDetails = ({ user, performance }: Props) => {
-  type UserForm1Values = {
-    id?: string;
-    nameOfSubject: string;
-    level: "UG" | "PG";
-    courseHead: "TH" | "PR" | "T";
-    term: "I" | "II";
-    previousYear: "Current" | "Previous";
-    noOfAllotedHour: number;
-    noOfClassesConducted: number;
-    result: number;
-  };
-  type UserForm2Values = {
-    id?: string;
-    averageStudentFeedbackScoreTermI: number;
-    averageStudentFeedbackScoreTermII: number;
-    averagePeerFeedbackScoreTermI: number;
-    averagePeerFeedbackScoreTermII: number;
-    averagePeerStudentFeedback: number;
-  };
-  const [arrayOfPreviousYear, setArrayOfPreviousYear] = useState<
-    UserForm1Values[]
-  >([]);
-  const [evaluation, setEvaluation] = useState<UserForm2Values[]>([]);
-  const [arrayOfECD, setArrayOfECD] = useState<string[]>([]);
+  const [academicAppraisel, setAcademicAppraisel] = useState<
+    AcademicAppraisel[]
+  >(performance.teachingAndLearning);
+  const [arrayOfECD, setArrayOfECD] = useState<string[]>(
+    performance.effectiveCurriculamEfforts
+  );
 
   const router = useRouter();
   if (user === undefined) {
@@ -62,66 +54,22 @@ const FormDetails = ({ user, performance }: Props) => {
   const { toast } = useToast();
   const onSubmit = async () => {
     console.log("hello");
-
-    console.log(arrayOfPreviousYear);
-    const hasCurrentYearEntry = arrayOfPreviousYear.some(
-      (entry) => entry.previousYear === "Current"
-    );
-
-    // Check if there is at least one entry for the previous year
-    const hasPreviousYearEntry = arrayOfPreviousYear.some(
-      (entry) => entry.previousYear === "Previous"
-    );
-    if (hasCurrentYearEntry && hasPreviousYearEntry) {
-      // setLoading(true);
-      // updateUserDetails(formData)
-      //   .then(({ message, user }) => {
-      //     update(user);
-      //     toast({
-      //       title: "Updated successfully",
-      //       description: "User updated successfully now you can go to Next Step",
-      //     });
-      //     router.refresh();
-      //   })
-      //   .catch((res) => {
-      //     res.toast({
-      //       title: res.message,
-      //       description: "Something went wrong",
-      //       variant: "destructive",
-      //     });
-      //   })
-      //   .finally(() => {
-      // setLoading(false);
-      // });
-    } else {
-      if (hasCurrentYearEntry) {
-        toast({
-          title: "Add Entry",
-          description: "Add minimum one entry of current Year",
-        });
-      } else {
-        toast({
-          title: "Add Entry",
-          description: "Add minimum one entry of current Year",
-        });
-      }
-      return;
-    }
   };
+
   const deleteFromArray = async (i: number) => {
     // Make sure the index is within the valid range of the array
-    if (i < 0 || i >= arrayOfPreviousYear.length) {
+    if (i < 0 || i >= academicAppraisel.length) {
       return;
     }
 
     // Clone the original array to avoid mutating it directly
-    const newArray = [...arrayOfPreviousYear];
+    const newArray = [...academicAppraisel];
 
     // Remove the element at index i from the cloned array
     const deletedItem = newArray.splice(i, 1)[0];
 
     // Update the state with the new array (if you're using React)
-    setArrayOfPreviousYear(newArray);
+    setAcademicAppraisel(newArray);
 
     // Check if the deleted item has an 'id' property and perform an API delete
     if (deletedItem && deletedItem.id) {
@@ -129,7 +77,7 @@ const FormDetails = ({ user, performance }: Props) => {
       try {
         // Assuming you have a function called 'deleteFamilyItem' that makes the API call
         // let res = await deleteFamilyItem(deletedItem);
-        // update({ data: arrayOfPreviousYear });
+        // update({ data: academicAppraisel });
         // if (res?.user) {
         //   // Show a success toast when the item is successfully deleted
         //   toast({
@@ -179,7 +127,7 @@ const FormDetails = ({ user, performance }: Props) => {
   return (
     <div className="flex flex-col items-center space-y-2">
       <div className="w-full flex-col flex gap-4">
-        <MiniForm arrayOfPreviousYear={setArrayOfPreviousYear} />
+        <MiniForm setAcademicAppraisel={setAcademicAppraisel} />
         <div className="rounded-lg w-full overflow-auto mb-10">
           <Table>
             <TableHeader>
@@ -192,40 +140,38 @@ const FormDetails = ({ user, performance }: Props) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {(performance?.teachingAndLearning || arrayOfPreviousYear)?.map(
-                (e, i) => {
-                  return (
-                    <TableRow key={i}>
-                      <TableCell className="font-medium text-left">
-                        {e.nameOfSubject}
-                      </TableCell>
-                      <TableCell className="font-medium text-left">
-                        {e.term}
-                      </TableCell>
-                      <TableCell className="font-medium text-left">
-                        {e.previousYear}
-                      </TableCell>
-                      <TableCell className="text-left">{e.result}%</TableCell>
-                      <TableCell className="text-center">
-                        <Button
-                          variant={"ghost"}
-                          type="button"
-                          size={"icon"}
-                          onClick={() => deleteFromArray(i)}
-                        >
-                          <MdDelete className="text-lg" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                }
-              )}
+              {academicAppraisel?.map((e, i) => {
+                return (
+                  <TableRow key={i}>
+                    <TableCell className="font-medium text-left">
+                      {e.nameOfSubject}
+                    </TableCell>
+                    <TableCell className="font-medium text-left">
+                      {e.term}
+                    </TableCell>
+                    <TableCell className="font-medium text-left">
+                      {e.year}
+                    </TableCell>
+                    <TableCell className="text-left">{e.result}%</TableCell>
+                    <TableCell className="text-center">
+                      <Button
+                        variant={"ghost"}
+                        type="button"
+                        size={"icon"}
+                        onClick={() => deleteFromArray(i)}
+                      >
+                        <MdDelete className="text-lg" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>
       </div>
       <div className="w-full flex flex-col pt-8 gap-4">
-        <MiniForm3 setArrayOfECD={setArrayOfECD} />
+        <MiniForm2 setArrayOfECD={setArrayOfECD} />
         <div className="rounded-lg w-full overflow-auto mb-10">
           <Table>
             {/* <TableCaption>
@@ -242,50 +188,43 @@ const FormDetails = ({ user, performance }: Props) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {(performance?.effectiveCurriculamEfforts || arrayOfECD)?.map(
-                (e, i) => {
-                  return (
-                    <TableRow key={i}>
-                      <TableCell className="font-medium text-left">
-                        {i + 1}
-                      </TableCell>
-                      <TableCell className="font-medium text-left">
-                        {e}
-                      </TableCell>
+              {arrayOfECD?.map((e, i) => {
+                return (
+                  <TableRow key={i}>
+                    <TableCell className="font-medium text-left">
+                      {i + 1}
+                    </TableCell>
+                    <TableCell className="font-medium text-left">{e}</TableCell>
 
-                      <TableCell className="text-center">
-                        <Button
-                          variant={"ghost"}
-                          type="button"
-                          size={"icon"}
-                          onClick={() => deleteFromECDArray(i)}
-                        >
-                          <MdDelete className="text-lg" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                }
-              )}
+                    <TableCell className="text-center">
+                      <Button
+                        variant={"ghost"}
+                        type="button"
+                        size={"icon"}
+                        onClick={() => deleteFromECDArray(i)}
+                      >
+                        <MdDelete className="text-lg" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>
       </div>
-      <div className="w-full flex-col flex gap-4">
+      <div className="w-full flex-col flex gap-4 py-8">
         <div className="w-full">
           <CardTitle>Academic-Evaluation</CardTitle>
           <CardDescription>Average-Feedback</CardDescription>
         </div>
-        <MiniForm2 feedback={performance?.feedback} />
+        <MiniForm3
+          academicAppraisel={academicAppraisel}
+          arrayOfECD={arrayOfECD}
+          feedback={performance?.feedback}
+          performance={performance}
+        />
       </div>
-
-      <Button
-        onClick={onSubmit}
-        disabled={!(arrayOfPreviousYear.length > 0)}
-        className="m-10 text-center w-fit"
-      >
-        Save Changes
-      </Button>
     </div>
   );
 };

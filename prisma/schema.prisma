@@ -64,12 +64,12 @@ model Performance {
   effectiveCurriculamEfforts String[]
   publications               PublicationAndJournal[] //done
   booksArticleChpter         BookArticleChapterPublished[] //done
+  programsAttended           ProgramsAttended[]
   programsOrganized          ProgramsOrganized[]
-  programsAttended           ProgramAttended[]
   sponsoredResearch          SponsoredResearch[]
   consultancyServices        ConsultancyService[]
-  intellectualPropertyRights IntellectualPropertyRight[]
-  examinationDuties          ExaminationDuty[]
+  intellectualPropertyRights IntellectualPropertyRight?
+  examinationDuties          ExaminationDuty?
   activities                 Activity[]
   responsibilities           Responsibility[]
   achievements               String[]
@@ -86,7 +86,7 @@ model AverageResult {
   term           Term
   level          Level
   courseHead     CourseHead
-  previousYear   PreviouseYear
+  year           PreviouseYear
   hoursAlloted   Float
   classConducted Float
   result         Float
@@ -132,7 +132,7 @@ model PublicationAndJournal {
   name          String
   issnNo        String
   isMainAuthor  Boolean
-  indexedIn     String?
+  indexedIn     String
   Performance   Performance?           @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId String
 }
@@ -141,14 +141,14 @@ model BookArticleChapterPublished {
   id                    String       @id @default(cuid())
   title                 String
   titleWithPageNo       String
-  IssbnNo               String
+  isbnNo                String
   detailOfCoAuthors     String
   publishedMonthAndYear Boolean
   Performance           Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId         String
 }
 
-model ProgramsOrganized {
+model ProgramsAttended {
   id            String       @id @default(cuid())
   title         String
   duration      String
@@ -158,7 +158,7 @@ model ProgramsOrganized {
   performanceId String
 }
 
-model ProgramAttended {
+model ProgramsOrganized {
   id            String       @id @default(cuid())
   title         String
   duration      String
@@ -167,13 +167,13 @@ model ProgramAttended {
 }
 
 model SponsoredResearch {
-  id                        String       @id @default(cuid())
+  id                        String                  @id @default(cuid())
   scheme                    String
   agency                    String
-  status                    String
+  status                    SponsoredResearchStatus
   dateOfSubmissionOrAwarded DateTime
   grantReceived             String
-  Performance               Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  Performance               Performance?            @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId             String
 }
 
@@ -190,8 +190,8 @@ model ConsultancyService {
 
 model Patent {
   id                          String                    @default(cuid())
-  status                      String
-  dateOfApplication           DateTime
+  status                      PropertyRightStatus
+  dateOfAppliedGranted        DateTime
   commercialized              Boolean
   intellectualPropertyRight   IntellectualPropertyRight @relation(fields: [intellectualPropertyRightId], references: [id])
   intellectualPropertyRightId String                    @unique
@@ -199,8 +199,8 @@ model Patent {
 
 model CopyRights {
   id                          String                    @default(cuid())
-  status                      String
-  dateOfApplication           DateTime
+  status                      PropertyRightStatus
+  dateOfAppliedGranted        DateTime
   commercialized              Boolean
   intellectualPropertyRight   IntellectualPropertyRight @relation(fields: [intellectualPropertyRightId], references: [id])
   intellectualPropertyRightId String                    @unique
@@ -208,8 +208,8 @@ model CopyRights {
 
 model TradeMarks {
   id                          String                    @default(cuid())
-  status                      String
-  dateOfApplication           DateTime
+  status                      PropertyRightStatus
+  dateOfAppliedGranted        DateTime
   commercialized              Boolean
   intellectualPropertyRight   IntellectualPropertyRight @relation(fields: [intellectualPropertyRightId], references: [id])
   intellectualPropertyRightId String                    @unique
@@ -221,15 +221,16 @@ model IntellectualPropertyRight {
   copyRights    CopyRights[]
   tradeMarks    TradeMarks[]
   Performance   Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
-  performanceId String
+  performanceId String       @unique
 }
 
 model ExaminationDuty {
-  id            String       @id @default(cuid())
-  dutyType      String
-  assignedBy    String
-  Performance   Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
-  performanceId String
+  id                          String                    @id @default(cuid())
+  invigilationFlyingSquadDuty ExaminationDutyAssignedBy
+  answerEvaluationDuty        ExaminationDutyAssignedBy
+  questionPaperSettingDuty    ExaminationDutyAssignedBy
+  Performance                 Performance?              @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  performanceId               String                    @unique
 }
 
 model Activity {
@@ -252,6 +253,21 @@ model Responsibility {
 enum ResponsibilityLevel {
   Department
   Institute
+}
+
+enum ExaminationDutyAssignedBy {
+  University
+  Institute
+}
+
+enum SponsoredResearchStatus {
+  Awarded
+  Submitted
+}
+
+enum PropertyRightStatus {
+  Applied
+  NotApplied
 }
 
 enum ActivityTypes {
