@@ -1,0 +1,323 @@
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Student Related Info
+
+model User {
+  id            String        @id @default(cuid())
+  name          String?
+  email         String?       @unique
+  emailVerified DateTime?
+  image         String        @default("/default-user.png")
+  role          Role
+  accounts      Account[]
+  sessions      Session[]
+  password      String?
+  personalInfo  PersonalInfo?
+  academics     Academics?
+  performance   Performance[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Performance {
+  id                         String                        @id @default(cuid())
+  departmentName             String //done
+  facultyName                String //done
+  phdDuringPeriod            String //done
+  teachingAndLearning        AverageResult[] //done
+  feedback                   Feedback? //done
+  effectiveCurriculamEfforts String[]
+  publications               PublicationAndJournal[] //done
+  booksArticleChpter         BookArticleChapterPublished[] //done
+  programsAttended           ProgramsAttended[]
+  programsOrganized          ProgramsOrganized[]
+  sponsoredResearch          SponsoredResearch[]
+  consultancyServices        ConsultancyService[]
+  intellectualPropertyRights IntellectualPropertyRight?
+  examinationDuties          ExaminationDuty?
+  activities                 Activity[]
+  responsibilities           Responsibility[]
+  achievements               String[]
+  grade                      Grade?
+  user                       User                          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                     String
+  createdAt                  DateTime                      @default(now())
+  updatedAt                  DateTime                      @updatedAt
+}
+
+model AverageResult {
+  id             String        @id @default(cuid())
+  nameOfSubject  String
+  term           Term
+  level          Level
+  courseHead     CourseHead
+  year           PreviouseYear
+  hoursAlloted   Float
+  classConducted Float
+  result         Float
+  Performance    Performance   @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  performanceId  String
+}
+
+enum Term {
+  I
+  II
+}
+
+enum Level {
+  UG
+  PG
+}
+
+enum CourseHead {
+  TH
+  PR
+  T
+}
+
+enum PreviouseYear {
+  Current
+  Previous
+}
+
+model Feedback {
+  studentTermIIPreviousYear Int         @default(0)
+  studentTermICurrentYear   Int         @default(0)
+  peerTermIIPreviousYear    Int         @default(0)
+  peerTermICurrentYear      Int         @default(0)
+  peerAndStudentFeedback    Int         @default(0)
+  Performance               Performance @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  performanceId             String      @unique
+}
+
+model PublicationAndJournal {
+  id            String                 @id @default(cuid())
+  paperTitle    String
+  level         JournalConferenceLevel
+  name          String
+  issnNo        String
+  isMainAuthor  Boolean
+  indexedIn     String
+  Performance   Performance?           @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  performanceId String
+}
+
+model BookArticleChapterPublished {
+  id                    String       @id @default(cuid())
+  title                 String
+  titleWithPageNo       String
+  isbnNo                String
+  detailOfCoAuthors     String
+  publishedMonthAndYear String
+  Performance           Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  performanceId         String
+}
+
+model ProgramsAttended {
+  id            String       @id @default(cuid())
+  title         String
+  duration      String
+  place         String
+  organizerName String
+  Performance   Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  performanceId String
+}
+
+model ProgramsOrganized {
+  id            String       @id @default(cuid())
+  title         String
+  duration      String
+  Performance   Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  performanceId String
+}
+
+model SponsoredResearch {
+  id                        String                  @id @default(cuid())
+  scheme                    String
+  agency                    String
+  status                    SponsoredResearchStatus
+  dateOfSubmissionOrAwarded DateTime
+  grantReceived             String
+  Performance               Performance?            @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  performanceId             String
+}
+
+model ConsultancyService {
+  id                     String       @id @default(cuid())
+  natureOfWork           String
+  agency                 String
+  workCommendamentDate   DateTime
+  DateOfCompletion       DateTime
+  publishingMonthAndYear String
+  Performance            Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  performanceId          String
+}
+
+model Patent {
+  id                          String                    @default(cuid())
+  status                      PropertyRightStatus
+  dateOfAppliedGranted        DateTime
+  commercialized              Boolean
+  intellectualPropertyRight   IntellectualPropertyRight @relation(fields: [intellectualPropertyRightId], references: [id])
+  intellectualPropertyRightId String                    @unique
+}
+
+model CopyRights {
+  id                          String                    @default(cuid())
+  status                      PropertyRightStatus
+  dateOfAppliedGranted        DateTime
+  commercialized              Boolean
+  intellectualPropertyRight   IntellectualPropertyRight @relation(fields: [intellectualPropertyRightId], references: [id])
+  intellectualPropertyRightId String                    @unique
+}
+
+model TradeMarks {
+  id                          String                    @default(cuid())
+  status                      PropertyRightStatus
+  dateOfAppliedGranted        DateTime
+  commercialized              Boolean
+  intellectualPropertyRight   IntellectualPropertyRight @relation(fields: [intellectualPropertyRightId], references: [id])
+  intellectualPropertyRightId String                    @unique
+}
+
+model IntellectualPropertyRight {
+  id            String       @unique @default(cuid())
+  patents       Patent[]
+  copyRights    CopyRights[]
+  tradeMarks    TradeMarks[]
+  Performance   Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  performanceId String       @unique
+}
+
+model ExaminationDuty {
+  id                          String                    @id @default(cuid())
+  invigilationFlyingSquadDuty ExaminationDutyAssignedBy
+  answerEvaluationDuty        ExaminationDutyAssignedBy
+  questionPaperSettingDuty    ExaminationDutyAssignedBy
+  Performance                 Performance?              @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  performanceId               String                    @unique
+}
+
+model Activity {
+  id            String        @id @default(cuid())
+  name          String
+  duration      String
+  type          ActivityTypes
+  Performance   Performance?  @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  performanceId String
+}
+
+model Responsibility {
+  id            String              @id @default(cuid())
+  natureOfWork  String
+  level         ResponsibilityLevel
+  Performance   Performance?        @relation(fields: [performanceId], references: [id], onDelete: Cascade)
+  performanceId String
+}
+
+enum ResponsibilityLevel {
+  Department
+  Institute
+}
+
+enum ExaminationDutyAssignedBy {
+  University
+  Institute
+}
+
+enum SponsoredResearchStatus {
+  Awarded
+  Submitted
+}
+
+enum PropertyRightStatus {
+  Applied
+  NotApplied
+}
+
+enum ActivityTypes {
+  ExtraCurricular
+  CoCurricular
+}
+
+enum Grade {
+  OutStanding
+  Excellent
+  VeryGood
+  Satisfactory
+  Average
+}
+
+enum Role {
+  Student
+  Teacher
+  Principle
+  HOD
+}
+
+enum JournalConferenceLevel {
+  Local
+  State
+  International
+  National
+}
+
+model PersonalInfo {
+  id      String @id @default(cuid())
+  mobile1 String @default("")
+  userId  String @unique
+  User    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Academics {
+  id             String   @id @default(cuid())
+  designation    String   @default("")
+  dateOfJoining  DateTime @default(now())
+  facultyName    String   @default("")
+  departmentName String   @default("")
+  userId         String   @unique
+  User           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
