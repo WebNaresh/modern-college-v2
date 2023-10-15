@@ -1,4 +1,5 @@
 "use client";
+import { pEFormStep4 } from "@/actions/teacherActions";
 import { Button } from "@/components/ui/button";
 import { CardDescription, CardTitle } from "@/components/ui/card";
 import {
@@ -11,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
+import useCelebration from "@/hooks/celebration";
 import useStore from "@/hooks/loader-hook";
 import {
   Performance,
@@ -31,21 +33,21 @@ type Props = {
     programsAttended: ProgramsAttended[];
   };
 };
+export type ProgramOrganized = {
+  id?: string;
+  title: string;
+  duration: string;
+  performanceId?: string;
+};
+export type ProgramAttended = {
+  id?: string;
+  title: string;
+  duration: string;
+  place: string;
+  organizerName: string;
+  performanceId?: string;
+};
 const PublicationForm = ({ performance, user }: Props) => {
-  type ProgramOrganized = {
-    id?: string;
-    title: string;
-    duration: string;
-    performanceId?: string;
-  };
-  type ProgramAttended = {
-    id?: string;
-    title: string;
-    duration: string;
-    place: string;
-    organizerName: string;
-    performanceId?: string;
-  };
   const [programAttended, setProgramAttended] = useState<ProgramAttended[]>(
     performance.programsAttended
   );
@@ -59,9 +61,28 @@ const PublicationForm = ({ performance, user }: Props) => {
 
   const { toast } = useToast();
   const { loading, setLoading } = useStore();
+  const { setCelebration } = useCelebration();
   const onSubmit = async () => {
     console.log("hello");
-
+    setLoading(true);
+    const newPeform = await pEFormStep4({
+      programOrganized,
+      programAttended,
+      performanceId: performance.id,
+    }).then(async ({ message, status }) => {
+      console.log(`🚀 ~  message, status :`, message, status);
+      status = await status;
+      toast({
+        title: message,
+      });
+      if (status === true) {
+        setLoading(false);
+        setCelebration(true);
+        router.push(`/performance/${performance.id}/evaluation`);
+      } else {
+        setLoading(false);
+      }
+    });
     console.log(programAttended);
   };
   const deleteFromArray = async (i: number) => {
@@ -213,7 +234,11 @@ const PublicationForm = ({ performance, user }: Props) => {
 
       <Button
         onClick={onSubmit}
-        disabled={!(programAttended.length > 0)}
+        disabled={
+          !(programAttended.length > 0 && programOrganized.length > 0) ||
+          programAttended.length <= performance.programsAttended.length ||
+          programOrganized.length <= performance.programsOrganized.length
+        }
         className="m-10 text-center w-fit"
       >
         Save Changes
