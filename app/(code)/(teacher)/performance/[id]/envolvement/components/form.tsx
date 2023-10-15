@@ -14,11 +14,14 @@ import { useToast } from "@/components/ui/use-toast";
 import useStore from "@/hooks/loader-hook";
 import { Activity, Performance, Responsibility } from "@prisma/client";
 import { Session } from "next-auth";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 import { MdDelete } from "react-icons/md";
 import MiniForm from "./mini-form";
 import MiniForm2 from "./mini-form.2";
+import { pEFormStep7 } from "@/actions/teacherActions";
+import useLoader from "@/hooks/loader-hook";
+import useCelebration from "@/hooks/celebration";
 
 type Props = {
   user: Session;
@@ -27,36 +30,77 @@ type Props = {
     responsibilities: Responsibility[];
   };
 };
+
+export type ActivityFormValues = {
+  id?: string;
+  name: string;
+  duration: string;
+  type: "ExtraCurricular" | "CoCurricular";
+  performanceId?: string;
+};
+
+export type ResponsibilityFormValues = {
+  id?: string;
+  natureOfWork: string;
+  level: "Department" | "Institute";
+  performanceId?: string;
+};
+
 const Envolvement = ({ user, performance }: Props) => {
-  type Activity = {
-    id?: string;
-    name: string;
-    duration: string;
-    type: "ExtraCurricular" | "CoCurricular";
-    performanceId?: string;
-  };
-  type Responsibility = {
-    id?: string;
-    natureOfWork: string;
-    level: "Department" | "Institute";
-    performanceId?: string;
-  };
-  const [activity, setActivity] = useState<Activity[]>(performance.activities);
-  const [responsibility, setResponsibility] = useState<Responsibility[]>(
-    performance.responsibilities
+  const [activity, setActivity] = useState<ActivityFormValues[]>(
+    performance.activities
   );
+
+  const { setLoading } = useLoader();
+  const { setCelebration } = useCelebration();
+  const [responsibility, setResponsibility] = useState<
+    ResponsibilityFormValues[]
+  >(performance.responsibilities);
+
+  console.log(
+    activity.length < activity.length + 1 ||
+      responsibility.length < activity.length + 1
+  );
+
   const router = useRouter();
   if (user === undefined) {
     router.push("/login");
   }
 
   const { toast } = useToast();
-  const { loading, setLoading } = useStore();
+  // const { loading, setLoading } = useStore();
   const onSubmit = async () => {
-    console.log("hello");
+    setLoading(true);
+    try {
+      // console.log("hello");
+      const form9 = await pEFormStep7({
+        activity,
+        responsibility,
+        performanceId: performance.id,
+      });
 
-    console.log(activity);
+      if (form9?.status === true) {
+        toast({
+          title: form9.message,
+        });
+
+        console.log(form9.message);
+        setCelebration(true);
+        router.push("/");
+      } else {
+        toast({
+          title: form9?.message,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+    // console.log(activity);
+    // console.log(responsibility);
   };
+
   const deleteFromArray = async (i: number) => {
     // Make sure the index is within the valid range of the array
     if (i < 0 || i >= activity.length) {
@@ -79,6 +123,56 @@ const Envolvement = ({ user, performance }: Props) => {
         // Assuming you have a function called 'deleteFamilyItem' that makes the API call
         // let res = await deleteFamilyItem(deletedItem);
         // update({ data: activity });
+        // if (res?.user) {
+        //   // Show a success toast when the item is successfully deleted
+        //   toast({
+        //     title: "Success!",
+        //     description: "Item deleted successfully.",
+        //   });
+        // } else {
+        //   // Show an error toast when the delete operation fails
+        //   toast({
+        //     title: "Error!",
+        //     description: "Failed to delete item. Please try again later.",
+        //     variant: "destructive", // Use "destructive" variant for error messages
+        //   });
+        // }
+      } catch (error) {
+        // Handle the error appropriately
+
+        // Show an error toast when the delete operation fails
+        toast({
+          title: "Error!",
+          description: "Failed to delete item. Please try again later.",
+          variant: "destructive", // Use "destructive" variant for error messages
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+  const deleteFromArray2 = async (i: number) => {
+    // Make sure the index is within the valid range of the array
+    if (i < 0 || i >= responsibility.length) {
+      return;
+    }
+
+    // Clone the original array to avoid mutating it directly
+    const newArray = [...responsibility];
+
+    // Remove the element at index i from the cloned array
+    const deletedItem = newArray.splice(i, 1)[0];
+
+    // Update the state with the new array (if you're using React)
+    setResponsibility(newArray);
+
+    // Check if the deleted item has an 'id' property and perform an API delete
+    if (deletedItem && deletedItem.id) {
+      setLoading(true);
+      try {
+        // Assuming you have a function called 'deleteFamilyItem' that makes the API call
+        // let res = await deleteFamilyItem(deletedItem);
+        // update({ data: responsibility });
         // if (res?.user) {
         //   // Show a success toast when the item is successfully deleted
         //   toast({
@@ -187,7 +281,7 @@ const Envolvement = ({ user, performance }: Props) => {
                       variant={"ghost"}
                       type="button"
                       size={"icon"}
-                      onClick={() => deleteFromArray(i)}
+                      onClick={() => deleteFromArray2(i)}
                     >
                       <MdDelete className="text-lg" />
                     </Button>
@@ -201,7 +295,10 @@ const Envolvement = ({ user, performance }: Props) => {
 
       <Button
         onClick={onSubmit}
-        disabled={!(activity.length > 0)}
+        disabled={
+          !(activity.length > performance.activities.length) ||
+          !(responsibility.length > performance.responsibilities.length)
+        }
         className="m-10 text-center w-fit"
       >
         Save Changes
