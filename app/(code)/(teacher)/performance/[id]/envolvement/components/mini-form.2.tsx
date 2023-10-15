@@ -23,9 +23,11 @@ import { MdAdd } from "react-icons/md";
 import { z } from "zod";
 
 type Props = {
-  setResponsibility: React.Dispatch<React.SetStateAction<UserForm1Values[]>>;
+  setResponsibility: React.Dispatch<
+    React.SetStateAction<ResposibilityFormValues[]>
+  >;
 };
-type UserForm1Values = z.infer<typeof formSchema>;
+type ResposibilityFormValues = z.infer<typeof formSchema>;
 
 const formSchema = z.object({
   natureOfWork: z.string().min(1),
@@ -35,15 +37,15 @@ const formSchema = z.object({
 const MiniForm2 = (props: Props) => {
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<UserForm1Values>({
+  const form = useForm<ResposibilityFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       natureOfWork: "",
       level: undefined,
     },
   });
-  const onSubmit = async (formData: UserForm1Values) => {
-    console.log(`🚀 ~ formData:`, formData);
+  const onSubmit = async (formData: ResposibilityFormValues) => {
+    // console.log(`🚀 ~ formData:`, formData);
     // formData.result =
     //   (formData.noOfClassesConducted / formData.noOfAllotedHour) * 100;
     props.setResponsibility((prevArray) => [...prevArray, formData]);

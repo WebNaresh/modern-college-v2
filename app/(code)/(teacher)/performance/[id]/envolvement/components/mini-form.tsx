@@ -22,9 +22,9 @@ import { MdAdd } from "react-icons/md";
 import { z } from "zod";
 
 type Props = {
-  setActivity: React.Dispatch<React.SetStateAction<UserForm1Values[]>>;
+  setActivity: React.Dispatch<React.SetStateAction<ActivtyFormValues[]>>;
 };
-type UserForm1Values = z.infer<typeof formSchema>;
+type ActivtyFormValues = z.infer<typeof formSchema>;
 
 const formSchema = z.object({
   name: z.string().min(1),
@@ -33,7 +33,7 @@ const formSchema = z.object({
 });
 
 const MiniForm = (props: Props) => {
-  const form = useForm<UserForm1Values>({
+  const form = useForm<ActivtyFormValues>({
     resolver: zodResolver(formSchema),
 
     defaultValues: {
@@ -43,7 +43,7 @@ const MiniForm = (props: Props) => {
     },
   });
 
-  const onSubmit = async (formData: UserForm1Values) => {
+  const onSubmit = async (formData: ActivtyFormValues) => {
     // formData.result =
     //   (formData.noOfClassesConducted / formData.noOfAllotedHour) * 100;
     props.setActivity((prevArray) => [...prevArray, formData]);

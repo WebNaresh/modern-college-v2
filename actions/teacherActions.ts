@@ -2,9 +2,12 @@
 
 import { AcademicAppraisel } from "@/app/(code)/(teacher)/performance/[id]/academics-appraisel/components/form";
 import { FeedbackFormTypes } from "@/app/(code)/(teacher)/performance/[id]/academics-appraisel/components/mini-form-3";
+import { ActivityFormValues, ResponsibilityFormValues } from "@/app/(code)/(teacher)/performance/[id]/envolvement/components/form";
+import { ConsultancyServicesFormValues, SponseredReasearchFormValues } from "@/app/(code)/(teacher)/performance/[id]/evaluation/components/form";
 import { authOptions } from "@/lib/auth";
 import { TeacherBasicInfo } from "@/lib/interface";
 import { prisma } from "@/lib/primsa";
+import { Activity, Responsibility } from "@prisma/client";
 import { getServerSession } from "next-auth";
 
 type FeedbackCreateManyInput = AcademicAppraisel & {
@@ -168,3 +171,106 @@ export const pEFormStep2 = async ({
     }
   }
 };
+
+
+export const pEFormStep5 = async ({ sponseredReasearch, consultancyServices, performanceId }: {
+  sponseredReasearch: SponseredReasearchFormValues[],
+  consultancyServices: ConsultancyServicesFormValues[]
+  performanceId: string
+}) => {
+  const session = await getServerSession(authOptions)
+  console.log(session);
+  
+  if (!session) {
+    return { message: "user is not authorized", user: null };
+  } else {
+    try {
+      // Check the activty Performaceid if not add in it
+      const sponseredReasearchWithId = sponseredReasearch
+        .filter((value) => !value.id)
+        .map((sponseredReasearch) => ({
+          ...sponseredReasearch,
+          performanceId, // Add your actual performanceId here
+        }));
+
+      const sponseredReasearched = await prisma.sponsoredResearch.createMany({
+        data: sponseredReasearchWithId
+      })
+      // Check the reposibilty Performaceid if not add in it
+      const consultancyServicesWithId = consultancyServices
+        .filter((value) => !value.id)
+        .map((consultancyServices) => ({
+          ...consultancyServices,
+          performanceId, // Add your actual performanceId here
+        }));
+
+      const resposibilities = await prisma.consultancyService.createMany({
+        data: consultancyServicesWithId
+      })
+      console.log(sponseredReasearched, resposibilities);
+      return {
+        message: "Consultancy services and sponseredReasearched added",
+        status: true
+      }
+
+    } catch (error) {
+      console.log({
+        status: false,
+        error
+      });
+    }
+  }
+}
+
+
+
+
+
+
+export const pEFormStep7 = async ({ activity, responsibility, performanceId }: {
+  activity: ActivityFormValues[],
+  responsibility: ResponsibilityFormValues[]
+  performanceId: string
+}) => {
+  const session = await getServerSession(authOptions)
+  if (!session) {
+    return { message: "user is not authorized", user: null };
+  } else {
+    try {
+      // Check the activty Performaceid if not add in it
+      const activityWithId = activity
+        .filter((value) => !value.id)
+        .map((activity) => ({
+          ...activity,
+          performanceId, // Add your actual performanceId here
+        }));
+
+      const activities = await prisma.activity.createMany({
+        data: activityWithId
+      })
+      // Check the reposibilty Performaceid if not add in it
+      const resposibilityWithId = responsibility
+        .filter((value) => !value.id)
+        .map((activity) => ({
+          ...activity,
+          performanceId, // Add your actual performanceId here
+        }));
+
+      const resposibilities = await prisma.responsibility.createMany({
+        data: resposibilityWithId
+      })
+      console.log(activities, resposibilities);
+      return {
+        message: "activty and data added",
+        status: true
+      }
+
+    } catch (error) {
+      console.log({
+        status: false,
+        error
+      });
+    }
+  }
+}
+

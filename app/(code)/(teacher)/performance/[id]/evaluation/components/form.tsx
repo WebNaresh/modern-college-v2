@@ -23,6 +23,9 @@ import { useState } from "react";
 import { MdDelete } from "react-icons/md";
 import MiniForm from "./mini-form";
 import MiniForm2 from "./mini-form.2";
+import useLoader from "@/hooks/loader-hook";
+import useCelebration from "@/hooks/celebration";
+import { pEFormStep5 } from "@/actions/teacherActions";
 
 type Props = {
   user: Session;
@@ -31,40 +34,73 @@ type Props = {
     consultancyServices: ConsultancyService[];
   };
 };
+
+export type SponseredReasearchFormValues = {
+  id?: string;
+  scheme: string;
+  agency: string;
+  status: "Awarded" | "Submitted";
+  dateOfSubmissionOrAwarded: Date;
+  grantReceived: string;
+  performanceId?: string;
+};
+export type ConsultancyServicesFormValues = {
+  id?: string;
+  natureOfWork: string;
+  agency: string;
+  workCommendamentDate: Date;
+  DateOfCompletion: Date;
+  publishingMonthAndYear: string;
+  performanceId?: string;
+};
 const Evaluation = ({ user, performance }: Props) => {
-  type SponseredReasearch = {
-    id?: string;
-    scheme: string;
-    agency: string;
-    status: "Awarded" | "Submitted";
-    dateOfSubmissionOrAwarded: Date;
-    grantReceived: string;
-    performanceId?: string;
-  };
-  type ConsultancyServices = {
-    id?: string;
-    natureOfWork: string;
-    agency: string;
-    workCommendamentDate: Date;
-    DateOfCompletion: Date;
-    publishingMonthAndYear: string;
-    performanceId?: string;
-  };
   const [sponseredReasearch, setSponseredReasearch] = useState<
-    SponseredReasearch[]
+    SponseredReasearchFormValues[]
   >(performance.sponsoredResearch);
   const [consultancyServices, setConsultancyServices] = useState<
-    ConsultancyServices[]
+    ConsultancyServicesFormValues[]
   >(performance.consultancyServices);
   const router = useRouter();
+  const { setLoading } = useLoader();
+  const { setCelebration } = useCelebration();
   if (user === undefined) {
     router.push("/login");
   }
 
   const { toast } = useToast();
-  const { loading, setLoading } = useStore();
+  // const { loading, setLoading } = useStore();
   const onSubmit = async () => {
+    let status = false;
     console.log("hello");
+    setLoading(true);
+    try {
+      // console.log("hello");
+      const form5 = await pEFormStep5({
+        sponseredReasearch,
+        consultancyServices,
+        performanceId: performance.id,
+      });
+
+      if (form5?.status === true) {
+        toast({
+          title: form5.message,
+        });
+        status = true;
+        console.log(form5.message);
+        setCelebration(true);
+      } else {
+        toast({
+          title: form5?.message,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      if (status) {
+        router.push("/performance/clnqzjvqy00059m2wyc3fb8w8/property-rights");
+      }
+      setLoading(false);
+    }
 
     console.log(sponseredReasearch);
   };
@@ -234,7 +270,10 @@ const Evaluation = ({ user, performance }: Props) => {
 
       <Button
         onClick={onSubmit}
-        disabled={!(sponseredReasearch.length > 0)}
+        disabled={
+          !(sponseredReasearch.length > performance.sponsoredResearch.length) ||
+          !(consultancyServices.length > performance.consultancyServices.length)
+        }
         className="m-10 text-center w-fit"
       >
         Save Changes

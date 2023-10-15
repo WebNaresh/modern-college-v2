@@ -24,9 +24,11 @@ const Page = async (props: Props) => {
       programsAttended: true,
       sponsoredResearch: true,
       consultancyServices: true,
+      activities: true,
+      responsibilities: true,
+      booksArticleChpter: true,
       intellectualPropertyRights: true,
       examinationDuties: true,
-      activities: true,
     },
   });
   if (data?.user === undefined) {
@@ -48,7 +50,8 @@ const Page = async (props: Props) => {
     },
     {
       status:
-        (existingPerformance?.publications?.length as number) >= 2
+        (existingPerformance?.publications?.length as number) >= 1 &&
+        (existingPerformance?.booksArticleChpter.length as number) >= 1
           ? true
           : false,
       formStep: "Publication-details",
@@ -56,7 +59,8 @@ const Page = async (props: Props) => {
     },
     {
       status:
-        (existingPerformance?.programsOrganized?.length as number) >= 2
+        (existingPerformance?.programsOrganized?.length as number) >= 1 &&
+        (existingPerformance?.programsOrganized?.length as number) >= 1
           ? true
           : false,
       formStep: "Program-details",
@@ -64,23 +68,22 @@ const Page = async (props: Props) => {
     },
     {
       status:
-        (existingPerformance?.programsOrganized?.length as number) >= 2
+        (existingPerformance?.consultancyServices?.length as number) >= 1 &&
+        (existingPerformance?.sponsoredResearch.length as number) >= 1
           ? true
           : false,
       formStep: "Personal Evaluation",
       href: `/performance/${existingPerformance?.id}/evaluation`,
     },
     {
-      status:
-        (existingPerformance?.programsAttended?.length as number) >= 2
-          ? true
-          : false,
+      status: false,
       formStep: "Intelectual property rights",
       href: `/performance/${existingPerformance?.id}/property-rights`,
     },
     {
       status:
-        (existingPerformance?.programsAttended?.length as number) >= 2
+        (existingPerformance?.activities.length as number) >= 1 &&
+        (existingPerformance?.responsibilities?.length as number) >= 1
           ? true
           : false,
       formStep: "College Envolvement",

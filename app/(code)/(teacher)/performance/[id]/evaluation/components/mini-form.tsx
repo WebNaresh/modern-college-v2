@@ -138,7 +138,7 @@ const MiniForm = (props: Props) => {
               name="dateOfSubmissionOrAwarded"
               render={({ field }) => (
                 <FormItem className="my-4 flex w-full flex-col">
-                  <FormLabel>Date of Joining</FormLabel>
+                  <FormLabel> Date of Submission/Awarded.</FormLabel>
                   <Popover modal={true}>
                     <PopoverTrigger
                       type="button"
