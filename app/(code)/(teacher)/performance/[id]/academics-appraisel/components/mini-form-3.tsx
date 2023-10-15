@@ -11,9 +11,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
+import useCelebration from "@/hooks/celebration";
+import useLoader from "@/hooks/loader-hook";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AverageResult, Feedback, Performance } from "@prisma/client";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { FiPercent } from "react-icons/fi";
 import { z } from "zod";
@@ -43,8 +45,9 @@ const MiniForm3 = ({
   academicAppraisel,
   performance,
 }: Props) => {
-  const [loading, setLoading] = useState(false);
-  console.log(`🚀 ~ feedback:`, feedback?.studentTermICurrentYear);
+  const { setLoading, loading } = useLoader();
+  const { setCelebration } = useCelebration();
+  const router = useRouter();
 
   const form = useForm<FeedbackFormTypes>({
     resolver: zodResolver(formSchema),
@@ -58,8 +61,8 @@ const MiniForm3 = ({
   });
 
   const onSubmit = async (formData: FeedbackFormTypes) => {
-    console.log(`🚀 ~ formData:`, formData);
-    console.log(academicAppraisel);
+    setLoading(true);
+    let status = false;
     const hasCurrentYearEntry = academicAppraisel.some(
       (entry) => entry.year === "Current"
     );
@@ -83,14 +86,27 @@ const MiniForm3 = ({
       hasPreviousTermIIEntry &&
       arrayOfECD.length > 0
     ) {
-      const formStatus = await pEFormStep2({
+      await pEFormStep2({
         formData,
         academicAppraisel,
         arrayOfECD,
         performanceId: performance.id,
+      }).then(async ({ message, status }) => {
+        console.log(`🚀 ~  message, status :`, message, status);
+        status = await status;
+        toast({
+          title: message,
+        });
+        if (status === true) {
+          setLoading(false);
+          setCelebration(true);
+          // router.replace(`performance/${performance.id}/publication`);
+          router.push(`/performance/${performance.id}/publication`);
+        } else {
+          setLoading(false);
+        }
       });
     } else {
-      console.log(`🚀 ~       hasCurrentYearEntry`, hasCurrentYearEntry);
       if (!hasCurrentYearEntry) {
         toast({
           title: "Add Entry",
@@ -124,10 +140,6 @@ const MiniForm3 = ({
       }
     }
   };
-  console.log(
-    `🚀 ~form.getValues().peerAndStudentFeedback:`,
-    form.formState.isDirty
-  );
 
   return (
     <>
@@ -150,20 +162,21 @@ const MiniForm3 = ({
                       <div className="relative">
                         <FiPercent className="absolute right-2 top-2" />
                         <Input
+                          onFocus={(e) => e.target.select()}
                           type="number"
                           value={field.value}
                           onChange={(
                             e: React.ChangeEvent<HTMLInputElement>
                           ) => {
-                            form.formState.isDirty = true;
                             if (e.target.value === "") {
                               form.setValue("peerTermIIPreviousYear", 0);
+                              field.onChange(0);
                             } else {
                               form.setValue(
                                 "studentTermICurrentYear",
                                 parseInt(e.target.value)
                               );
-                              field.onChange(e);
+                              field.onChange(parseInt(e.target.value));
                             }
                           }}
                           className="w-full"
@@ -191,6 +204,7 @@ const MiniForm3 = ({
                       <div className="relative">
                         <FiPercent className="absolute right-2 top-2" />
                         <Input
+                          onFocus={(e) => e.target.select()}
                           className="w-full"
                           disabled={loading}
                           type="number"
@@ -198,14 +212,15 @@ const MiniForm3 = ({
                           onChange={(
                             e: React.ChangeEvent<HTMLInputElement>
                           ) => {
-                            form.formState.isDirty = true;
                             if (e.target.value === "") {
                               form.setValue("peerTermIIPreviousYear", 0);
+                              field.onChange(0);
                             } else {
                               form.setValue(
                                 "studentTermIIPreviousYear",
                                 parseInt(e.target.value)
                               );
+                              field.onChange(parseInt(e.target.value));
                             }
                           }}
                           // onChange={field.onChange}
@@ -232,6 +247,7 @@ const MiniForm3 = ({
                       <div className="relative">
                         <FiPercent className="absolute right-2 top-2" />
                         <Input
+                          onFocus={(e) => e.target.select()}
                           className="w-full"
                           disabled={loading}
                           placeholder="Term-I"
@@ -240,14 +256,15 @@ const MiniForm3 = ({
                           onChange={(
                             e: React.ChangeEvent<HTMLInputElement>
                           ) => {
-                            form.formState.isDirty = true;
                             if (e.target.value === "") {
                               form.setValue("peerTermIIPreviousYear", 0);
+                              field.onChange(0);
                             } else {
                               form.setValue(
                                 "peerTermICurrentYear",
                                 parseInt(e.target.value)
                               );
+                              field.onChange(parseInt(e.target.value));
                             }
                           }}
                         />
@@ -271,6 +288,7 @@ const MiniForm3 = ({
                       <div className="relative">
                         <FiPercent className="absolute right-2 top-2" />
                         <Input
+                          onFocus={(e) => e.target.select()}
                           className="w-full"
                           disabled={loading}
                           placeholder="Term-II"
@@ -279,14 +297,15 @@ const MiniForm3 = ({
                           onChange={(
                             e: React.ChangeEvent<HTMLInputElement>
                           ) => {
-                            form.formState.isDirty = true;
                             if (e.target.value === "") {
                               form.setValue("peerTermIIPreviousYear", 0);
+                              field.onChange(0);
                             } else {
                               form.setValue(
                                 "peerTermIIPreviousYear",
                                 parseInt(e.target.value)
                               );
+                              field.onChange(parseInt(e.target.value));
                             }
                           }}
                         />
@@ -309,6 +328,7 @@ const MiniForm3 = ({
                       <div className="relative">
                         <FiPercent className="absolute right-2 top-2" />
                         <Input
+                          onFocus={(e) => e.target.select()}
                           className="w-full"
                           disabled={loading}
                           placeholder="Average feedback of both"
@@ -317,14 +337,15 @@ const MiniForm3 = ({
                           onChange={(
                             e: React.ChangeEvent<HTMLInputElement>
                           ) => {
-                            form.formState.isDirty = true;
                             if (e.target.value === "") {
                               form.setValue("peerTermIIPreviousYear", 0);
+                              field.onChange(0);
                             } else {
                               form.setValue(
                                 "peerAndStudentFeedback",
                                 parseInt(e.target.value)
                               );
+                              field.onChange(parseInt(e.target.value));
                             }
                           }}
                         />

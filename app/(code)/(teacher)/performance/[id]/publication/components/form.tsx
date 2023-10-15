@@ -1,4 +1,5 @@
 "use client";
+import { pEFormStep3 } from "@/actions/teacherActions";
 import { Button } from "@/components/ui/button";
 import { CardDescription, CardTitle } from "@/components/ui/card";
 import {
@@ -11,7 +12,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
-import useStore from "@/hooks/loader-hook";
+import useCelebration from "@/hooks/celebration";
+import useLoader from "@/hooks/loader-hook";
 import {
   BookArticleChapterPublished,
   Performance,
@@ -31,25 +33,25 @@ type Props = {
     booksArticleChpter: BookArticleChapterPublished[];
   };
 };
+export type PublicationValues = {
+  id?: string;
+  paperTitle: string;
+  level: "State" | "Local" | "International" | "National";
+  name: string;
+  issnNo: string;
+  isMainAuthor: boolean;
+  indexedIn: string;
+  performanceId?: string;
+};
+export type BookValues = {
+  id?: string;
+  title: string;
+  titleWithPageNo: string;
+  isbnNo: string;
+  detailOfCoAuthors: string;
+  publishedMonthAndYear: string;
+};
 const PublicationForm = ({ performance, user }: Props) => {
-  type PublicationValues = {
-    id?: string;
-    paperTitle: string;
-    level: "State" | "Local" | "International" | "National";
-    name: string;
-    issnNo: string;
-    isMainAuthor: boolean;
-    indexedIn: string;
-    performanceId?: string;
-  };
-  type BookValues = {
-    id?: string;
-    title: string;
-    titleWithPageNo: string;
-    isbnNo: string;
-    detailOfCoAuthors: string;
-    publishedMonthAndYear: string;
-  };
   const [arrayOfPublications, setArrayOfPublications] = useState<
     PublicationValues[]
   >(performance.publications);
@@ -60,56 +62,49 @@ const PublicationForm = ({ performance, user }: Props) => {
   }
 
   const { toast } = useToast();
-  const { loading, setLoading } = useStore();
+  const { setLoading, loading } = useLoader();
+  const { setCelebration } = useCelebration();
   const onSubmit = async () => {
     console.log("hello");
-
+    const newPeform = await pEFormStep3({
+      arrayOfPublications,
+      arrayOfBooks,
+      performanceId: performance.id,
+    }).then(async ({ message, status }) => {
+      console.log(`🚀 ~  message, status :`, message, status);
+      status = await status;
+      toast({
+        title: message,
+      });
+      if (status === true) {
+        setLoading(false);
+        setCelebration(true);
+        router.push(`/performance/${performance.id}/program`);
+      } else {
+        setLoading(false);
+      }
+    });
+    console.log(`🚀 ~ newPeform:`, newPeform);
     console.log(arrayOfPublications);
   };
   const deleteFromArray = async (i: number) => {
-    // Make sure the index is within the valid range of the array
     if (i < 0 || i >= arrayOfPublications.length) {
       return;
     }
 
-    // Clone the original array to avoid mutating it directly
     const newArray = [...arrayOfPublications];
 
-    // Remove the element at index i from the cloned array
     const deletedItem = newArray.splice(i, 1)[0];
 
-    // Update the state with the new array (if you're using React)
     setArrayOfPublications(newArray);
 
-    // Check if the deleted item has an 'id' property and perform an API delete
     if (deletedItem && deletedItem.id) {
       setLoading(true);
       try {
-        // Assuming you have a function called 'deleteFamilyItem' that makes the API call
-        // let res = await deleteFamilyItem(deletedItem);
-        // update({ data: arrayOfPublications });
-        // if (res?.user) {
-        //   // Show a success toast when the item is successfully deleted
-        //   toast({
-        //     title: "Success!",
-        //     description: "Item deleted successfully.",
-        //   });
-        // } else {
-        //   // Show an error toast when the delete operation fails
-        //   toast({
-        //     title: "Error!",
-        //     description: "Failed to delete item. Please try again later.",
-        //     variant: "destructive", // Use "destructive" variant for error messages
-        //   });
-        // }
       } catch (error) {
-        // Handle the error appropriately
-
-        // Show an error toast when the delete operation fails
         toast({
           title: "Error!",
           description: "Failed to delete item. Please try again later.",
-          variant: "destructive", // Use "destructive" variant for error messages
         });
       } finally {
         setLoading(false);
@@ -228,7 +223,11 @@ const PublicationForm = ({ performance, user }: Props) => {
 
       <Button
         onClick={onSubmit}
-        disabled={!(arrayOfPublications.length > 0)}
+        disabled={
+          !(arrayOfPublications.length > 0 && arrayOfBooks.length > 0) ||
+          arrayOfPublications.length <= performance.publications.length ||
+          arrayOfBooks.length <= performance.booksArticleChpter.length
+        }
         className="m-10 text-center w-fit"
       >
         Save Changes
