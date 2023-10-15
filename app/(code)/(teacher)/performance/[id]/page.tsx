@@ -71,18 +71,12 @@ const Page = async (props: Props) => {
       href: `/performance/${existingPerformance?.id}/evaluation`,
     },
     {
-      status:
-        (existingPerformance?.programsAttended?.length as number) >= 2
-          ? true
-          : false,
+      status: false,
       formStep: "Intelectual property rights",
       href: `/performance/${existingPerformance?.id}/property-rights`,
     },
     {
-      status:
-        (existingPerformance?.programsAttended?.length as number) >= 2
-          ? true
-          : false,
+      status: false,
       formStep: "College Envolvement",
       href: `/performance/${existingPerformance?.id}/envolvement`,
     },
