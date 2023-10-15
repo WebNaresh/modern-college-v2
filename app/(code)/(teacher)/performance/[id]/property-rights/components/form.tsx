@@ -1,5 +1,4 @@
 "use client";
-import { pEFormStep6 } from "@/actions/teacherActions";
 import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/card";
 import {
@@ -11,12 +10,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
-import useCelebration from "@/hooks/celebration";
-import useLoader from "@/hooks/loader-hook";
+import useStore from "@/hooks/loader-hook";
 import {
   CopyRights,
   ExaminationDuty,
-  IntellectualPropertyRight,
   Patent,
   Performance,
   TradeMarks,
@@ -32,44 +29,31 @@ import MiniForm2 from "./mini-form.2";
 type Props = {
   user: Session;
   performance: Performance & {
-    intellectualPropertyRights:
-      | (IntellectualPropertyRight & {
-          patents: Patent[];
-          copyRights: CopyRights[];
-          tradeMarks: TradeMarks[];
-        })
-      | null;
+    intellectualPropertyRights: {
+      patents: Patent[];
+      copyRights: CopyRights[];
+      tradeMarks: TradeMarks[];
+    } | null;
     examinationDuties: ExaminationDuty | null;
   };
 };
-export type Patents = {
-  id?: string;
-  status: "Applied" | "NotApplied";
-  dateOfAppliedGranted: Date;
-  commercialized: boolean;
-  intellectualPropertyRightId?: string;
-};
 const PropertyRightForm = ({ user, performance }: Props) => {
+  type Patents = {
+    id?: string;
+    status: "Applied" | "NotApplied";
+    dateOfAppliedGranted: Date;
+    commercialized: boolean;
+    intellectualPropertyRightId?: string;
+  };
+
   // Publication Array
-  const [arrayOfPatents, setArrayOfPatents] = useState<Patents[]>(
-    performance.intellectualPropertyRights
-      ? performance.intellectualPropertyRights.patents
-      : []
-  );
+  const [arrayOfPatents, setArrayOfPatents] = useState<Patents[]>([]);
 
   // CopyRights Array
-  const [arrayOfCopyRights, setArrayOfCopyRights] = useState<Patents[]>(
-    performance.intellectualPropertyRights
-      ? performance.intellectualPropertyRights.copyRights
-      : []
-  );
+  const [arrayOfCopyRights, setArrayOfCopyRights] = useState<Patents[]>([]);
 
   // TradeMark Array
-  const [arrayOfTradeMark, setArrayOfTradeMark] = useState<Patents[]>(
-    performance.intellectualPropertyRights
-      ? performance.intellectualPropertyRights.tradeMarks
-      : []
-  );
+  const [arrayOfTradeMark, setArrayOfTradeMark] = useState<Patents[]>([]);
 
   const router = useRouter();
   if (user === undefined) {
@@ -77,52 +61,14 @@ const PropertyRightForm = ({ user, performance }: Props) => {
   }
 
   const { toast } = useToast();
-  const { setLoading } = useLoader();
-  const { setCelebration } = useCelebration();
 
+  const { loading, setLoading } = useStore();
   const onSubmit = async () => {
-    if (performance.intellectualPropertyRights) {
-      await pEFormStep6({
-        arrayOfPatents,
-        arrayOfCopyRights,
-        arrayOfTradeMark,
-        performanceId: performance.id,
-        intellectualPropertyRightId: performance.intellectualPropertyRights.id,
-      }).then(async ({ message, status }) => {
-        console.log(`🚀 ~  message, status :`, message, status);
-        status = await status;
-        toast({
-          title: message,
-        });
-        if (status === true) {
-          setLoading(false);
-          setCelebration(true);
-          router.push(`/performance/${performance.id}/evaluation`);
-        } else {
-          setLoading(false);
-        }
-      });
-    } else {
-      await pEFormStep6({
-        arrayOfPatents,
-        arrayOfCopyRights,
-        arrayOfTradeMark,
-        performanceId: performance.id,
-      }).then(async ({ message, status }) => {
-        console.log(`🚀 ~  message, status :`, message, status);
-        status = await status;
-        toast({
-          title: message,
-        });
-        if (status === true) {
-          setLoading(false);
-          setCelebration(true);
-          router.push(`/performance/${performance.id}/evaluation`);
-        } else {
-          setLoading(false);
-        }
-      });
-    }
+    console.log("hello");
+
+    console.log(arrayOfPatents);
+    console.log(arrayOfCopyRights);
+    console.log(arrayOfTradeMark);
   };
 
   const deleteFromArray = async (i: number) => {
@@ -436,25 +382,7 @@ const PropertyRightForm = ({ user, performance }: Props) => {
       <MiniForm2 examinationDuties={performance.examinationDuties} />
       <Button
         onClick={onSubmit}
-        disabled={
-          !(
-            arrayOfPatents.length > 0 &&
-            arrayOfCopyRights.length > 0 &&
-            arrayOfTradeMark.length > 0
-          ) ||
-          arrayOfPatents.length <=
-            (performance?.intellectualPropertyRights
-              ? performance.intellectualPropertyRights.patents.length
-              : 0) ||
-          arrayOfTradeMark.length <=
-            (performance?.intellectualPropertyRights
-              ? performance.intellectualPropertyRights.tradeMarks.length
-              : 0) ||
-          arrayOfTradeMark.length <=
-            (performance?.intellectualPropertyRights
-              ? performance.intellectualPropertyRights.tradeMarks.length
-              : 0)
-        }
+        // disabled={!(arrayOfPublications.length > 0)}
         className="m-10 text-center w-fit"
       >
         Save Changes

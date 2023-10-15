@@ -143,7 +143,7 @@ model BookArticleChapterPublished {
   titleWithPageNo       String
   isbnNo                String
   detailOfCoAuthors     String
-  publishedMonthAndYear String
+  publishedMonthAndYear Boolean
   Performance           Performance? @relation(fields: [performanceId], references: [id], onDelete: Cascade)
   performanceId         String
 }
